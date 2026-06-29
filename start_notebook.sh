@@ -1,6 +1,7 @@
 #!/bin/bash
 module load singularity
-export PROJECT_DIR="/home/nr_dodb/nr_dose"
+export PROJECT_DIR= $(pwd)
+#"/home/nr_dodb/nr_dose"
 export REAL_PROJECT_DIR=$(readlink -f $PROJECT_DIR)
 echo "Server runs at http://10.150.1.134:18888/?token=flora"
 export SINGULARITYENV_JUPYTER_PORT=18888

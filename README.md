@@ -34,3 +34,9 @@
 - Vision Transformer.
 - Conv encoder + Transformer transition + Conv decoder.
 - 3D Unet.
+
+
+
+## Planned Meetings:
+- Wed: 13:00 - 14:00
+- Fri: 13:00 - 14:00

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from omegaconf import OmegaConf
 
 class BeamMaskedMAELoss(nn.Module):
     """
@@ -180,7 +181,146 @@ class IDDCurveLoss(nn.Module):
             return normalised.sum()
         return normalised.mean()
  
- 
+
+
+
+import torch
+import torch.nn as nn
+
+class Stratified_plan_level_MAE(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.eps = 1e-8
+
+    def stratified_plan_mae(self, pred_dose: torch.Tensor, gt_dose: torch.Tensor) -> torch.Tensor:
+        """
+        Calculates the Level 2 Stratified Plan-Level MAE.
+        Derives the prescription dose dynamically from the ground-truth volume.
+        """
+        rx_dose_proxy = gt_dose.max()
+        abs_error = torch.abs(pred_dose - gt_dose)
+
+        high_mask = gt_dose >= 0.80 * rx_dose_proxy
+        mid_mask  = (gt_dose >= 0.30 * rx_dose_proxy) & (gt_dose < 0.80 * rx_dose_proxy)
+        low_mask  = (gt_dose >= 0.10 * rx_dose_proxy) & (gt_dose < 0.30 * rx_dose_proxy)
+
+        def get_stratum_mae(mask: torch.Tensor) -> torch.Tensor:
+            if mask.sum() == 0:
+                return torch.tensor(0.0, device=pred_dose.device, dtype=pred_dose.dtype)
+            
+            return abs_error[mask].mean() / (rx_dose_proxy + self.eps)
+
+        mae_high = get_stratum_mae(high_mask)
+        mae_mid  = get_stratum_mae(mid_mask)
+        mae_low  = get_stratum_mae(low_mask)
+
+        valid_strata_count = (high_mask.sum() > 0).int() + \
+                             (mid_mask.sum() > 0).int() + \
+                             (low_mask.sum() > 0).int()
+
+        if valid_strata_count == 0:
+            return torch.tensor(0.0, device=pred_dose.device, dtype=pred_dose.dtype)
+
+        plan_level_mae = (mae_high + mae_mid + mae_low) / valid_strata_count
+
+        return plan_level_mae
+
+    def forward(self, pred_dose: torch.Tensor, gt_dose: torch.Tensor) -> torch.Tensor:
+        """
+        Allows the class to be called directly like a standard PyTorch loss function.
+        """
+        return self.stratified_plan_mae(pred_dose, gt_dose)
+    
+
+
+def dim_ceil(val):
+    return int(val) + (1 if val % 1 > 0 else 0)
+
+class LossEvaluator(nn.Module):
+    def __init__(self, voxel_spacing = None):
+        """
+        Args:
+            voxel_spacing (tuple): Physical size of a voxel in mm (dx, dy, dz).
+                                   Crucial for calculating Distance-to-Agreement.
+        """
+        super().__init__()
+        cfg = OmegaConf.load("configs/default_config.yaml")
+        self.voxel_spacing = cfg['data']['voxel_spacing'] if voxel_spacing is None else voxel_spacing
+
+    def local_gamma_3d(self, pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
+        """
+        Computes the 3D Local Gamma Pass Rate (1% / 1mm) on GPU.
+        
+        Args:
+            pred (torch.Tensor): Predicted dose volume, shape (D, H, W)
+            gt (torch.Tensor): Ground truth dose volume, shape (D, H, W)
+            
+        Returns:
+            torch.Tensor: Scalar tensor containing the pass rate (0.0 to 1.0)
+        """
+        device = pred.device
+        dx, dy, dz = self.voxel_spacing
+        
+        # 1. Define evaluation mask (Voxels >= 10% of global maximum GT dose)
+        gt_max = gt.max()
+        eval_mask = gt >= 0.10 * gt_max
+        
+        total_eval_voxels = eval_mask.sum()
+        if total_eval_voxels == 0:
+            return torch.tensor(1.0, device=device) # Trivial pass if no high dose regions
+
+        # 2. Determine search window radius in voxels based on 1.0 mm limit
+        # A voxel distance further than 1mm automatically makes the spatial term > 1,
+        # meaning gamma cannot be <= 1. Thus, we only search within a 1mm radius.
+        r_z = int(dim_ceil(1.0 / dz))
+        r_y = int(dim_ceil(1.0 / dy))
+        r_x = int(dim_ceil(1.0 / dx))
+        
+        # Initialize gamma matrix with infinity
+        gamma_sq = torch.full_like(gt, float('inf'))
+        
+        # Pad tensors to safely handle edge shifts
+        pad_w = (r_x, r_x, r_y, r_y, r_z, r_z)
+        gt_padded = torch.nn.functional.pad(gt, pad_w, mode='edge')
+        
+        D, H, W = gt.shape
+
+        # 3. Search over the localized 3D neighborhood
+        for sz in range(-r_z, r_z + 1):
+            for sy in range(-r_y, r_y + 1):
+                for sx in range(-r_x, r_x + 1):
+                    # Calculate physical Euclidean distance
+                    dist_sq = (sz * dz)**2 + (sy * dy)**2 + (sx * dx)**2
+                    if dist_sq > 1.0: 
+                        continue # Skip neighbor if distance strictly exceeds 1 mm
+                    
+                    # Crop the shifted reference region matching the original dimensions
+                    gt_shifted = gt_padded[
+                        r_z + sz : r_z + sz + D,
+                        r_y + sy : r_y + sy + H,
+                        r_x + sx : r_x + sx + W
+                    ]
+                    
+                    # Local dose difference tolerance: 1% of the LOCAL reference dose
+                    dose_tol = 0.01 * gt_shifted
+                    
+                    # Compute dose discrepancy term safely avoiding division by zero
+                    dose_diff_sq = ((pred - gt_shifted) / (dose_tol + 1e-8))**2
+                    
+                    # Combined Gamma space value for this specific neighbor displacement
+                    current_gamma_sq = dist_sq + dose_diff_sq
+                    
+                    # Retain the minimum found across all checked neighbors
+                    gamma_sq = torch.minimum(gamma_sq, current_gamma_sq)
+
+        # 4. Extract final gamma metrics inside the valid evaluation mask
+        gamma = torch.sqrt(gamma_sq[eval_mask])
+        
+        # Pass rate is defined as the percentage of voxels where gamma <= 1
+        passed_voxels = (gamma <= 1.0).sum()
+        pass_rate = passed_voxels.float() / total_eval_voxels.float()
+        
+        return pass_rate
 
 def test_beam_masked_mae():
     torch.manual_seed(0)

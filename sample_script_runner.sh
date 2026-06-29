@@ -1,5 +1,6 @@
 #!/bin/bash
 module load singularity
+
 export PROJECT_DIR="/home/nr_dodb/nr_dose"
 export REAL_PROJECT_DIR=$(readlink -f $PROJECT_DIR)
 
