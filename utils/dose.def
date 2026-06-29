@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:24.01-py3
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=Europe/Budapest
+
+    # 1. Install required underlying Linux C++ libraries for OpenCV/MONAI
+    apt-get update -y
+    apt-get install -y tzdata libgl1-mesa-glx libglib2.0-0 build-essential
+
+    # 2. Upgrade pip and install your Python stack
+    pip install --no-cache-dir --upgrade pip
+    pip install --no-cache-dir lightning "monai[all]" SimpleITK matplotlib numpy pandas wandb jupyter notebook anndata seaborn pillow monai-generative omegaconf openpyxl
+v 
+%environment
+    export PYTHONUNBUFFERED=1
+
+%labels
+    Author Dbence
+    Description Complete PyTorch & MONAI container for medical deep learning
