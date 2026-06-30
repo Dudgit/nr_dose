@@ -1,8 +1,8 @@
 import json
-from monai.transforms import MapTransform, ResizeWithPadOrCropd , EnsureTyped,Compose, LoadImaged, EnsureChannelFirstd, Spacingd, CenterSpatialCropd
+from monai.transforms import MapTransform, ResizeWithPadOrCropd , EnsureTyped,Compose, LoadImaged, EnsureChannelFirstd, Spacingd, CenterSpatialCropd, ConvertToArrayd
 import nibabel as nib
 import numpy as np
-from monai.data import PersistentDataset, DataLoader
+from monai.data import PersistentDataset, DataLoader, Dataset
 import torch
 from omegaconf import OmegaConf
 import os
@@ -53,18 +53,22 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     train_transforms = Compose([
     LoadImaged(keys=["ct", "gt_dose"]),
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
-    
     # Extract +/- 10 slices based on the physical ray location
     ExtractSlabAroundZ(keys=["ct", "gt_dose"], source_key="condition", margin_slices=data_cfg['margin_slices']),
-    
     # Resample the extracted slabs to a fixed 1x1x1 mm resolution
     Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode="trilinear"),
-    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']),])
+    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']),
+    ConvertToArrayd(keys=["condition"])
+    ])
 
     cache_dir = hw_cfg[hw]['cache_dir']
     os.makedirs(cache_dir, exist_ok=True)
-    train_ds =  PersistentDataset(data=train_list, transform=train_transforms,cache_dir=cache_dir)
-    val_ds =  PersistentDataset(data=val_list, transform=train_transforms,cache_dir=cache_dir)
+    if hw_cfg[hw]["dataset_type"] == "dataset":
+        train_ds =  Dataset(data=train_list, transform=train_transforms)
+        val_ds =  Dataset(data=val_list, transform=train_transforms)
+    else:
+        train_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
+        val_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)
 
     train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'])
     val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'])

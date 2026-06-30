@@ -9,7 +9,12 @@ data:
   roi_size: [256, 256, 64]
   
 modelkwgs:
-  model_type: "unet"
   in_channels: 1
   out_channels: 1
-  base_n_filter: 16
+  chanels: [32, 64, 128, 256]
+  embed_dim: 256
+  num_heads: 8
+  num_layers: 4
+
+train:
+  num_epochs: 100
