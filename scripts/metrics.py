@@ -236,7 +236,7 @@ class Stratified_plan_level_MAE(nn.Module):
 def dim_ceil(val):
     return int(val) + (1 if val % 1 > 0 else 0)
 
-class LossEvaluator(nn.Module):
+class GammaLoss(nn.Module):
     def __init__(self, voxel_spacing = None):
         """
         Args:
@@ -281,7 +281,10 @@ class LossEvaluator(nn.Module):
         
         # Pad tensors to safely handle edge shifts
         pad_w = (r_x, r_x, r_y, r_y, r_z, r_z)
-        gt_padded = torch.nn.functional.pad(gt, pad_w, mode='edge')
+        gt_5d = gt[None, None, :, :, :]
+        gt_padded_5d = torch.nn.functional.pad(gt_5d, pad_w, mode='replicate')
+        gt_padded = gt_padded_5d[0, 0, :, :, :]
+
         
         D, H, W = gt.shape
 
@@ -322,74 +325,111 @@ class LossEvaluator(nn.Module):
         
         return pass_rate
 
-def test_beam_masked_mae():
-    torch.manual_seed(0)
-    B, N, D, H, W = 2, 3, 16, 64, 64
 
-    target = torch.rand(B, N, D, H, W)
-    pred   = target + 0.05 * torch.randn(B, N, D, H, W)
+class LossEvaluator(nn.Module):
+    def __init__(self, eps: float = 1e-8):
+        super().__init__()
+        self.eps = eps
 
-    loss_fn = BeamMaskedMAELoss()
-    loss    = loss_fn(pred, target)
-    print(f"Loss (mean, 3D): {loss.item():.6f}")
+    def _get_d_x(self, dose_volume: torch.Tensor, mask: torch.Tensor, q: float) -> torch.Tensor:
+        """Helper to calculate the Dose to X% of the volume (quantile)."""
+        if mask.sum() == 0:
+            return torch.tensor(0.0, device=dose_volume.device)
+        
+        # Extract doses inside the mask and ensure they are float32 for torch.quantile
+        doses_in_structure = dose_volume[mask].float()
+        return torch.quantile(doses_in_structure, q)
 
-    # reduction='none' → per-beam tensor
-    per_beam = BeamMaskedMAELoss(reduction="none")(pred, target)
-    print(f"Per-beam shape: {per_beam.shape}")   # (2, 3)
-    print(f"Per-beam values:\n{per_beam}")
+    def _get_v_x(self, dose_volume: torch.Tensor, mask: torch.Tensor, threshold_dose: float) -> torch.Tensor:
+        """Helper to calculate Volume receiving >= threshold_dose (fractional)."""
+        if mask.sum() == 0:
+            return torch.tensor(0.0, device=dose_volume.device)
+        
+        doses_in_structure = dose_volume[mask]
+        # Calculate the fraction of voxels meeting the threshold
+        return (doses_in_structure >= threshold_dose).float().mean()
 
-    # 2-D spatial (e.g. slice-wise)
-    target_2d = torch.rand(B, N, H, W)
-    pred_2d   = target_2d + 0.05 * torch.randn(B, N, H, W)
-    loss_2d   = loss_fn(pred_2d, target_2d)
-    print(f"Loss (mean, 2D): {loss_2d.item():.6f}")
+    def _get_d_mean(self, dose_volume: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        """Helper to calculate Mean Dose."""
+        if mask.sum() == 0:
+            return torch.tensor(0.0, device=dose_volume.device)
+        
+        return dose_volume[mask].mean()
 
-    # Zero-dose beam edge case
-    target_zero          = torch.rand(B, N, D, H, W)
-    target_zero[:, 0, :] = 0.0   # first beam has zero gt dose
-    pred_zero            = torch.rand(B, N, D, H, W)
-    loss_zero            = loss_fn(pred_zero, target_zero)
-    print(f"Loss with one zero-dose beam: {loss_zero.item():.6f}")
+    def _absolute_relative_diff(self, pred_val: torch.Tensor, gt_val: torch.Tensor) -> torch.Tensor:
+        """Computes |Pred - GT| / GT, safeguarded with epsilon."""
+        return torch.abs(pred_val - gt_val) / (gt_val + self.eps)
 
+    def dvh_clinical_score(self, 
+                           pred_dose: torch.Tensor, 
+                           gt_dose: torch.Tensor, 
+                           ptv_mask: torch.Tensor, 
+                           oar_masks, rx_dose  = None) -> torch.Tensor:
+        """
+        Computes the standardized Level 2.3 DVH-Based Clinical Score.
+        
+        Args:
+            pred_dose (torch.Tensor): Predicted dose volume.
+            gt_dose (torch.Tensor): Ground-truth dose volume.
+            ptv_mask (torch.Tensor): Boolean mask for the Target (PTV).
+            oar_masks (List[torch.Tensor]): List of boolean masks for the 3 closest OARs.
+            rx_dose (float, optional): Prescribed dose. If None, uses max of gt_dose.
+            
+        Returns:
+            torch.Tensor: The final DVH score (lower is better, 0.0 is perfect).
+        """
+        device = pred_dose.device
+        if rx_dose is None:
+            rx_dose = gt_dose.max().item()
 
-def test_iid():
-    import torch
- 
-    torch.manual_seed(42)
-    B, N, H, W = 2, 3, 64, 64
- 
-    # ---- basic forward pass ----
-    target = torch.rand(B, N, H, W)
-    pred   = target + 0.05 * torch.randn(B, N, H, W)
- 
-    loss_fn = IDDCurveLoss(beam_dim=-1)           # depth = W axis
-    loss    = loss_fn(pred, target)
-    print(f"Loss (mean, beam_dim=-1): {loss.item():.6f}")
- 
-    loss_fn0 = IDDCurveLoss(beam_dim=0)           # depth = H axis
-    loss0    = loss_fn0(pred, target)
-    print(f"Loss (mean, beam_dim= 0): {loss0.item():.6f}")
- 
-    # ---- perfect prediction → loss should be ~0 ----
-    loss_perfect = loss_fn(target, target)
-    print(f"Loss (perfect pred):      {loss_perfect.item():.6f}")
- 
-    # ---- reduction='none' → per-beam ----
-    per_beam = IDDCurveLoss(beam_dim=-1, reduction="none")(pred, target)
-    print(f"Per-beam shape: {per_beam.shape}")    # (B, N) = (2, 3)
-    print(f"Per-beam values:\n{per_beam}")
- 
-    # ---- single-channel total dose (B, H, W) ----
-    target_2d = torch.rand(B, H, W)
-    pred_2d   = target_2d + 0.05 * torch.randn(B, H, W)
-    loss_2d   = IDDCurveLoss(beam_dim=-1)(pred_2d, target_2d)
-    print(f"Loss (single-channel 2D): {loss_2d.item():.6f}")
- 
-    # ---- zero ground truth edge case ----
-    target_z  = torch.zeros(B, N, H, W)
-    pred_z    = torch.rand(B, N, H, W)
-    loss_z    = loss_fn(pred_z, target_z)
-    print(f"Loss (zero gt):           {loss_z.item():.6f}")   # should be large but finite
+        # ---------------------------------------------------------
+        # 1. Target (PTV) Metrics
+        # ---------------------------------------------------------
+        # D98% (2nd percentile)
+        ptv_d98_gt = self._get_d_x(gt_dose, ptv_mask, q=0.02)
+        ptv_d98_pred = self._get_d_x(pred_dose, ptv_mask, q=0.02)
+        ard_ptv_d98 = self._absolute_relative_diff(ptv_d98_pred, ptv_d98_gt)
 
-if __name__ == "__main__":
-    test_iid()
+        # V95% (Volume >= 95% of Rx)
+        v95_threshold = 0.95 * rx_dose
+        ptv_v95_gt = self._get_v_x(gt_dose, ptv_mask, v95_threshold)
+        ptv_v95_pred = self._get_v_x(pred_dose, ptv_mask, v95_threshold)
+        ard_ptv_v95 = self._absolute_relative_diff(ptv_v95_pred, ptv_v95_gt)
+
+        # Average Target Score
+        target_score = (ard_ptv_d98 + ard_ptv_v95) / 2.0
+
+        # ---------------------------------------------------------
+        # 2. OAR Metrics (Iterate through the 3 OARs)
+        # ---------------------------------------------------------
+        oar_ards = []
+        for oar_mask in oar_masks:
+            if oar_mask.sum() == 0:
+                continue # Skip if an OAR mask is entirely empty in this patch/volume
+
+            # D2% (98th percentile)
+            oar_d2_gt = self._get_d_x(gt_dose, oar_mask, q=0.98)
+            oar_d2_pred = self._get_d_x(pred_dose, oar_mask, q=0.98)
+            ard_oar_d2 = self._absolute_relative_diff(oar_d2_pred, oar_d2_gt)
+
+            # D_mean
+            oar_dmean_gt = self._get_d_mean(gt_dose, oar_mask)
+            oar_dmean_pred = self._get_d_mean(pred_dose, oar_mask)
+            ard_oar_dmean = self._absolute_relative_diff(oar_dmean_pred, oar_dmean_gt)
+
+            oar_ards.extend([ard_oar_d2, ard_oar_dmean])
+
+        # Average OAR Score
+        if len(oar_ards) > 0:
+            oar_score = torch.stack(oar_ards).mean()
+        else:
+            oar_score = torch.tensor(0.0, device=device)
+
+        # ---------------------------------------------------------
+        # 3. Final Combined Score (Equal Weighting)
+        # ---------------------------------------------------------
+        # The prompt specifies equal contribution from target metrics and OAR metrics.
+        # Target weight = 0.5, OAR weight = 0.5
+        dvh_score = (target_score * 0.5) + (oar_score * 0.5)
+
+        return dvh_score

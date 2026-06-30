@@ -1,6 +1,12 @@
 data:
   voxel_spacing: [1.0, 1.0, 1.0]
   target_size: [256, 256, 64]
+  dataset_list: "data/dataset_list.json"
+  train_list: "data/train.json"
+  val_list: "data/val.json"
+  margin_slices: 10
+  pixdim: [1.0, 1.0, 1.0]
+  roi_size: [256, 256, 64]
 modelkwgs:
   model_type: "unet"
   in_channels: 1
