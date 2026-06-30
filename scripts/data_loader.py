@@ -8,14 +8,14 @@ from omegaconf import OmegaConf
 import os
 
 class ExtractSlabAroundZ(MapTransform):
-    def __init__(self, keys, source_key="ray_source_phys", margin_slices=10, allow_missing_keys=False):
+    def __init__(self, keys, source_key="condition", margin_slices=15, allow_missing_keys=False):
         super().__init__(keys, allow_missing_keys)
         self.source_key = source_key
         self.margin_slices = margin_slices
 
     def __call__(self, data):
         d = dict(data)
-        ray_source_phys = d[self.source_key] # [x, y, z]
+        ray_source_phys = d[self.source_key][:3] # [x, y, z]
         
         for key in self.key_iterator(d):
             img = d[key]
@@ -41,10 +41,12 @@ class ExtractSlabAroundZ(MapTransform):
         return d
 
 
-def get_loaders(batch_size= 32, num_workers = 4,config_name = "default_config"):
+def get_loaders(hw="atlasz",config_name = "default_config"):
 
     cfg = OmegaConf.load(f"configs/{config_name}.yaml")
     data_cfg = cfg['data']
+    hw_cfg = OmegaConf.load(f"configs/hw_config.yaml")
+
     train_list = json.load(open(data_cfg['train_list'], "r"))
     val_list = json.load(open(data_cfg['val_list'], "r"))
 
@@ -53,19 +55,19 @@ def get_loaders(batch_size= 32, num_workers = 4,config_name = "default_config"):
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
     
     # Extract +/- 10 slices based on the physical ray location
-    ExtractSlabAroundZ(keys=["ct", "gt_dose"], source_key="ray_source_phys", margin_slices=data_cfg['margin_slices']),
+    ExtractSlabAroundZ(keys=["ct", "gt_dose"], source_key="condition", margin_slices=data_cfg['margin_slices']),
     
     # Resample the extracted slabs to a fixed 1x1x1 mm resolution
     Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode="trilinear"),
-    CenterSpatialCropd(keys=["ct", "gt_dose"], roi_size=data_cfg['roi_size']),])
+    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']),])
 
-    cache_dir = "/home/nr_dodb/nr_dose_scratch"
+    cache_dir = hw_cfg[hw]['cache_dir']
     os.makedirs(cache_dir, exist_ok=True)
     train_ds =  PersistentDataset(data=train_list, transform=train_transforms,cache_dir=cache_dir)
     val_ds =  PersistentDataset(data=val_list, transform=train_transforms,cache_dir=cache_dir)
 
-    train_loader = DataLoader(train_ds,batch_size=batch_size,shuffle=True,num_workers=num_workers)
-    val_loader = DataLoader(val_ds,batch_size=batch_size,shuffle=False,num_workers=num_workers)
+    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'])
+    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'])
 
     return train_loader, val_loader
 
