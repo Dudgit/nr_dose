@@ -61,7 +61,7 @@ def train_dota():
     wandb_logger = WandbLogger(log_model=True, project="DoseRad", name=run_name,entity="ELTE_dl_competition_team",save_dir="/tmp")
     
     trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger,
-                         accelerator="gpu",devices=[3],callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
+                         accelerator="gpu",devices=4,callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")
     if os.path.exists(last_ckpt_path):

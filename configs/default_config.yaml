@@ -2,9 +2,9 @@ data:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  margin_slices: 10
+  margin_slices: 15
   pixdim: [1.0, 1.0, 1.0]
-  roi_size: [256, 256, 64]
+  roi_size: [256, 256, 32]
   
 model_name: "DoTA"
 run_name: "Vanilla"

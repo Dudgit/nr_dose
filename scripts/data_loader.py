@@ -70,8 +70,8 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
         train_ds =  Dataset(data=train_list, transform=train_transforms)
         val_ds =  Dataset(data=val_list, transform=train_transforms)
 
-    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'])
-    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'])
+    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],persistent_workers=hw_cfg[hw]['persistent_workers'],pin_memory=True)
+    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],persistent_workers=hw_cfg[hw]['persistent_workers'],pin_memory=True)
 
     return train_loader, val_loader
 
