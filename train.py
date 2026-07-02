@@ -1,20 +1,36 @@
+
+#* Default system configs
+import os
 import argparse
+
+import torch
 from omegaconf import OmegaConf
-import pytrch_lightning as pl
+
+#* Linghting and Lighning functions
+import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.plugins.environments import LightningEnvironment
 
-import os
-
-
+#* Own scripts
 from scripts.data_loader import get_loaders
+
+torch.set_float32_matmul_precision('medium')
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train a model")
     parser.add_argument("--config", type=str, default="default", help="Which config file to use")
     return parser.parse_args()
 
+
+
+def create_config():
+    cfg = OmegaConf.load(f"configs/default_config.yaml")
+    args = parse_args()
+    if args.config != "default":
+        cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}.yaml"))
+    return cfg
 
 def create_dota_instance(cfg):
     from scripts.models import DoTA_based
@@ -23,19 +39,31 @@ def create_dota_instance(cfg):
     dose_instance_model = DoseTrainer(model)
     return dose_instance_model
 
+
+
+def choseModels(cfg):
+    if cfg['modelname'] == "DoTA":
+        model = create_dota_instance(cfg)
+    return model
+
+def create_callbacks(cfg):
+    last_callback = ModelCheckpoint(dirpath=os.path.join("checkpoints", cfg['run_name']),filename='last',save_last=True)
+    return [last_callback]
+
 def train_dota():
-    run_name ="Vanilla"
-    cfg = OmegaConf.load(f"configs/default_config.yaml")
-    
+    cfg = create_config()
+    run_name =cfg['run_name']
+
     train_loader, val_loader = get_loaders()
     model = create_dota_instance(cfg)
+    callbacks = create_callbacks(cfg)
+
+    wandb_logger = WandbLogger(log_model=True, project="DoseRad", name=run_name,entity="ELTE_dl_competition_team",save_dir="/tmp")
     
-    last_callback = ModelCheckpoint(dirpath=os.path.join("checkpoints", run_name),filename='last',save_last=True)
-    wandb_logger = WandbLogger(log_model=True, project="DOTA", name=run_name,entity="DOSERAD",save_dir="/tmp")
+    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger,
+                         accelerator="gpu",devices=[3],callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     
-    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger,accelerator="gpu",callbacks=[last_callback],plugins=LightningEnvironment())
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")
-    
     if os.path.exists(last_ckpt_path):
         print(f"Resuming 8-hour chain from {last_ckpt_path}...")
         trainer.fit(model, train_loader, val_loader, ckpt_path=last_ckpt_path)

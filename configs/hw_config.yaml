@@ -1,7 +1,7 @@
 atlasz:
-  num_workers: 16
-  batch_size: 64
-  cache_dir: "/scratch/db/dose_cache"
+  num_workers: 4
+  batch_size: 128
+  cache_dir: "/scratch/db"
   dataset_type: "dataset"
 
 komondor:

@@ -24,11 +24,25 @@ class Decoder(nn.Module):
 
         layers = []
 
+        # This upsamples 3 times: 256->128, 128->64, 64->32
         for cin, cout in zip(channels[:-1], channels[1:]):
-            layers.extend([nn.ConvTranspose3d(cin, cout, kernel_size=2, stride=2),nn.InstanceNorm3d(cout),nn.GELU(),])
+            layers.extend([
+                nn.ConvTranspose3d(cin, cout, kernel_size=2, stride=2),
+                nn.InstanceNorm3d(cout),
+                nn.GELU(),
+            ])
+
+        # ADD THE 4TH UPSAMPLE STEP HERE: 32->32
+        # This restores the final missing spatial dimension
+        last_channel = channels[-1]
+        layers.extend([
+            nn.ConvTranspose3d(last_channel, last_channel, kernel_size=2, stride=2),
+            nn.InstanceNorm3d(last_channel),
+            nn.GELU(),
+        ])
 
         self.decoder = nn.Sequential(*layers)
-        self.out = nn.Conv3d(channels[-1], out_channels, kernel_size=1)
+        self.out = nn.Conv3d(last_channel, out_channels, kernel_size=1)
 
     def forward(self, x):
         return self.out(self.decoder(x))

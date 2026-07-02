@@ -16,12 +16,17 @@ class DoseTrainer(pl.LightningModule):
         y = batch['gt_dose']
         condition = batch['condition']
         y_hat = self(x, condition)
+        
         loss = self.loss_function(y_hat, y)
         return loss, y_hat, y, condition
     
     def training_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch)
-        self.log("train_loss", loss, prog_bar=True, sync_dist=True)
+        self.log("train/MSE", loss, prog_bar=True, sync_dist=True)
+        return loss
+    def validation_step(self, batch, batch_idx):
+        loss, y_hat, y, condition = self.shared_step(batch)
+        self.log("val/MSE", loss, prog_bar=True, sync_dist=True)
         return loss
 
     def logging_step(self,res_dict,prefix):

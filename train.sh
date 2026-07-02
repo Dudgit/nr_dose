@@ -15,5 +15,5 @@ export REAL_SCRATCH=$(readlink -f $SCRATCH)
 export HDD="/home/nr_fldb/nr_floraai/data/ct_rate_subset/dataset/train_fixed"
 export REAL_HDD=$(readlink -f $HDD)
 
-export SINGULARITYENV_WANDB_API_KEY="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"
+export SINGULARITYENV_WANDB_API_KEY="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"
 singularity exec --nv --pwd $REAL_SCRATCH -B $REAL_SCRATCH:$REAL_SCRATCH -B $REAL_HDD:/mnt/ct_data FLORA/flora.sif python main_stage2.py
