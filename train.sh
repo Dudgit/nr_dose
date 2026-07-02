@@ -1,15 +1,15 @@
 #!/bin/bash
-#SBATCH --job-name=flora_train
+#SBATCH --job-name=Dose_train
 #SBATCH --partition=ai
 #SBATCH --gres=gpu:4
-#SBATCH --mem=128G 
+#SBATCH --mem=250G 
 #SBATCH --cpus-per-task=32            
-#SBATCH --time=4:00:00
-#SBATCH --output=logs/sample_name.log
+#SBATCH --time=8:00:00
+#SBATCH --output=logs/vanilla.log
 
 module load singularity
 
-export SCRATCH="/home/nr_dodb/nr_dose"
+export SCRATCH="$(pwd)/nr_dose"
 export REAL_SCRATCH=$(readlink -f $SCRATCH)
 
 export HDD="/home/nr_fldb/nr_floraai/data/ct_rate_subset/dataset/train_fixed"
