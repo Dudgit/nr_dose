@@ -29,7 +29,7 @@ class DoseLevel1MetricsCallback(pl.Callback):
 
 import pytorch_lightning as pl
 import torch
-from scipts.metrics import Stratified_plan_level_MAE, GammaLoss
+from scripts.metrics import Stratified_plan_level_MAE, GammaLoss
 
 class DoseLevel2MetricsCallback(pl.Callback):
     def __init__(self, unique_patient_ids, volume_shape=(1, 256, 256, 32)):
