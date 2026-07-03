@@ -1,10 +1,10 @@
 atlasz:
   num_workers: 8
   batch_size: 64
-  prefetch_factor: 4
+  prefetch_factor: 2 
   persistent_workers: True
   cache_dir: "/scratch/db"
-  dataset_type: "dataset"
+  dataset_type: "persistent"
 
 komondor:
   num_workers: 8

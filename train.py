@@ -14,6 +14,7 @@ from pytorch_lightning.plugins.environments import LightningEnvironment
 
 #* Own scripts
 from scripts.data_loader import get_loaders
+from scripts.callbacks import DoseLevel1MetricsCallback
 
 torch.set_float32_matmul_precision('medium')
 
@@ -48,7 +49,8 @@ def choseModels(cfg):
 
 def create_callbacks(cfg):
     last_callback = ModelCheckpoint(dirpath=os.path.join("checkpoints", cfg['run_name']),filename='last',save_last=True)
-    return [last_callback]
+    doe_level1_callback = DoseLevel1MetricsCallback()
+    return [last_callback, doe_level1_callback]
 
 def train_dota():
     cfg = create_config()
@@ -72,4 +74,6 @@ def train_dota():
         trainer.fit(model, train_loader, val_loader)
 
 if __name__ == "__main__":
+    import torch.multiprocessing as mp
+    mp.set_start_method('spawn', force=True)
     train_dota()

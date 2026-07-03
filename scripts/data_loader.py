@@ -7,6 +7,31 @@ import torch
 from omegaconf import OmegaConf
 import os
 
+
+
+from torch.utils.data import Dataset as TorchDataset
+
+class PatientIDWrapper(TorchDataset):
+    def __init__(self, monai_dataset, raw_json_list):
+        self.monai_dataset = monai_dataset
+        self.raw_json_list = raw_json_list
+
+    def __len__(self):
+        return len(self.monai_dataset)
+
+    def __getitem__(self, idx):
+        # 1. Pull the data from the existing 1TB MONAI cache
+        data_dict = self.monai_dataset[idx]
+        
+        # 2. Extract the ID from the original JSON list (bypassing the cache entirely)
+        # Example: "/scratch/db/proton/training/1ABB161/image/ct.mha" -> "1ABB161"
+        file_path = self.raw_json_list[idx]["ct"]
+        patient_id = file_path.split('/')[-3]
+        
+        # 3. Inject the string into the dictionary and return
+        data_dict["patient_id"] = patient_id
+        return data_dict
+
 class ExtractSlabAroundZ(MapTransform):
     def __init__(self, keys, source_key="condition", margin_slices=15, allow_missing_keys=False):
         super().__init__(keys, allow_missing_keys)
@@ -56,11 +81,11 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     # Extract +/- 10 slices based on the physical ray location
     ExtractSlabAroundZ(keys=["ct", "gt_dose"], source_key="condition", margin_slices=data_cfg['margin_slices']),
     # Resample the extracted slabs to a fixed 1x1x1 mm resolution
-    Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode="trilinear"),
+    Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode="nearest"),
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']),
-    EnsureTyped(keys=["condition"])
+    EnsureTyped(keys=["ct", "gt_dose", "condition"],track_meta=False,dtype=torch.float16)
     ])
-
+    
     if hw_cfg[hw]['dataset_type'] == "persistent":
         cache_dir = hw_cfg[hw]['cache_dir']
         os.makedirs(cache_dir, exist_ok=True)
@@ -69,9 +94,10 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     if hw_cfg[hw]["dataset_type"] == "dataset":
         train_ds =  Dataset(data=train_list, transform=train_transforms)
         val_ds =  Dataset(data=val_list, transform=train_transforms)
-
-    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],persistent_workers=hw_cfg[hw]['persistent_workers'],pin_memory=True)
-    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],persistent_workers=hw_cfg[hw]['persistent_workers'],pin_memory=True)
+    
+    val_ds = PatientIDWrapper(val_ds, val_list)
+    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'],persistent_workers=hw_cfg[hw]['persistent_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],pin_memory=True)
+    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'],persistent_workers=hw_cfg[hw]['persistent_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],pin_memory=True)
 
     return train_loader, val_loader
 

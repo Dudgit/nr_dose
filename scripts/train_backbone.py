@@ -24,10 +24,11 @@ class DoseTrainer(pl.LightningModule):
         loss, y_hat, y, condition = self.shared_step(batch)
         self.log("train/MSE", loss, prog_bar=True, sync_dist=True)
         return loss
+    
     def validation_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch)
         self.log("val/MSE", loss, prog_bar=True, sync_dist=True)
-        return loss
+        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
 
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():
