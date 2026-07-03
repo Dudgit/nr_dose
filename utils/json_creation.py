@@ -78,6 +78,7 @@ def create_doserad_dataset(json_path):
 if __name__ == "__main__":
     import glob
     import numpy as np
+<<<<<<< HEAD
     jsonPaths = glob.glob('data/LMUK-RADONC-PHYS-RES__DoseRAD2026/proton/training/*/*.json')
     def format_dict(item):
         src = np.array(item["ray_source_phys"])
@@ -100,6 +101,10 @@ if __name__ == "__main__":
             # Sleek, 3-element physics vector: [Angle X, Angle Y, Energy]
             "condition": [float(dir_x), float(dir_y), float(item["energy"])]
         }
+=======
+    jsonPaths = glob.glob('/home/nr_dodb/nr_dose_scratch/training/*/*.json')
+    print(f"Found {len(jsonPaths)} JSON files for dataset creation.")
+>>>>>>> 7a4f25f (works on komondor)
     
     dataset_list = [create_doserad_dataset(json_path) for json_path in jsonPaths]
     dataset_list = [item for sublist in dataset_list for item in sublist]

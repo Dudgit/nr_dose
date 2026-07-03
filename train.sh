@@ -3,17 +3,16 @@
 #SBATCH --partition=ai
 #SBATCH --gres=gpu:4
 #SBATCH --mem=250G 
-#SBATCH --cpus-per-task=32            
-#SBATCH --time=8:00:00
+#SBATCH --cpus-per-task=4            
+#SBATCH --time=4:00:00
 #SBATCH --output=logs/vanilla.log
 
-module load singularity
-
-export SCRATCH="$(pwd)/nr_dose"
+export SINGULARITYENV_WANDB_API_KEY="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"
+export SCRATCH="/home/nr_dodb/nr_dose_scratch"
 export REAL_SCRATCH=$(readlink -f $SCRATCH)
 
-export HDD="/home/nr_fldb/nr_floraai/data/ct_rate_subset/dataset/train_fixed"
+export HDD="/home/nr_dodb/nr_dose"
 export REAL_HDD=$(readlink -f $HDD)
 
-export SINGULARITYENV_WANDB_API_KEY="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"
-singularity exec --nv --pwd $REAL_SCRATCH -B $REAL_SCRATCH:$REAL_SCRATCH -B $REAL_HDD:/mnt/ct_data FLORA/flora.sif python main_stage2.py
+module load singularity
+singularity exec --nv -B $REAL_SCRATCH:$REAL_SCRATCH -B $REAL_HDD:$REAL_HDD dose.sif python $REAL_HDD/train.py -hw komondor

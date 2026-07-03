@@ -7,9 +7,9 @@ atlasz:
   dataset_type: "persistent"
 
 komondor:
-  num_workers: 8
-  batch_size: 8
-  cache_dir: "/home/nr_dodb/nr_dose_scratch"
+  num_workers: 0
+  batch_size: 32
+  prefetch_factor: 0
+  data_dir: "/home/nr_dodb/nr_dose_scratch/training"
   dataset_type: "dataset"
-  prefetch_factor: 4
-  persistent_workers: True
+  persistent_workers: False

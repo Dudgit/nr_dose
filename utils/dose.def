@@ -12,7 +12,7 @@ From: nvcr.io/nvidia/pytorch:24.01-py3
     # 2. Upgrade pip and install your Python stack
     pip install --no-cache-dir --upgrade pip
     pip install --no-cache-dir lightning "monai[all]" SimpleITK matplotlib numpy pandas wandb jupyter notebook anndata seaborn pillow monai-generative omegaconf openpyxl
-v 
+ 
 %environment
     export PYTHONUNBUFFERED=1
 
