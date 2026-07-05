@@ -1,4 +1,4 @@
-run_name: "DoseAttentionUnet"
+run_name: "GAN_training"
 modelname: "DoseAttentionUnet"
 
 
@@ -31,8 +31,13 @@ attentionkwgs:
   
 losskwgs:
   masked_factor: 10.0
-  iid_curve_weight: 5.
-  allMAE_weight: 1.00
+  iid_curve_weight: 0.5
+  allMAE_weight: 0.50
+  total_variation_weight: 0.01
 
 train:
   num_epochs: 50
+  adversarial:
+    use: True
+    adv_weight: 0.1
+    d_update_freq: 5

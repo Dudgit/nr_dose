@@ -326,6 +326,39 @@ class GammaLoss(nn.Module):
         return pass_rate
 
 
+class TotalVariationLoss3D(nn.Module):
+    def __init__(self, weight=0.01):
+        super().__init__()
+        self.weight = weight
+
+    def forward(self, x):
+        # x shape: [Batch, Channel, X, Y, Z]
+        # Calculate absolute differences between adjacent voxels in all 3 spatial dimensions
+        tv_x = torch.abs(x[:, :, 1:, :, :] - x[:, :, :-1, :, :]).mean()
+        tv_y = torch.abs(x[:, :, :, 1:, :] - x[:, :, :, :-1, :]).mean()
+        tv_z = torch.abs(x[:, :, :, :, 1:] - x[:, :, :, :, :-1]).mean()
+        
+        return self.weight * (tv_x + tv_y + tv_z)
+    
+
+def gradient_difference_loss_3d(pred, target):
+    # Calculate gradients (edges) in X, Y, and Z
+    pred_dx = torch.abs(pred[:, :, 1:, :, :] - pred[:, :, :-1, :, :])
+    pred_dy = torch.abs(pred[:, :, :, 1:, :] - pred[:, :, :, :-1, :])
+    pred_dz = torch.abs(pred[:, :, :, :, 1:] - pred[:, :, :, :, :-1])
+    
+    target_dx = torch.abs(target[:, :, 1:, :, :] - target[:, :, :-1, :, :])
+    target_dy = torch.abs(target[:, :, :, 1:, :] - target[:, :, :, :-1, :])
+    target_dz = torch.abs(target[:, :, :, :, 1:] - target[:, :, :, :, :-1])
+    
+    # Penalize the network if its edges are less sharp than the ground truth edges
+    loss = torch.mean(torch.abs(pred_dx - target_dx)) + \
+           torch.mean(torch.abs(pred_dy - target_dy)) + \
+           torch.mean(torch.abs(pred_dz - target_dz))
+           
+    return loss
+
+
 class LossEvaluator(nn.Module):
     def __init__(self, eps: float = 1e-8):
         super().__init__()
@@ -473,11 +506,12 @@ class SimpleIDDLoss(nn.Module):
 
 
 class Level1LossFunction(nn.Module):
-    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0):
+    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, total_variation_weight=0.01):
         super().__init__()
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.IID_curve_loss = SimpleIDDLoss()
         self.allMAE = torch.nn.L1Loss()
+        self.total_variation_loss = gradient_difference_loss_3d
         self.masked_factor = masked_factor
         self.iid_curve_weight = iid_curve_weight
         self.allMAE_weight = allMAE_weight
@@ -486,15 +520,17 @@ class Level1LossFunction(nn.Module):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
         idd_curve_loss_value = self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
+        total_variation = self.total_variation_loss(pred_dose, gt_dose)
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_curve_loss_value * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
-        
-        total_loss = eff_masked + eff_idd + eff_all
+
+        total_loss = eff_masked + eff_idd + eff_all + total_variation
         lossDict = {
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_curve_loss_value,
             "allMAE": allMAE,
+            "3dGradientLoss": total_variation,
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,

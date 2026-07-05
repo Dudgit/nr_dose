@@ -16,7 +16,7 @@ from pytorch_lightning.plugins.environments import LightningEnvironment
 from scripts.data_loader import get_loaders
 from scripts.callbacks import DoseLevel1MetricsCallback, Matshow3DVisualizerCallback
 from scripts.metrics import Level1LossFunction
-from scripts.train_backbone import DoseTrainer
+from scripts.train_backbone import DoseTrainer, DoseGANTrainer
 
 torch.set_float32_matmul_precision('medium')
 
@@ -68,7 +68,15 @@ def choseModels(cfg):
     else:
         raise ValueError(f"Unknown model name: {cfg['modelname']}")
     loss_function = Level1LossFunction(**cfg['losskwgs'])
-    dose_instance_model = DoseTrainer(model, loss_function)
+    if cfg['train']['adversarial']['use']:
+        from monai.networks.nets import PatchDiscriminator
+        discriminator = PatchDiscriminator(
+        spatial_dims=3,in_channels=2, # 1 for CT + 1 for Dose (It needs to see the anatomy AND the dose to judge reality)
+        num_layers_d=3,channels=64,norm="instance")
+        dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,adv_weight=cfg['train']['adversarial']['adv_weight'],d_update_freq=cfg['train']['adversarial']['d_update_freq'])
+    else:
+        dose_instance_model = DoseTrainer(model, loss_function)
+
     return dose_instance_model
 
 def create_callbacks(cfg):
@@ -86,8 +94,8 @@ def train_dota():
     callbacks = create_callbacks(cfg)
 
     wandb_logger = WandbLogger(log_model=True, project="DoseRad", name=run_name,entity="ELTE_dl_competition_team",save_dir="/tmp")
-    
-    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger,
+    strategy = "ddp" if not cfg['train']['adversarial']['use'] else "ddp_find_unused_parameters_true" 
+    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
                          accelerator="gpu",devices=4,callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")

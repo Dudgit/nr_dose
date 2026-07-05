@@ -328,6 +328,60 @@ class ExtractVectorROId(MapTransform):
 
 from monai.transforms import Lambdad
 from monai.transforms import SelectItemsd
+
+
+
+
+class InjectBeamTrajectoryd(MapTransform):
+    def __init__(self, keys, source_key="ray_source", target_key="ray_target", ref_key="ct"):
+        super().__init__(keys)
+        self.source_key = source_key
+        self.target_key = target_key
+        self.ref_key = ref_key # We use the CT to get the spatial dimensions
+
+    def __call__(self, data):
+        d = dict(data)
+        
+        # 1. Get physical points
+        p1 = torch.tensor(d[self.source_key][:3], dtype=torch.float32)
+        p2 = torch.tensor(d[self.target_key][:3], dtype=torch.float32)
+        
+        # 2. Get target volume dimensions from the CT (e.g., 128x128x32)
+        ct_tensor = d[self.ref_key]
+        _, X, Y, Z = ct_tensor.shape
+        
+        # 3. Create a 3D coordinate grid
+        # Note: Depending on your exact affine matrix, you might need to map this grid to physical space,
+        # but a normalized grid usually works perfectly as a geometric prior!
+        x_grid, y_grid, z_grid = torch.meshgrid(
+            torch.arange(X), torch.arange(Y), torch.arange(Z), indexing='ij'
+        )
+        coords = torch.stack([x_grid, y_grid, z_grid], dim=-1).float() # [X, Y, Z, 3]
+        
+        # 4. Vectorized Distance from Point to Line Segment Segment
+        # Math: ||(coords - p1) x (coords - p2)|| / ||p2 - p1||
+        line_vec = p2 - p1
+        line_len = torch.norm(line_vec)
+        
+        if line_len > 0:
+            line_dir = line_vec / line_len
+            v = coords - p1
+            # Cross product magnitude trick for distance to a line
+            cross_prod = torch.cross(v, line_dir.expand_as(v), dim=-1)
+            dist_field = torch.norm(cross_prod, dim=-1)
+        else:
+            dist_field = torch.norm(coords - p1, dim=-1)
+            
+        # 5. Invert and normalize so the core of the beam is 1.0, and the edges fade to 0.0
+        # A 15-voxel radius gives a nice, smooth 3D cylinder gradient
+        radius = 15.0 
+        prior_mask = torch.clamp(1.0 - (dist_field / radius), min=0.0)
+        
+        # Add a channel dimension: [1, X, Y, Z]
+        d["geometric_prior"] = prior_mask.unsqueeze(0)
+        
+        return d
+
 def scale_dose_by_1000(x):
     return x * 1000.0
 def get_loaders(hw="atlasz",config_name = "default_config"):
