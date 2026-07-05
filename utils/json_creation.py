@@ -53,6 +53,7 @@ def create_doserad_dataset(json_path):
         for ray in beam.get('rays', []):
             ray_idx = ray['ray_idx']
             ray_source = ray['ray_source'] # Expected format: [x, y, z] in mm
+            ray_target = ray['ray_target'] # Expected format: [x, y, z] in mm
             
             for beamlet in ray.get('beamlets', []):
                 beamlet_idx = beamlet['beamlet_idx']
@@ -67,6 +68,7 @@ def create_doserad_dataset(json_path):
                         "ct": ct_path,
                         "gt_dose": dose_path,
                         "ray_source_phys": ray_source,
+                        "ray_target_phys": ray_target,
                         "energy": energy
                     })
                     
@@ -77,17 +79,41 @@ if __name__ == "__main__":
     import glob
     import numpy as np
     jsonPaths = glob.glob('data/LMUK-RADONC-PHYS-RES__DoseRAD2026/proton/training/*/*.json')
+    def format_dict(item):
+        src = np.array(item["ray_source_phys"])
+        tgt = np.array(item["ray_target_phys"])
+        
+        # Calculate the direction vector (Target - Source)
+        delta_x = tgt[0] - src[0]
+        delta_y = tgt[1] - src[1]
+        
+        # Normalize to a unit vector (length 1)
+        magnitude = np.sqrt(delta_x**2 + delta_y**2)
+        dir_x = delta_x / magnitude if magnitude > 0 else 0.0
+        dir_y = delta_y / magnitude if magnitude > 0 else 0.0
+        
+        return {
+            "ct": item["ct"],
+            "gt_dose": item["gt_dose"],
+            "ray_source": item["ray_source_phys"],
+            "ray_target": item["ray_target_phys"],
+            # Sleek, 3-element physics vector: [Angle X, Angle Y, Energy]
+            "condition": [float(dir_x), float(dir_y), float(item["energy"])]
+        }
     
     dataset_list = [create_doserad_dataset(json_path) for json_path in jsonPaths]
     dataset_list = [item for sublist in dataset_list for item in sublist]
-    dataset_list = [{"ct": item["ct"],"gt_dose": item["gt_dose"],
-        "condition": np.asarray([*item["ray_source_phys"], item["energy"]],dtype=np.float32).tolist(),}
-        for item in dataset_list]
-    json.dump(dataset_list, open("data/dataset_list.json", "w"), indent=4)
+    
+    # Format and save Full Dataset
+    formatted_dataset_list = [format_dict(item) for item in dataset_list]
+    json.dump(formatted_dataset_list, open("data/dataset_list.json", "w"), indent=4)
 
+    # Generate Train/Val Splits (Using your existing function)
     train_list, val_list = create_split_datasets(jsonPaths)
-    train_list = [ {"ct": item["ct"],"gt_dose": item["gt_dose"],"condition": np.asarray([*item["ray_source_phys"], item["energy"]],dtype=np.float32).tolist(),}for item in train_list]
-
-    val_list = [{    "ct": item["ct"],    "gt_dose": item["gt_dose"],    "condition": np.asarray([*item["ray_source_phys"], item["energy"]],dtype=np.float32).tolist(),}for item in val_list]
-    json.dump(train_list, open("data/train.json", "w"), indent=4)
-    json.dump(val_list, open("data/val.json", "w"), indent=4)
+    
+    # Format and save Splits
+    formatted_train_list = [format_dict(item) for item in train_list]
+    formatted_val_list = [format_dict(item) for item in val_list]
+    
+    json.dump(formatted_train_list, open("data/train.json", "w"), indent=4)
+    json.dump(formatted_val_list, open("data/val.json", "w"), indent=4)

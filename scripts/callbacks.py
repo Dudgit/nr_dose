@@ -1,13 +1,72 @@
 import pytorch_lightning as pl
 import torch
-from scripts.metrics import BeamMaskedMAELoss, IDDCurveLoss, Stratified_plan_level_MAE, GammaLoss
+from scripts.metrics import BeamMaskedMAELoss, IDDCurveLoss, Stratified_plan_level_MAE, GammaLoss, SimpleMaskedMAE, SimpleIDDLoss
 import json
+import matplotlib.pyplot as plt
+import wandb
+import numpy as np
+from monai.visualize import matshow3d
+
+class Matshow3DVisualizerCallback(pl.Callback):
+    def __init__(self, num_samples=1):
+        super().__init__()
+        # How many patients from the first batch you want to visualize
+        self.num_samples = num_samples
+
+    def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
+        # 1. SPEED SAFEGUARD: Only run this on the very first batch of the validation epoch
+        if batch_idx != 0:
+            return
+            
+        # 2. DDP SAFEGUARD: Only the main GPU (Rank 0) is allowed to plot and talk to WandB
+        if not trainer.is_global_zero:
+            return
+
+        # Extract tensors from the dictionary you return in validation_step
+        pred_dose = outputs["pred_dose"]
+        gt_dose = outputs["gt_dose"]
+
+        # Loop through the requested number of samples in the batch
+        for i in range(min(self.num_samples, pred_dose.shape[0])):
+            
+            # Detach, move to CPU, and convert to numpy. 
+            # Squeeze removes the channel dimension (1, 256, 256, 32) -> (256, 256, 32)
+            p_vol = pred_dose[i].squeeze().detach().cpu().float().numpy()
+            g_vol = gt_dose[i].squeeze().detach().cpu().float().numpy()
+            
+            # Calculate the Error Map (Absolute Difference)
+            err_vol = np.abs(p_vol - g_vol)
+
+            # We use a viridis colormap for dose, and inferno for the error map to make it pop
+            fig_gt = plt.figure(figsize=(12, 12))
+            matshow3d(g_vol, fig=fig_gt, title=f"Ground Truth Dose", cmap="viridis",frame_dim=-1)
+            
+            fig_pred = plt.figure(figsize=(12, 12))
+            matshow3d(p_vol, fig=fig_pred, title=f"Predicted Dose", cmap="viridis",frame_dim=-1)
+
+            fig_err = plt.figure(figsize=(12, 12))
+            matshow3d(err_vol, fig=fig_err, title=f"Absolute Error Map", cmap="inferno",frame_dim=-1)
+
+            # Upload the matplotlib figures directly to Weights & Biases
+            trainer.logger.experiment.log({
+                f"val/visuals/Sample_{i}": [
+                    wandb.Image(fig_gt, caption="Ground Truth"),
+                    wandb.Image(fig_pred, caption="Prediction"),
+                    wandb.Image(fig_err, caption="Error Map")
+                ],
+                "global_step": trainer.global_step
+            })
+
+            # CRITICAL: Close the figures to prevent a massive RAM memory leak!
+            plt.close(fig_gt)
+            plt.close(fig_pred)
+            plt.close(fig_err)
 
 class DoseLevel1MetricsCallback(pl.Callback):
     def __init__(self):
         super().__init__() # Good practice to init the parent class
-        self.beam_masked_mae_loss = BeamMaskedMAELoss()
-        self.idd_curve_loss = IDDCurveLoss()
+        self.beam_masked_mae_loss = SimpleMaskedMAE()
+        self.idd_curve_loss = SimpleIDDLoss()
         
         
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
@@ -96,3 +155,4 @@ class DoseLevel2MetricsCallback(pl.Callback):
         # Free memory before the next training epoch begins
         self.plan_preds.clear()
         self.plan_gts.clear()
+

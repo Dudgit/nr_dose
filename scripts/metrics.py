@@ -433,3 +433,71 @@ class LossEvaluator(nn.Module):
         dvh_score = (target_score * 0.5) + (oar_score * 0.5)
 
         return dvh_score
+    
+import torch.nn.functional as F
+
+class SimpleMaskedMAE(nn.Module):
+    def __init__(self, threshold_pct=0.1):
+        super().__init__()
+        self.threshold = threshold_pct
+
+    def forward(self, pred, target):
+        # 1. Find the max dose for each volume in the batch
+        # Keep dims so it broadcasts correctly: (B, 1, 1, 1, 1)
+        batch_max = target.amax(dim=(2, 3, 4), keepdim=True)
+        
+        # 2. Create a boolean mask of the high-dose region
+        mask = target >= (batch_max * self.threshold)
+        
+        # 3. Failsafe: If mask is somehow empty, just do a global MAE
+        if mask.sum() == 0:
+            return F.l1_loss(pred, target)
+            
+        # 4. Extract only the masked voxels (flattens into a 1D list automatically)
+        # and compute the native PyTorch mean absolute error.
+        return F.l1_loss(pred[mask], target[mask])
+
+
+class SimpleIDDLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, pred, target):
+        # 1. Collapse the lateral spatial dimensions (X=2, Y=3) using MEAN
+        # This reduces (B, 1, 64, 64, 32) -> (B, 1, 32)
+        pred_curve = pred.mean(dim=(2, 3))
+        target_curve = target.mean(dim=(2, 3))
+        
+        # 2. Compute the mean absolute error between the two 1D curves
+        return F.l1_loss(pred_curve, target_curve)
+
+
+class Level1LossFunction(nn.Module):
+    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0):
+        super().__init__()
+        self.beam_masked_mae_loss = SimpleMaskedMAE()
+        self.IID_curve_loss = SimpleIDDLoss()
+        self.allMAE = torch.nn.L1Loss()
+        self.masked_factor = masked_factor
+        self.iid_curve_weight = iid_curve_weight
+        self.allMAE_weight = allMAE_weight
+    
+    def __call__(self, pred_dose, gt_dose):
+        beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
+        idd_curve_loss_value = self.IID_curve_loss(pred_dose, gt_dose)
+        allMAE = self.allMAE(pred_dose, gt_dose)
+        eff_masked = beam_masked_mae * self.masked_factor
+        eff_idd = idd_curve_loss_value * self.iid_curve_weight
+        eff_all = allMAE * self.allMAE_weight
+        
+        total_loss = eff_masked + eff_idd + eff_all
+        lossDict = {
+            "masked_mae": beam_masked_mae,
+            "idd_curve_loss_value": idd_curve_loss_value,
+            "allMAE": allMAE,
+            "effective_beam_masked_mae": eff_masked,
+            "effective_idd_curve_loss": eff_idd,
+            "effective_allMAE": eff_all,
+            "total_loss": total_loss
+        }
+        return lossDict
