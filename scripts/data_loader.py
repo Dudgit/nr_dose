@@ -7,7 +7,11 @@ import torch
 from omegaconf import OmegaConf
 import os
 
+<<<<<<< HEAD
 from monai.transforms import ScaleIntensityRanged
+=======
+
+>>>>>>> f565827 (temporal)
 
 from torch.utils.data import Dataset as TorchDataset
 
@@ -397,6 +401,7 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     train_transforms = Compose([
     LoadImaged(keys=["ct", "gt_dose"]),
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
+<<<<<<< HEAD
     Lambdad(keys=["gt_dose"], func=scale_dose_by_1000),
     ScaleIntensityRanged(keys=['ct'],a_min=data_cfg['ct_min'], a_max=data_cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
     ExtractSlabsAroundZ(keys=["ct", "gt_dose"], source_key="ray_source", slice_radius=15),
@@ -404,6 +409,14 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']), #roi_size = [128, 128, 32] 
     EnsureTyped(keys=["ct", "gt_dose", "condition"],track_meta=False,dtype=torch.float32),
     SelectItemsd(keys=["ct", "gt_dose", "condition"])
+=======
+    # Extract +/- 10 slices based on the physical ray location
+    ExtractSlabAroundZ(keys=["ct", "gt_dose"], source_key="condition", margin_slices=data_cfg['margin_slices']),
+    # Resample the extracted slabs to a fixed 1x1x1 mm resolution
+    Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode="nearest"),
+    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']),
+    EnsureTyped(keys=["ct", "gt_dose", "condition"],track_meta=False,dtype=torch.float16)
+>>>>>>> f565827 (temporal)
     ])
     
     if hw_cfg[hw]['dataset_type'] == "persistent":

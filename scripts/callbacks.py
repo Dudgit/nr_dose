@@ -1,5 +1,6 @@
 import pytorch_lightning as pl
 import torch
+<<<<<<< HEAD
 from scripts.metrics import BeamMaskedMAELoss, IDDCurveLoss, Stratified_plan_level_MAE, GammaLoss, SimpleMaskedMAE, SimpleIDDLoss
 import json
 import matplotlib.pyplot as plt
@@ -61,17 +62,30 @@ class Matshow3DVisualizerCallback(pl.Callback):
             plt.close(fig_gt)
             plt.close(fig_pred)
             plt.close(fig_err)
+=======
+from scripts.metrics import BeamMaskedMAELoss, IDDCurveLoss, Stratified_plan_level_MAE, GammaLoss
+import json
+>>>>>>> f565827 (temporal)
 
 class DoseLevel1MetricsCallback(pl.Callback):
     def __init__(self):
         super().__init__() # Good practice to init the parent class
+<<<<<<< HEAD
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.idd_curve_loss = SimpleIDDLoss()
+=======
+        self.beam_masked_mae_loss = BeamMaskedMAELoss()
+        self.idd_curve_loss = IDDCurveLoss()
+>>>>>>> f565827 (temporal)
         
         
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
         # Extract tensors from the validation_step outputs
+<<<<<<< HEAD
         gt_dose = batch["gt_dose"]
+=======
+        gt_dose = outputs["gt_dose"]
+>>>>>>> f565827 (temporal)
         pred_dose = outputs["pred_dose"]
 
         # Compute the beam-level losses
@@ -88,7 +102,11 @@ class DoseLevel1MetricsCallback(pl.Callback):
 
 import pytorch_lightning as pl
 import torch
+<<<<<<< HEAD
 from scripts.metrics import Stratified_plan_level_MAE, GammaLoss
+=======
+from scipts.metrics import Stratified_plan_level_MAE, GammaLoss
+>>>>>>> f565827 (temporal)
 
 class DoseLevel2MetricsCallback(pl.Callback):
     def __init__(self, unique_patient_ids, volume_shape=(1, 256, 256, 32)):
@@ -154,5 +172,9 @@ class DoseLevel2MetricsCallback(pl.Callback):
 
         # Free memory before the next training epoch begins
         self.plan_preds.clear()
+<<<<<<< HEAD
         self.plan_gts.clear()
 
+=======
+        self.plan_gts.clear()
+>>>>>>> f565827 (temporal)

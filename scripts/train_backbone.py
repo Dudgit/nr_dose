@@ -26,8 +26,13 @@ class DoseTrainer(pl.LightningModule):
         return loss, y_hat, y, condition
     
     def training_step(self, batch, batch_idx):
+<<<<<<< HEAD
         loss, y_hat, y, condition = self.shared_step(batch,prefix="train")
         
+=======
+        loss, y_hat, y, condition = self.shared_step(batch)
+        self.log("train/MSE", loss, prog_bar=True, sync_dist=True)
+>>>>>>> f565827 (temporal)
         return loss
     
     def validation_step(self, batch, batch_idx):
@@ -41,6 +46,7 @@ class DoseTrainer(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=1e-4, weight_decay=1e-5)
+<<<<<<< HEAD
         return optimizer
     
 
@@ -165,3 +171,6 @@ class DoseGANTrainer(pl.LightningModule):
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():
             self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
+=======
+        return optimizer
+>>>>>>> f565827 (temporal)
