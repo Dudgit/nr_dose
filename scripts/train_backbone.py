@@ -17,6 +17,8 @@ class DoseTrainer(pl.LightningModule):
     def shared_step(self, batch,prefix="Train"):
         x = batch['ct']
         y = batch['gt_dose']
+        prior = batch['geometric_prior']
+        x = torch.cat([x, prior], dim=1)
         condition = batch['condition']
         y_hat = self(x, condition)
         

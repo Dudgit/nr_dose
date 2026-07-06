@@ -1,4 +1,4 @@
-run_name: "DOTA_GAN_Phys_Prior"
+run_name: "DOTA_Phys_Prior"
 modelname: "DoTA"
 #? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
@@ -40,6 +40,6 @@ losskwgs:
 train:
   num_epochs: 50
   adversarial:
-    use: True
+    use: False
     adv_weight: 0.1
     d_update_freq: 5

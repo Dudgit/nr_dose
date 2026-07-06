@@ -511,7 +511,7 @@ class Level1LossFunction(nn.Module):
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.IID_curve_loss = SimpleIDDLoss()
         self.allMAE = torch.nn.L1Loss()
-        self.total_variation_loss = gradient_difference_loss_3d
+        #self.total_variation_loss = gradient_difference_loss_3d
         self.masked_factor = masked_factor
         self.iid_curve_weight = iid_curve_weight
         self.allMAE_weight = allMAE_weight
@@ -520,17 +520,17 @@ class Level1LossFunction(nn.Module):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
         idd_curve_loss_value = self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
-        total_variation = self.total_variation_loss(pred_dose, gt_dose)
+        #total_variation = self.total_variation_loss(pred_dose, gt_dose)
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_curve_loss_value * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
 
-        total_loss = eff_masked + eff_idd + eff_all + total_variation
+        total_loss = eff_masked + eff_idd + eff_all #+ total_variation
         lossDict = {
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_curve_loss_value,
             "allMAE": allMAE,
-            "3dGradientLoss": total_variation,
+            #"3dGradientLoss": total_variation,
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,
