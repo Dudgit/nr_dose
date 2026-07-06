@@ -86,9 +86,10 @@ def create_callbacks(cfg):
 
 def train_dota():
     cfg = create_config()
-    run_name_base =cfg['run_name']
+    run_name_base = cfg['atlasz_run_name'] if args.hw == "atlasz" else cfg['komondor_run_name']
     run_name_base = run_name_base + "_adv" if cfg['train']['adversarial']['use'] else run_name_base
-    run_name = args.hw + "_" + run_name_base + "_" + str(cfg['modelname']) + "_" + str(cfg['train']['num_epochs']) + "epochs"
+    modelname = cfg['atlasz_modelname'] if args.hw == "atlasz" else cfg['komondor_modelname']
+    run_name = args.hw + "_" + run_name_base + "_" + str(modelname) + "_" + str(cfg['train']['num_epochs']) + "epochs"
 
     train_loader, val_loader = get_loaders(hw = args.hw)
     model = choseModels(cfg)

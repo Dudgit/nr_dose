@@ -1,7 +1,14 @@
-run_name: "Diff_Sigma"
-modelname: "DoTA"
-#? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
+
+atlasz_run_name: "diff_reproduce_larger_batch"
+atlasz_modelname: "DoTA"
+atlasz_sigma: 4.0
+
+komondor_run_name: "Diff_sigma"
+komondor_modelname: "DoTA"
+komondor_sigma: 2.0
+
+#? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
 data:
   dataset_list: "data/dataset_list.json"

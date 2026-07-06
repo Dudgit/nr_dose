@@ -1,6 +1,6 @@
 atlasz:
   num_workers: 8
-  batch_size: 16
+  batch_size: 128
   prefetch_factor: 2 
   persistent_workers: True
   cache_dir: "/scratch/db/cache"
