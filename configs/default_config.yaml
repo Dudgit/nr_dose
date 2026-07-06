@@ -1,4 +1,4 @@
-run_name: "DOTA_Phys_Prior_sigma_2.0"
+run_name: "Phys_Prior_diff_ranges"
 modelname: "DoTA"
 #? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
@@ -12,7 +12,7 @@ data:
   roi_size: [128, 128, 32]
   ct_min: -1024
   ct_max: 2000
-  sigma: 2.0 # Only in komondor, yet it might be changed in atlas too.
+  sigma: 4.0 # 2 in komondor 4 in atlas
 
   
 dotakwgs:
