@@ -11,5 +11,5 @@ komondor:
   batch_size: 16
   cache_dir: "/scratch/nr_dose"
   dataset_type: "persistent"
-  prefetch_factor: 4
+  prefetch_factor: 2
   persistent_workers: True

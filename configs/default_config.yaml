@@ -1,4 +1,4 @@
-run_name: "Phys_Prior_diff_ranges"
+run_name: "Diff_Sigma"
 modelname: "DoTA"
 #? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
