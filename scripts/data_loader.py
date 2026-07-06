@@ -6,6 +6,8 @@ from monai.data import PersistentDataset, DataLoader, Dataset
 import torch
 from omegaconf import OmegaConf
 import os
+from pathlib import Path
+
 from scripts.metaembedder import InjectGaussianBeamPriord
 
 from monai.transforms import ScaleIntensityRanged
@@ -411,8 +413,6 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     if hw_cfg[hw]['dataset_type'] == "persistent":
         cache_dir = hw_cfg[hw]['cache_dir']
         if hw == "komondor":
-            import os
-            from pathlib import Path
             scratch_dir = os.environ.get("REAL_SCRATCH")
             cache_dir = os.path.join(scratch_dir,"cache")
             print(f"Using cache directory: {cache_dir}")
