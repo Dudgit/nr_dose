@@ -71,7 +71,7 @@ def choseModels(cfg):
     if cfg['train']['adversarial']['use']:
         from monai.networks.nets import PatchDiscriminator
         discriminator = PatchDiscriminator(
-        spatial_dims=3,in_channels=2, # 1 for CT + 1 for Dose (It needs to see the anatomy AND the dose to judge reality)
+        spatial_dims=3,in_channels=3, # 1 for CT + 1 for Dose (It needs to see the anatomy AND the dose to judge reality)
         num_layers_d=3,channels=64,norm="instance")
         dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,adv_weight=cfg['train']['adversarial']['adv_weight'],d_update_freq=cfg['train']['adversarial']['d_update_freq'])
     else:

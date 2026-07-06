@@ -1,4 +1,4 @@
-run_name: "DOTA_GAN"
+run_name: "DOTA_GAN_Phys_Prior"
 modelname: "DoTA"
 #? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
@@ -12,10 +12,11 @@ data:
   roi_size: [128, 128, 32]
   ct_min: -1024
   ct_max: 1500
+  sigma: 4.0
 
   
 dotakwgs:
-  in_channels: 1
+  in_channels: 2
   out_channels: 1
   channels: [32, 64, 128, 256]
   num_heads: 8

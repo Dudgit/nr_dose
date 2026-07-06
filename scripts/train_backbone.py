@@ -68,6 +68,8 @@ class DoseGANTrainer(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x = batch['ct']
+        prior = batch['geometric_prior']
+        x = torch.cat([x, prior], dim=1)  # Concatenate along the channel dimension
         y = batch['gt_dose']
         condition = batch['condition']
         
@@ -157,6 +159,7 @@ class DoseGANTrainer(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y, condition = batch['ct'], batch['gt_dose'], batch['condition']
+        x = torch.cat([x, batch['geometric_prior']], dim=1)  # Concatenate along the channel dimension
         y_hat = self(x, condition)
         loss_dict = self.loss_function(y_hat, y)
         self.log("val/MSE", loss_dict["total_loss"], prog_bar=True, sync_dist=True)

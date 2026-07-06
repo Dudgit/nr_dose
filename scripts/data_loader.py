@@ -6,6 +6,7 @@ from monai.data import PersistentDataset, DataLoader, Dataset
 import torch
 from omegaconf import OmegaConf
 import os
+from scripts.metaembedder import InjectGaussianBeamPriord
 
 from monai.transforms import ScaleIntensityRanged
 
@@ -402,8 +403,9 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     ExtractSlabsAroundZ(keys=["ct", "gt_dose"], source_key="ray_source", slice_radius=15),
     Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode='trilinear'), # pixdim = [4.0, 4.0, 3.0]
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']), #roi_size = [128, 128, 32] 
-    EnsureTyped(keys=["ct", "gt_dose", "condition"],track_meta=False,dtype=torch.float32),
-    SelectItemsd(keys=["ct", "gt_dose", "condition"])
+    InjectGaussianBeamPriord(keys =['ct'],source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=data_cfg['sigma'], flip_lps_to_ras = True),
+    EnsureTyped(keys=["ct", "gt_dose", "condition", "geometric_prior"],track_meta=False,dtype=torch.float32),
+    SelectItemsd(keys=["ct", "gt_dose", "condition", "geometric_prior"])
     ])
     
     if hw_cfg[hw]['dataset_type'] == "persistent":

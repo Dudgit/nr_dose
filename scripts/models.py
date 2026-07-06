@@ -70,8 +70,7 @@ class ConditionedTransformer(nn.Module):
 
         # Beam encoder
         self.energy_mlp = nn.Sequential(nn.Linear(1, 64),nn.GELU())
-        self.condition_proj = nn.Sequential(nn.Linear(128,embed_dim),nn.GELU())
-        self.coord_encoder = nn.Sequential(nn.Linear(2, 64), nn.GELU(), nn.Linear(64, 64))
+        self.condition_proj = nn.Sequential(nn.Linear(64,embed_dim),nn.GELU())
         #FourierEmbedding(num_frequencies=8)
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim,
@@ -96,11 +95,8 @@ class ConditionedTransformer(nn.Module):
         x = x.flatten(2).transpose(1, 2)
 
         # (Connditioning)
-        xyz = self.coord_encoder(beam[:, :2])
         energy = self.energy_mlp(beam[:, 2:3])
-        condition = torch.cat([xyz, energy], dim=-1)
-        condition = self.condition_proj(condition)  # (B,1,C)
-
+        condition = self.condition_proj(energy)
 
         # Add conditioning to every token
         x = x + condition.unsqueeze(1)
@@ -112,7 +108,7 @@ class ConditionedTransformer(nn.Module):
         return x
 
 class DoTA_based(nn.Module):
-    def __init__(self, in_channels=1, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4):
+    def __init__(self, in_channels=2, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4):
         super().__init__()
         embed_dim = channels[-1]
         self.encoder = Encoder(in_channels=in_channels, channels=channels)
