@@ -1,22 +1,15 @@
 atlasz:
   num_workers: 8
-<<<<<<< HEAD
   batch_size: 16
   prefetch_factor: 2 
   persistent_workers: True
   cache_dir: "/scratch/db/cache"
-=======
-  batch_size: 64
-  prefetch_factor: 2 
-  persistent_workers: True
-  cache_dir: "/scratch/db"
->>>>>>> f565827 (temporal)
   dataset_type: "persistent"
 
 komondor:
-  num_workers: 24
-  batch_size: 32
-  prefetch_factor: 2
-  cache_dir: "/home/nr_dodb/nr_dose_scratch/training"
-  dataset_type: "persistent"
+  num_workers: 8
+  batch_size: 8
+  cache_dir: "/home/nr_dodb/nr_dose_scratch"
+  dataset_type: "dataset"
+  prefetch_factor: 4
   persistent_workers: True
