@@ -21,16 +21,15 @@ from scripts.train_backbone import DoseTrainer, DoseGANTrainer
 torch.set_float32_matmul_precision('medium')
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Train a model")
-    parser.add_argument("--config", type=str, default="default", help="Which config file to use")
-    return parser.parse_args()
+parser = argparse.ArgumentParser(description="Train a model")
+parser.add_argument("--config", type=str, default="default", help="Which config file to use")
+parser.add_argument('--hw', type=str, default = "atlasz")
+args =  parser.parse_args()
 
 
 
 def create_config():
     cfg = OmegaConf.load(f"configs/default_config.yaml")
-    args = parse_args()
     if args.config != "default":
         cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}.yaml"))
     return cfg
@@ -87,9 +86,11 @@ def create_callbacks(cfg):
 
 def train_dota():
     cfg = create_config()
-    run_name =cfg['run_name']
+    run_name_base =cfg['run_name']
+    run_name_base = run_name_base + "_adv" if cfg['train']['adversarial']['use'] else run_name_base
+    run_name = run_name_base + "_" + str(cfg['modelname']) + "_" + str(cfg['train']['num_epochs']) + "epochs"
 
-    train_loader, val_loader = get_loaders()
+    train_loader, val_loader = get_loaders(hw = args.hw)
     model = choseModels(cfg)
     callbacks = create_callbacks(cfg)
 

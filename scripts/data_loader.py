@@ -410,6 +410,12 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
     
     if hw_cfg[hw]['dataset_type'] == "persistent":
         cache_dir = hw_cfg[hw]['cache_dir']
+        if hw == "komondor":
+            import os
+            from pathlib import Path
+            scratch_dir = os.environ.get("REAL_SCRATCH")
+            cache_dir = os.path.join(scratch_dir,"cache")
+            print(f"Using cache directory: {cache_dir}")
         os.makedirs(cache_dir, exist_ok=True)
         train_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
         val_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)

@@ -1,2 +1,2 @@
 data:
-  target_size: [128, 128, 64]
+    sigma: 2.0

@@ -1,4 +1,4 @@
-run_name: "DOTA_Phys_Prior"
+run_name: "DOTA_Phys_Prior_sigma_2.0"
 modelname: "DoTA"
 #? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
@@ -11,8 +11,8 @@ data:
   pixdim: [4.0, 4.0, 3.0]
   roi_size: [128, 128, 32]
   ct_min: -1024
-  ct_max: 1500
-  sigma: 4.0
+  ct_max: 2000
+  sigma: 2.0 # Only in komondor, yet it might be changed in atlas too.
 
   
 dotakwgs:
