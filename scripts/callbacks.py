@@ -71,7 +71,7 @@ class DoseLevel1MetricsCallback(pl.Callback):
         
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
         # Extract tensors from the validation_step outputs
-        gt_dose = outputs["gt_dose"]
+        gt_dose = batch["gt_dose"]
         pred_dose = outputs["pred_dose"]
 
         # Compute the beam-level losses

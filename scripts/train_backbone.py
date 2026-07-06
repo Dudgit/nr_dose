@@ -81,7 +81,7 @@ class DoseGANTrainer(pl.LightningModule):
         # Real Pair
         real_pair = torch.cat([x, y], dim=1)
         d_real_logits = self.discriminator(real_pair)[-1]
-        
+
         smoothed_real_labels = torch.empty_like(d_real_logits).fill_(0.9)
         d_loss_real = F.binary_cross_entropy_with_logits(d_real_logits, smoothed_real_labels)
 
@@ -153,13 +153,14 @@ class DoseGANTrainer(pl.LightningModule):
         # Keep main metrics on progress bar
         self.log("D_prob_real", d_prob_real, prog_bar=True)
         self.log("G_prob_fake", g_prob_fake, prog_bar=True)
+        return {"loss": g_loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
 
     def validation_step(self, batch, batch_idx):
         x, y, condition = batch['ct'], batch['gt_dose'], batch['condition']
         y_hat = self(x, condition)
         loss_dict = self.loss_function(y_hat, y)
         self.log("val/MSE", loss_dict["total_loss"], prog_bar=True, sync_dist=True)
-        return {"loss": loss_dict["total_loss"]}
+        return {"loss": loss_dict["total_loss"], "pred_dose": y_hat, "gt_dose": y, "condition": condition}
     
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():

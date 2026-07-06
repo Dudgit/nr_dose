@@ -1,5 +1,6 @@
-run_name: "GAN_training"
-modelname: "DoseAttentionUnet"
+run_name: "DOTA_GAN"
+modelname: "DoTA"
+#? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
 
 
 data:
