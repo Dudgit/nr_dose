@@ -2,7 +2,7 @@
 #SBATCH --job-name=Dose_train
 #SBATCH --partition=ai
 #SBATCH --gres=gpu:4
-#SBATCH --mem=120G 
+#SBATCH --mem=300G 
 #SBATCH --cpus-per-task=4            
 #SBATCH --time=4:00:00
 #SBATCH --output=logs/vanilla.log
