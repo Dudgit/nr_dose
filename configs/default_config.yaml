@@ -45,7 +45,7 @@ losskwgs:
   total_variation_weight: 0.01
 
 train:
-  num_epochs: 50
+  num_epochs: 400
   adversarial:
     use: False
     adv_weight: 0.1
