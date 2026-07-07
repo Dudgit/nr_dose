@@ -109,6 +109,7 @@ def train_dota():
     else:
         print("Starting fresh training run...")
         trainer.fit(model, train_loader, val_loader)
+    print(cfg)
 
 if __name__ == "__main__":
     import torch.multiprocessing as mp
