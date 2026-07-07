@@ -8,7 +8,7 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "Changed_lr_to_reproduce"
+  run_name: "changed_scheduler_again"
   modelname: "DoTA"
   margin_slices: 15
   pixdim: [4.0, 4.0, 3.0]
@@ -40,8 +40,8 @@ atlasz:
     total_variation_weight: 0.01
 
   train:
-    num_epochs: 400
-    use_warmups: True
+    num_epochs: 50
+    use_warmups: False
     adversarial:
       use: False
       adv_weight: 0.1
