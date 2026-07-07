@@ -76,7 +76,7 @@ def choseModels(cfg):
         dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,
                                             adv_weight=cfg['train']['adversarial']['adv_weight'],d_update_freq=cfg['train']['adversarial']['d_update_freq'],lr=cfg['train']['lr'])
     else:
-        dose_instance_model = DoseTrainer(model, loss_function,lr = cfg['train']['lr'])
+        dose_instance_model = DoseTrainer(model, loss_function,lr = cfg['train']['lr'],use_warmups=cfg['train']['use_warmups'])
 
     return dose_instance_model
 

@@ -6,10 +6,11 @@ import torch.nn as nn
 
 
 class DoseTrainer(pl.LightningModule):
-    def __init__(self,model,loss_function=None,lr = 1e-4):
+    def __init__(self,model,loss_function=None,lr = 1e-4,use_warmups=True):
         super().__init__()
         self.model = model
         self.lr = lr
+        self.use_wamrups = use_warmups
         self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
     
     def forward(self, x,condition):
@@ -44,24 +45,26 @@ class DoseTrainer(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
-        total_steps = self.trainer.estimated_stepping_batches
-        warmup_steps = int(total_steps * 0.1)
-        decay_steps = total_steps - warmup_steps
-        
-        # 1. Warmup: Start at 1/1000th of 1e-3, scale linearly to exactly 1e-3 over warmup_steps
-        warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.001, total_iters=warmup_steps)
-        # 2. Decay: Smoothly curve down from 1e-3 to 0 over the remaining steps
-        cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=decay_steps)
-        # 3. Chain them together
-        scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup_scheduler, cosine_scheduler],milestones=[warmup_steps])
-        
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": scheduler,
-                "interval": "step", # Steps after every batch
-            },
-    }
+        if self.use_wamrups:
+            total_steps = self.trainer.estimated_stepping_batches
+            warmup_steps = int(total_steps * 0.1)
+            decay_steps = total_steps - warmup_steps
+            
+            # 1. Warmup: Start at 1/1000th of 1e-3, scale linearly to exactly 1e-3 over warmup_steps
+            warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.001, total_iters=warmup_steps)
+            # 2. Decay: Smoothly curve down from 1e-3 to 0 over the remaining steps
+            cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=decay_steps)
+            # 3. Chain them together
+            scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup_scheduler, cosine_scheduler],milestones=[warmup_steps])
+            
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": scheduler,
+                    "interval": "step", # Steps after every batch
+                },
+        }
+        return optimizer
     
 
 import pytorch_lightning as pl

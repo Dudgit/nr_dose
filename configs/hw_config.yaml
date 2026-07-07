@@ -41,6 +41,7 @@ atlasz:
 
   train:
     num_epochs: 400
+    use_warmups: True
     adversarial:
       use: False
       adv_weight: 0.1
@@ -93,6 +94,7 @@ komondor:
   train:
     num_epochs: 300
     lr: 2e-4
+    use_warmups: False
     adversarial:
       use: False
       adv_weight: 0.1
