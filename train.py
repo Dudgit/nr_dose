@@ -73,9 +73,10 @@ def choseModels(cfg):
         discriminator = PatchDiscriminator(
         spatial_dims=3,in_channels=3, # 1 for CT + 1 for Dose (It needs to see the anatomy AND the dose to judge reality)
         num_layers_d=3,channels=64,norm="instance")
-        dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,adv_weight=cfg['train']['adversarial']['adv_weight'],d_update_freq=cfg['train']['adversarial']['d_update_freq'])
+        dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,
+                                            adv_weight=cfg['train']['adversarial']['adv_weight'],d_update_freq=cfg['train']['adversarial']['d_update_freq'],lr=cfg['train']['lr'])
     else:
-        dose_instance_model = DoseTrainer(model, loss_function)
+        dose_instance_model = DoseTrainer(model, loss_function,lr = cfg['train']['lr'])
 
     return dose_instance_model
 

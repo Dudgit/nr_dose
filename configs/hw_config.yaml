@@ -45,6 +45,7 @@ atlasz:
       use: False
       adv_weight: 0.1
       d_update_freq: 5
+    lr: 3e-4
 
 
 komondor:
@@ -91,6 +92,7 @@ komondor:
 
   train:
     num_epochs: 300
+    lr: 2e-4
     adversarial:
       use: False
       adv_weight: 0.1

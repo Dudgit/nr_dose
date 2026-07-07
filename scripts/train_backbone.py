@@ -6,9 +6,10 @@ import torch.nn as nn
 
 
 class DoseTrainer(pl.LightningModule):
-    def __init__(self,model,loss_function=None):
+    def __init__(self,model,loss_function=None,lr = 1e-4):
         super().__init__()
         self.model = model
+        self.lr = lr
         self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
     
     def forward(self, x,condition):
@@ -42,8 +43,15 @@ class DoseTrainer(pl.LightningModule):
             self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=1e-4, weight_decay=1e-5)
-        return optimizer
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
+        scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=self.lr,total_steps=self.trainer.estimated_stepping_batches,pct_starter=0.1,anneal_strategy="cos")
+        return {
+        "optimizer": optimizer,
+        "lr_scheduler": {
+            "scheduler": scheduler,
+            "interval": "step", # Updates the LR after every batch, not every epoch
+        },
+    }
     
 
 import pytorch_lightning as pl
@@ -51,12 +59,13 @@ import torch
 import torch.nn.functional as F
 
 class DoseGANTrainer(pl.LightningModule):
-    def __init__(self, generator, discriminator, loss_function=None, adv_weight=0.1,d_update_freq=1):
+    def __init__(self, generator, discriminator, loss_function=None, adv_weight=0.1,d_update_freq=1,lr = 1e-4):
         super().__init__()
         self.model = generator
         self.discriminator = discriminator
         self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
         self.adv_weight = adv_weight
+        self.lr = lr
         self.automatic_optimization = False
         self.d_update_freq = d_update_freq  
 
@@ -64,8 +73,8 @@ class DoseGANTrainer(pl.LightningModule):
         return self.model(x, condition)
 
     def configure_optimizers(self):
-        opt_g = torch.optim.AdamW(self.model.parameters(), lr=1e-4, weight_decay=1e-5)
-        opt_d = torch.optim.AdamW(self.discriminator.parameters(), lr=1e-4, weight_decay=1e-5)
+        opt_g = torch.optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=1e-5)
+        opt_d = torch.optim.AdamW(self.discriminator.parameters(), lr=self.lr, weight_decay=1e-5)
         return [opt_g, opt_d], []
 
     def training_step(self, batch, batch_idx):
