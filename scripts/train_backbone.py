@@ -44,13 +44,23 @@ class DoseTrainer(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
-        scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=self.lr,total_steps=self.trainer.estimated_stepping_batches,pct_starter=0.1,anneal_strategy="cos")
+        total_steps = self.trainer.estimated_stepping_batches
+        warmup_steps = int(total_steps * 0.1)
+        decay_steps = total_steps - warmup_steps
+        
+        # 1. Warmup: Start at 1/1000th of 1e-3, scale linearly to exactly 1e-3 over warmup_steps
+        warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.001, total_iters=warmup_steps)
+        # 2. Decay: Smoothly curve down from 1e-3 to 0 over the remaining steps
+        cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=decay_steps)
+        # 3. Chain them together
+        scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup_scheduler, cosine_scheduler],milestones=[warmup_steps])
+        
         return {
-        "optimizer": optimizer,
-        "lr_scheduler": {
-            "scheduler": scheduler,
-            "interval": "step", # Updates the LR after every batch, not every epoch
-        },
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": "step", # Steps after every batch
+            },
     }
     
 

@@ -8,7 +8,7 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "diff_reproduce_larger_batch"
+  run_name: "Changed_lr_to_reproduce"
   modelname: "DoTA"
   margin_slices: 15
   pixdim: [4.0, 4.0, 3.0]
@@ -45,7 +45,7 @@ atlasz:
       use: False
       adv_weight: 0.1
       d_update_freq: 5
-    lr: 3e-4
+    lr: 7e-4
 
 
 komondor:
