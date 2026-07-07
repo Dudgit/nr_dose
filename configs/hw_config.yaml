@@ -58,7 +58,7 @@ komondor:
   persistent_workers: True
   run_name: "Diff_sigma"
   modelname: "DoTA"
-  sigma: 2.0
+  sigma: 4.0
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
@@ -94,7 +94,7 @@ komondor:
   train:
     num_epochs: 300
     lr: 2e-4
-    use_warmups: False
+    use_warmups: True
     adversarial:
       use: False
       adv_weight: 0.1
