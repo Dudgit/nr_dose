@@ -5,6 +5,48 @@ atlasz:
   persistent_workers: True
   cache_dir: "/scratch/db/cache"
   dataset_type: "persistent"
+  dataset_list: "data/dataset_list.json"
+  train_list: "data/train.json"
+  val_list: "data/val.json"
+  run_name: "diff_reproduce_larger_batch"
+  modelname: "DoTA"
+  sigma: 4.0
+  margin_slices: 15
+  pixdim: [4.0, 4.0, 3.0]
+  roi_size: [128, 128, 32]
+  ct_min: -1024
+  ct_max: 2000
+  sigma: 4.0 # 2 in komondor 4 in atlas
+    
+  dotakwgs:
+    in_channels: 2
+    out_channels: 1
+    channels: [32, 64, 128, 256]
+    num_heads: 8
+    num_layers: 4
+
+  unetkwgs:
+    condition_dim: 3
+
+  filmkwgs:
+    condition_dim: 3
+
+  attentionkwgs:
+    condition_dim: 3
+  
+  losskwgs:
+    masked_factor: 10.0
+    iid_curve_weight: 0.5
+    allMAE_weight: 0.50
+    total_variation_weight: 0.01
+
+  train:
+    num_epochs: 400
+    adversarial:
+      use: False
+      adv_weight: 0.1
+      d_update_freq: 5
+
 
 komondor:
   num_workers: 4
@@ -13,3 +55,45 @@ komondor:
   dataset_type: "persistent"
   prefetch_factor: 2
   persistent_workers: True
+  komondor_run_name: "Diff_sigma"
+  komondor_modelname: "DoTA"
+  komondor_sigma: 2.0
+   dataset_list: "data/dataset_list.json"
+  train_list: "data/train.json"
+  val_list: "data/val.json"
+  margin_slices: 15
+  pixdim: [4.0, 4.0, 3.0]
+  roi_size: [128, 128, 32]
+  ct_min: -1024
+  ct_max: 2000
+  sigma: 4.0 # 2 in komondor 4 in atlas
+
+    
+  dotakwgs:
+    in_channels: 2
+    out_channels: 1
+    channels: [32, 64, 128, 256]
+    num_heads: 8
+    num_layers: 4
+
+  unetkwgs:
+    condition_dim: 3
+
+  filmkwgs:
+    condition_dim: 3
+
+  attentionkwgs:
+    condition_dim: 3
+  
+  losskwgs:
+    masked_factor: 10.0
+    iid_curve_weight: 0.5
+    allMAE_weight: 0.50
+    total_variation_weight: 0.01
+
+  train:
+    num_epochs: 400
+    adversarial:
+      use: False
+      adv_weight: 0.1
+      d_update_freq: 5

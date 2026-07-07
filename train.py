@@ -29,7 +29,8 @@ args =  parser.parse_args()
 
 
 def create_config():
-    cfg = OmegaConf.load(f"configs/default_config.yaml")
+    cfg = OmegaConf.load(f"configs/hw_config.yaml")
+    cfg = cfg[args.hw]
     if args.config != "default":
         cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}.yaml"))
     return cfg
@@ -86,10 +87,9 @@ def create_callbacks(cfg):
 
 def train_dota():
     cfg = create_config()
-    run_name_base = cfg['atlasz_run_name'] if args.hw == "atlasz" else cfg['komondor_run_name']
+    run_name_base = cfg['run_name'] #if args.hw == "atlasz" else cfg['komondor_run_name']
     run_name_base = run_name_base + "_adv" if cfg['train']['adversarial']['use'] else run_name_base
-    modelname = cfg['atlasz_modelname'] if args.hw == "atlasz" else cfg['komondor_modelname']
-    cfg['modelname'] = modelname
+    modelname = cfg['modelname']# if args.hw == "atlasz" else cfg['komondor_modelname']
     run_name = args.hw + "_" + run_name_base + "_" + str(modelname) + "_" + str(cfg['train']['num_epochs']) + "epochs"
     cfg['run_name'] = run_name
     train_loader, val_loader = get_loaders(hw = args.hw)
