@@ -47,16 +47,14 @@ class DoseTrainer(pl.LightningModule):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
         if self.use_wamrups:
             total_steps = self.trainer.estimated_stepping_batches
-            warmup_steps = int(total_steps * 0.1)
-            decay_steps = total_steps - warmup_steps
+            max_epochs = self.trainer.max_epochs
+            steps_per_epoch = total_steps // max_epochs
+            warmup_steps = steps_per_epoch * 3
             
             # 1. Warmup: Start at 1/1000th of 1e-3, scale linearly to exactly 1e-3 over warmup_steps
-            warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.001, total_iters=warmup_steps)
-            # 2. Decay: Smoothly curve down from 1e-3 to 0 over the remaining steps
-            cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=decay_steps)
-            # 3. Chain them together
-            scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup_scheduler, cosine_scheduler],milestones=[warmup_steps])
-            
+            warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.1,end_factor=1.0, total_iters=warmup_steps)
+            flat_scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=(total_steps - warmup_steps))
+            scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup_scheduler, flat_scheduler],milestones=[warmup_steps])
             return {
                 "optimizer": optimizer,
                 "lr_scheduler": {
