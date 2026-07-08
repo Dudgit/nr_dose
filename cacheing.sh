@@ -3,7 +3,7 @@
 #SBATCH --partition=cpu          # or the appropriate CPU partition
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=200G
-#SBATCH --time=2:00:00
+#SBATCH --time=3:00:00
 #SBATCH --output=logs/cache.log
 
 module load singularity

@@ -19,3 +19,6 @@
 - UNET VANILLA
 - UNET ATTENTION
 - GAN-like training.
+
+
+## Optimal energy encoding

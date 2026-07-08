@@ -56,7 +56,7 @@ komondor:
   dataset_type: "persistent"
   prefetch_factor: 2
   persistent_workers: True
-  run_name: "Diff_sigma"
+  run_name: "Komondor_Baseline_reproduce"
   modelname: "DoTA"
   sigma: 4.0
   dataset_list: "data/dataset_list.json"
@@ -92,9 +92,9 @@ komondor:
     total_variation_weight: 0.01
 
   train:
-    num_epochs: 300
+    num_epochs: 200
     lr: 2.8e-4
-    use_warmups: True
+    use_warmups: False
     adversarial:
       use: False
       adv_weight: 0.1

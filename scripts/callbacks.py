@@ -31,8 +31,8 @@ class Matshow3DVisualizerCallback(pl.Callback):
             
             # Detach, move to CPU, and convert to numpy. 
             # Squeeze removes the channel dimension (1, 256, 256, 32) -> (256, 256, 32)
-            p_vol = pred_dose[i].squeeze().detach().cpu().float().numpy()
-            g_vol = gt_dose[i].squeeze().detach().cpu().float().numpy()
+            p_vol = pred_dose[i+1].squeeze().detach().cpu().float().numpy()
+            g_vol = gt_dose[i+1].squeeze().detach().cpu().float().numpy()
             
             # Calculate the Error Map (Absolute Difference)
             err_vol = np.abs(p_vol - g_vol)
