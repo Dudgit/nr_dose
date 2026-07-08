@@ -8,7 +8,7 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "changed_scheduler_again"
+  run_name: "New_prior"
   modelname: "DoTA"
   margin_slices: 15
   pixdim: [4.0, 4.0, 3.0]
@@ -40,11 +40,12 @@ atlasz:
     total_variation_weight: 0.01
 
   train:
-    num_epochs: 50
+    num_epochs: 100
     use_warmups: False
+    fine_tune: False
     adversarial:
       use: False
-      adv_weight: 0.1
+      adv_weight: 1.0
       d_update_freq: 5
     lr: 4e-4
 
@@ -93,8 +94,9 @@ komondor:
 
   train:
     num_epochs: 300
-    lr: 2.8e-4
-    use_warmups: True
+    lr: 2e-4
+    use_warmups: False
+    fine_tune: False
     adversarial:
       use: False
       adv_weight: 0.1

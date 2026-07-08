@@ -99,7 +99,8 @@ def train_dota():
 
     wandb_logger = WandbLogger(log_model=True, project="DoseRad", name=run_name,entity="ELTE_dl_competition_team",save_dir="/tmp")
     strategy = "ddp" if not cfg['train']['adversarial']['use'] else "ddp_find_unused_parameters_true" 
-    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs'],precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
+    fine_tune_steps = 50 if cfg['train']["fine_tune"] else 0
+    trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs']+fine_tune_steps,precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
                          accelerator="gpu",devices=4,callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")

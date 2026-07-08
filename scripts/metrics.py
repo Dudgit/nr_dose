@@ -525,7 +525,7 @@ class Level1LossFunction(nn.Module):
         eff_idd = idd_curve_loss_value * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
 
-        total_loss = eff_masked + eff_idd + eff_all #+ total_variation
+        total_loss = eff_masked  + eff_all #+ total_variation + eff_idd
         lossDict = {
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_curve_loss_value,

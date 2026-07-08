@@ -36,7 +36,6 @@ class DoseTrainer(pl.LightningModule):
     
     def validation_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch,prefix="val")
-        self.log("val/MSE", loss, prog_bar=True, sync_dist=True)
         return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
 
     def logging_step(self,res_dict,prefix):
@@ -141,7 +140,7 @@ class DoseGANTrainer(pl.LightningModule):
         g_adv_loss = F.binary_cross_entropy_with_logits(g_fake_logits, torch.ones_like(g_fake_logits))
         
         g_loss = physics_loss + (self.adv_weight * g_adv_loss)
-        
+        loss_dict['g_adv_loss'] = g_adv_loss
         opt_g.zero_grad()
         self.manual_backward(g_loss)
         opt_g.step()
@@ -151,17 +150,8 @@ class DoseGANTrainer(pl.LightningModule):
             g_prob_fake = torch.sigmoid(g_fake_logits).mean()
             # Ratio of adversarial pressures (avoid devision by zero)
             adv_ratio = (self.adv_weight * g_adv_loss) / (d_loss + 1e-8)
-
-        # ==========================================
-        # DIAGNOSTIC LOGGING TO WANDB / TENSORBOARD
-        # ==========================================
-        metrics = {
-            # Standard Losses
-            "loss/physics_mae": physics_loss,
-            "loss/d_total": d_loss,
-            "loss/g_adv": g_adv_loss,
-            "loss/g_total": g_loss,
             
+        metrics = {
             # Probability Ratios (Crucial for stability check!)
             "ratio/d_prob_real": d_prob_real,   # Should hover 0.5 - 0.8
             "ratio/d_prob_fake": d_prob_fake,   # Should hover 0.2 - 0.5
@@ -170,7 +160,7 @@ class DoseGANTrainer(pl.LightningModule):
             # Balance Diagnostic
             "ratio/adv_to_d_loss": adv_ratio,
         }
-        
+        self.logging_step(loss_dict, prefix="train")
         for k, v in metrics.items():
             self.log(k, v, prog_bar=False, sync_dist=True)
             
@@ -184,7 +174,7 @@ class DoseGANTrainer(pl.LightningModule):
         x = torch.cat([x, batch['geometric_prior']], dim=1)  # Concatenate along the channel dimension
         y_hat = self(x, condition)
         loss_dict = self.loss_function(y_hat, y)
-        self.log("val/MSE", loss_dict["total_loss"], prog_bar=True, sync_dist=True)
+        self.logging_step(loss_dict,prefix ="val")
         return {"loss": loss_dict["total_loss"], "pred_dose": y_hat, "gt_dose": y, "condition": condition}
     
     def logging_step(self,res_dict,prefix):
