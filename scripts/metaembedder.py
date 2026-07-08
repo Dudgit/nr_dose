@@ -1,8 +1,7 @@
-import torch
 import numpy as np
+import torch
 import nibabel as nib
 from monai.transforms import MapTransform
-
 
 class InjectGaussianBeamPriord(MapTransform):
     def __init__(self, keys, source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=4.0, flip_lps_to_ras=True):
@@ -35,6 +34,11 @@ class InjectGaussianBeamPriord(MapTransform):
         
         vox_source = nib.affines.apply_affine(inv_affine, phys_source)
         vox_target = nib.affines.apply_affine(inv_affine, phys_target)
+        
+        # --- MODIFICATION: Lock the Z-axis to the 16th slice (index 15) ---
+        # This forces the origin and target to sit perfectly in the center of the 32-slice depth.
+        vox_source[2] = 15.0
+        vox_target[2] = 15.0
         
         device = ct_tensor.device
         A = torch.tensor(vox_source, dtype=torch.float32, device=device) # Source

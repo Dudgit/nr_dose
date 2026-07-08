@@ -25,14 +25,16 @@ class Matshow3DVisualizerCallback(pl.Callback):
         # Extract tensors from the dictionary you return in validation_step
         pred_dose = outputs["pred_dose"]
         gt_dose = outputs["gt_dose"]
+        geom_prior = batch["geometric_prior"]
 
         # Loop through the requested number of samples in the batch
         for i in range(min(self.num_samples, pred_dose.shape[0])):
             
             # Detach, move to CPU, and convert to numpy. 
             # Squeeze removes the channel dimension (1, 256, 256, 32) -> (256, 256, 32)
-            p_vol = pred_dose[i+1].squeeze().detach().cpu().float().numpy()
-            g_vol = gt_dose[i+1].squeeze().detach().cpu().float().numpy()
+            p_vol = pred_dose[i].squeeze().detach().cpu().float().numpy()
+            g_vol = gt_dose[i].squeeze().detach().cpu().float().numpy()
+            prior_vol = geom_prior[i].squeeze().detach().cpu().float().numpy()
             
             # Calculate the Error Map (Absolute Difference)
             err_vol = np.abs(p_vol - g_vol)
@@ -46,13 +48,17 @@ class Matshow3DVisualizerCallback(pl.Callback):
 
             fig_err = plt.figure(figsize=(12, 12))
             matshow3d(err_vol, fig=fig_err, title=f"Absolute Error Map", cmap="inferno",frame_dim=-1)
+            
+            fig_prior = plt.figure(figsize=(12, 12))
+            matshow3d(prior_vol, fig=fig_prior, title=f"Geometric Prior", cmap="viridis",frame_dim=-1)
 
             # Upload the matplotlib figures directly to Weights & Biases
             trainer.logger.experiment.log({
                 f"val/visuals/Sample_{i}": [
                     wandb.Image(fig_gt, caption="Ground Truth"),
                     wandb.Image(fig_pred, caption="Prediction"),
-                    wandb.Image(fig_err, caption="Error Map")
+                    wandb.Image(fig_err, caption="Error Map"),
+                    wandb.Image(fig_prior, caption="Geometric Prior")
                 ],
                 "global_step": trainer.global_step
             })
@@ -61,7 +67,7 @@ class Matshow3DVisualizerCallback(pl.Callback):
             plt.close(fig_gt)
             plt.close(fig_pred)
             plt.close(fig_err)
-
+            plt.close(fig_prior)
 class DoseLevel1MetricsCallback(pl.Callback):
     def __init__(self):
         super().__init__() # Good practice to init the parent class
