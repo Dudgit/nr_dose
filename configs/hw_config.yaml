@@ -47,6 +47,10 @@ atlasz:
       use: True
       adv_weight: 1.0
       d_update_freq: 5
+      start_epoch: 75
+      ramp_length: 25
+      max_mae_weight: 15.0
+      def_mae_weight: 10.0
     lr: 4e-4
 
 
