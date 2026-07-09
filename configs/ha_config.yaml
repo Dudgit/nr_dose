@@ -1,5 +1,4 @@
-komondor:
-  train:
-    adversarial:
-      use: True
-      adv_weight: 0.8
+train:
+  adversarial:
+    use: True
+    adv_weight: 0.8

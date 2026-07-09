@@ -33,6 +33,7 @@ def create_config():
     cfg = cfg[args.hw]
     if args.config != "default":
         cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}_config.yaml"))
+    print("Run name:", cfg['run_name'])
     return cfg
 
 def create_dota_instance(cfg):
