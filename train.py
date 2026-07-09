@@ -32,7 +32,7 @@ def create_config():
     cfg = OmegaConf.load(f"configs/hw_config.yaml")
     cfg = cfg[args.hw]
     if args.config != "default":
-        cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}.yaml"))
+        cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}_config.yaml"))
     return cfg
 
 def create_dota_instance(cfg):

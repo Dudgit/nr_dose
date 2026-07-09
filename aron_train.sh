@@ -15,4 +15,4 @@ export HDD="/home/nr_doha3/nr_dose"
 export REAL_HDD=$(readlink -f $HDD)
 
 module load singularity
-singularity exec --nv -B $REAL_SCRATCH:$REAL_SCRATCH -B $REAL_HDD:$REAL_HDD dose.sif python $REAL_HDD/train.py --hw komondor --config ha_config
+singularity exec --nv -B $REAL_SCRATCH:$REAL_SCRATCH -B $REAL_HDD:$REAL_HDD dose.sif python $REAL_HDD/train.py --hw komondor --config ha
