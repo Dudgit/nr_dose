@@ -8,7 +8,7 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "New_prior"
+  run_name: "New_prior_GAN"
   modelname: "DoTA"
   margin_slices: 15
   pixdim: [4.0, 4.0, 3.0]
@@ -44,7 +44,7 @@ atlasz:
     use_warmups: False
     fine_tune: False
     adversarial:
-      use: False
+      use: True
       adv_weight: 1.0
       d_update_freq: 5
     lr: 4e-4
