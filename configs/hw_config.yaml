@@ -57,7 +57,7 @@ komondor:
   dataset_type: "persistent"
   prefetch_factor: 2
   persistent_workers: True
-  run_name: "Komondor_reproduce_Modified_Prior"
+  run_name: "Modified_lr"
   modelname: "DoTA"
   sigma: 4.0
   dataset_list: "data/dataset_list.json"
