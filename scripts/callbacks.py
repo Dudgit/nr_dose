@@ -70,6 +70,11 @@ class Matshow3DVisualizerCallback(pl.Callback):
             plt.close(fig_pred)
             plt.close(fig_err)
             plt.close(fig_prior)
+
+
+
+
+
 class DoseLevel1MetricsCallback(pl.Callback):
     def __init__(self):
         super().__init__() # Good practice to init the parent class
