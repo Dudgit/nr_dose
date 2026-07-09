@@ -13,6 +13,7 @@ class Matshow3DVisualizerCallback(pl.Callback):
         # How many patients from the first batch you want to visualize
         self.num_samples = num_samples
 
+        
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
         # 1. SPEED SAFEGUARD: Only run this on the very first batch of the validation epoch
         if batch_idx != 0:
