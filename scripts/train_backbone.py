@@ -135,7 +135,7 @@ class DoseGANTrainer(pl.LightningModule):
 
 
 
-        if self.current_epoch < self.start_epoch:
+        if self.current_epoch > self.start_epoch:
             ram_progress = min(1.0, (self.current_epoch-self.start_epoch)/self.ramp_length)
             self.loss_function.masked_factor = self.def_mae_weight+ram_progress*(self.max_mae_weight-self.def_mae_weight)
         loss_dict = self.loss_function(y_hat, y)
