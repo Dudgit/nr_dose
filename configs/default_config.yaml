@@ -8,7 +8,7 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "Fourier_energy"
+  run_name: "Fourier_energy_earlyRamp"
   modelname: "DoTA"
   sigma: 4.0
   margin_slices: 15
@@ -24,6 +24,7 @@ atlasz:
     channels: [32, 64, 128, 256]
     num_heads: 8
     num_layers: 4
+    use_fourier_embedding: True
 
   unetkwgs:
     condition_dim: 3
@@ -38,6 +39,9 @@ atlasz:
     masked_factor: 10.0
     iid_curve_weight: 0.5
     allMAE_weight: 0.50
+    use_high_dose_mask: True
+    high_dose_threshold: 0.8
+    high_dose_weight: 5.0
 
   train:
     num_epochs: 100
@@ -46,13 +50,15 @@ atlasz:
     fine_tune: False
     
     adversarial:
-      use: False
+      use: True
       adv_weight: 0.1
       d_update_freq: 5
       start_epoch: 50
       ramp_length: 50
       max_mae_weight: 10.0
       def_mae_weight: 10.0
+      useRamping: True
+      earlyRamp: True
 
 
 komondor:

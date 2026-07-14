@@ -13,3 +13,4 @@ losskwgs:
 train:
   adversarial:
     use: True
+    
