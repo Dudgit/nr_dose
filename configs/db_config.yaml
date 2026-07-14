@@ -1,0 +1,16 @@
+run_name: "Attention_Unet_3D_Gan"
+modelname: "DoseAttentionUnet"
+batch_size: 64
+
+
+
+attentionkwgs:
+  condition_dim: 3
+  encoded_cond_features: 4
+
+train:
+  lr: 2e-4
+  adversarial:
+    use: True
+    adv_weight: 0.1
+    d_update_freq: 5

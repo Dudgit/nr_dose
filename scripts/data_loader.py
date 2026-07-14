@@ -387,31 +387,26 @@ class InjectBeamTrajectoryd(MapTransform):
 
 def scale_dose_by_1000(x):
     return x * 1000.0
-def get_loaders(hw="atlasz",config_name = "default_config"):
-
-    cfg = OmegaConf.load(f"configs/{config_name}.yaml")
-    data_cfg = cfg['data']
-    hw_cfg = OmegaConf.load(f"configs/hw_config.yaml")
-
-    train_list = json.load(open(data_cfg['train_list'], "r"))
-    val_list = json.load(open(data_cfg['val_list'], "r"))
+def get_loaders(cfg,hw = "atlasz"):
+    train_list = json.load(open(cfg['train_list'], "r"))
+    val_list = json.load(open(cfg['val_list'], "r"))
 
     
     train_transforms = Compose([
     LoadImaged(keys=["ct", "gt_dose"]),
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
     Lambdad(keys=["gt_dose"], func=scale_dose_by_1000),
-    ScaleIntensityRanged(keys=['ct'],a_min=data_cfg['ct_min'], a_max=data_cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
+    ScaleIntensityRanged(keys=['ct'],a_min=cfg['ct_min'], a_max=cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
     ExtractSlabsAroundZ(keys=["ct", "gt_dose"], source_key="ray_source", slice_radius=15),
-    Spacingd(keys=["ct", "gt_dose"], pixdim=data_cfg['pixdim'], mode='trilinear'), # pixdim = [4.0, 4.0, 3.0]
-    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=data_cfg['roi_size']), #roi_size = [128, 128, 32] 
-    InjectGaussianBeamPriord(keys =['ct'],source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=data_cfg['sigma'], flip_lps_to_ras = True),
+    Spacingd(keys=["ct", "gt_dose"], pixdim=cfg['pixdim'], mode='trilinear'), # pixdim = [4.0, 4.0, 3.0]
+    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']), #roi_size = [128, 128, 32] 
+    InjectGaussianBeamPriord(keys =['ct'],source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras = True),
     EnsureTyped(keys=["ct", "gt_dose", "condition", "geometric_prior"],track_meta=False,dtype=torch.float32),
     SelectItemsd(keys=["ct", "gt_dose", "condition", "geometric_prior"])
     ])
     
-    if hw_cfg[hw]['dataset_type'] == "persistent":
-        cache_dir = hw_cfg[hw]['cache_dir']
+    if cfg['dataset_type'] == "persistent":
+        cache_dir = cfg['cache_dir']
         if hw == "komondor":
             scratch_dir = os.environ.get("REAL_SCRATCH")
             cache_dir = os.path.join(scratch_dir,"cache")
@@ -419,13 +414,13 @@ def get_loaders(hw="atlasz",config_name = "default_config"):
         os.makedirs(cache_dir, exist_ok=True)
         train_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
         val_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)
-    if hw_cfg[hw]["dataset_type"] == "dataset":
+    if cfg["dataset_type"] == "dataset":
         train_ds =  Dataset(data=train_list, transform=train_transforms)
         val_ds =  Dataset(data=val_list, transform=train_transforms)
     
     val_ds = PatientIDWrapper(val_ds, val_list)
-    train_loader = DataLoader(train_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=True,num_workers=hw_cfg[hw]['num_workers'],persistent_workers=hw_cfg[hw]['persistent_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],pin_memory=True)
-    val_loader = DataLoader(val_ds,batch_size=hw_cfg[hw]['batch_size'],shuffle=False,num_workers=hw_cfg[hw]['num_workers'],persistent_workers=hw_cfg[hw]['persistent_workers'],prefetch_factor=hw_cfg[hw]['prefetch_factor'],pin_memory=True)
+    train_loader = DataLoader(train_ds,batch_size=cfg['batch_size'],shuffle=True,num_workers=cfg['num_workers'],persistent_workers=cfg['persistent_workers'],prefetch_factor=cfg['prefetch_factor'],pin_memory=True)
+    val_loader = DataLoader(val_ds,batch_size=cfg['batch_size'],shuffle=False,num_workers=cfg['num_workers'],persistent_workers=cfg['persistent_workers'],prefetch_factor=cfg['prefetch_factor'],pin_memory=True)
 
     return train_loader, val_loader
 

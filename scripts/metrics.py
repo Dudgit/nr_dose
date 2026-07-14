@@ -506,15 +506,20 @@ class SimpleIDDLoss(nn.Module):
 
 
 class Level1LossFunction(nn.Module):
-    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, total_variation_weight=0.01):
+    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, use_high_dose_mask=False, high_dose_threshold=0.8, high_dose_weight=1.0):
         super().__init__()
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.IID_curve_loss = SimpleIDDLoss()
         self.allMAE = torch.nn.L1Loss()
         #self.total_variation_loss = gradient_difference_loss_3d
+        if use_high_dose_mask:
+            self.beam_masked_mae_loss = SimpleMaskedMAE(threshold_pct=high_dose_threshold)
+            self.high_dose_weight = high_dose_weight
         self.masked_factor = masked_factor
         self.iid_curve_weight = iid_curve_weight
         self.allMAE_weight = allMAE_weight
+        self.use_high_dose_mask = use_high_dose_mask
+
     
     def __call__(self, pred_dose, gt_dose):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
@@ -524,16 +529,24 @@ class Level1LossFunction(nn.Module):
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_curve_loss_value * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
-
         total_loss = eff_masked  + eff_all #+ total_variation + eff_idd
+        if self.use_high_dose_mask:
+            high_beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
+            eff_high_masked = high_beam_masked_mae * self.high_dose_weight
+            total_loss = total_loss + eff_high_masked
+        
         lossDict = {
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_curve_loss_value,
             "allMAE": allMAE,
-            #"3dGradientLoss": total_variation,
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,
             "total_loss": total_loss
         }
+
+        if self.use_high_dose_mask:
+            lossDict["high_beam_masked_mae"] = high_beam_masked_mae
+            lossDict["effective_high_beam_masked_mae"] = eff_high_masked
+            
         return lossDict

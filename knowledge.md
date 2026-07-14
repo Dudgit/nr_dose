@@ -6,6 +6,23 @@ This file summarizes the main conclusions from the CT metadata and beam/ray geom
 
 The goal was to understand how the processed CT volumes, Excel metadata, and JSON beam geometry relate to each other.
 
+
+## Pipeline.
+
+Data is stored in scratch and cached into tensor checkpoints. Tensor checkpoints are tensors that can be load in extremely fast, so the training is much faster.
+
+Data is processed by the initial transformations: Scaling, Fix Spacing, creating gantry angle prior.
+
+Loaded data passed into the training instances.
+
+Training instance is build from 2 components:
+- **Model**: This is the architecture, the neural network that is called and shoud predict y_pred, the dosage distribution in 3d.
+- **Trainer**: In the trainer we define what is steps we take to train the model, we can chose if we want adversarial training or not, or we can define extra trainer instances.
+
+Training instance is given to pytorch lightning trainer and the loop starts.
+
+Every important parameter is stored in the configs/userNaem_config.yaml file. You should only edit the config corresponding to your username.
+ 
 ## Data location
 
 Training data:

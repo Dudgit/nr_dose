@@ -81,3 +81,73 @@ class InjectGaussianBeamPriord(MapTransform):
         d["geometric_prior"] = gaussian_prior.unsqueeze(0)
         
         return d
+
+class EnergyInjector(MapTransform):
+    """
+    THIS IS JUST A SAMPLE TEMPLATE!!!!
+    """
+    def __init__(self, keys, energy_key="energy", ref_key="ct"):
+        super().__init__(keys)
+        self.energy_key = energy_key
+        self.ref_key = ref_key
+
+    def __call__(self, data):
+        d = dict(data)
+        energy_value = d[self.energy_key]
+        ct_tensor = d[self.ref_key]
+        
+        # Create a tensor filled with the energy value, matching the CT tensor's shape
+        energy_tensor = torch.full_like(ct_tensor, fill_value=energy_value)
+        
+        d["energy_map"] = energy_tensor
+        
+        return d
+
+
+import torch
+import torch.nn as nn
+import math
+
+class FourierFeatureEmbedder(nn.Module):
+    def __init__(self, in_features=1, num_freqs=8, include_input=True):
+        """
+        Args:
+            in_features: The length of the raw input vector (1 if just energy).
+            num_freqs: The number of frequency bands (L). Higher means it can resolve 
+                       finer numerical differences, but costs more channels.
+            include_input: Whether to append the raw unencoded scalar to the output.
+        """
+        super().__init__()
+        self.in_features = in_features
+        self.num_freqs = num_freqs
+        self.include_input = include_input
+        
+        # Calculate the final output dimension for the MLP mathematically
+        self.out_dim = 0
+        if include_input:
+            self.out_dim += in_features
+        # For each frequency band, we generate both a sine and cosine projection
+        self.out_dim += in_features * num_freqs * 2 
+        
+        # Generate the frequency bands: [2^0, 2^1, 2^2, ..., 2^(L-1)]
+        # We use register_buffer so PyTorch handles DDP device placement automatically
+        freq_bands = 2.0 ** torch.linspace(0.0, num_freqs - 1, num_freqs)
+        self.register_buffer("freq_bands", freq_bands)
+
+    def forward(self, x):
+        """
+        x shape: (Batch, in_features)
+        Returns: (Batch, out_dim)
+        """
+        embeds = []
+        if self.include_input:
+            embeds.append(x)
+            
+        for freq in self.freq_bands:
+            # Multiply the input by the frequency scalar and pi
+            val = x * freq * math.pi
+            embeds.append(torch.sin(val))
+            embeds.append(torch.cos(val))
+            
+        # Concatenate everything along the feature dimension
+        return torch.cat(embeds, dim=-1)

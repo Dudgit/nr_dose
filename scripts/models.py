@@ -5,6 +5,7 @@ import torch.nn as nn
 from monai.networks.blocks import UnetResBlock
 from monai.networks.nets import ViT
 from monai.networks.blocks import UnetResBlock
+from scripts.metaembedder import FourierFeatureEmbedder
 
 class Encoder(nn.Module):
     def __init__(self, in_channels=1, channels=(32, 64, 128, 256)):
@@ -65,12 +66,17 @@ class FourierEmbedding(nn.Module):
     
 
 class ConditionedTransformer(nn.Module):
-    def __init__(self,embed_dim=256,num_heads=8,num_layers=4,mlp_ratio=4,):
+    def __init__(self,embed_dim=256,num_heads=8,num_layers=4,mlp_ratio=4,use_fourier_embedding=False):
         super().__init__()
 
         # Beam encoder
-        self.energy_mlp = nn.Sequential(nn.Linear(1, 64),nn.GELU())
-        self.condition_proj = nn.Sequential(nn.Linear(64,embed_dim),nn.GELU())
+        
+
+        self.energy_encoder = nn.Sequential(nn.Linear(1, 64),nn.GELU())
+        if use_fourier_embedding:
+            self.energy_encoder = FourierFeatureEmbedder(num_freqs=8)
+        cond_input = self.energy_encoder.out_dim if use_fourier_embedding else 64
+        self.condition_proj = nn.Sequential(nn.Linear(cond_input,embed_dim),nn.GELU())
         #FourierEmbedding(num_frequencies=8)
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim,
@@ -95,7 +101,7 @@ class ConditionedTransformer(nn.Module):
         x = x.flatten(2).transpose(1, 2)
 
         # (Connditioning)
-        energy = self.energy_mlp(beam[:, 2:3])
+        energy = self.energy_encoder(beam[:, 2:3])
         condition = self.condition_proj(energy)
 
         # Add conditioning to every token
@@ -108,11 +114,11 @@ class ConditionedTransformer(nn.Module):
         return x
 
 class DoTA_based(nn.Module):
-    def __init__(self, in_channels=2, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4):
+    def __init__(self, in_channels=2, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4,use_fourier_embedding=False):
         super().__init__()
         embed_dim = channels[-1]
         self.encoder = Encoder(in_channels=in_channels, channels=channels)
-        self.transformer = ConditionedTransformer(embed_dim=embed_dim,num_heads=num_heads,num_layers=num_layers,)
+        self.transformer = ConditionedTransformer(embed_dim=embed_dim,num_heads=num_heads,num_layers=num_layers,use_fourier_embedding=use_fourier_embedding)
         self.decoder = Decoder(channels=list(reversed(channels)), out_channels=out_channels)
 
     def forward(self, x, beam):
@@ -144,7 +150,7 @@ class DoseSwinUnet(nn.Module):
         # The Swin Transformer Hybrid
         self.unet = SwinUNETR(
             img_size=(128, 128, 32), # MUST match your ResizeWithPadOrCropd spatial_size!
-            in_channels=1 + encoded_cond_features,
+            in_channels=2 + encoded_cond_features,
             out_channels=1,
             feature_size=24, # Base feature size (increase to 48 if you have massive VRAM)
             use_checkpoint=True, # Saves VRAM during training by trading compute for memory
@@ -165,11 +171,11 @@ class DoseSwinUnet(nn.Module):
 from monai.networks.nets import AttentionUnet
 
 class DoseAttentionUnet(nn.Module):
-    def __init__(self, condition_dim, encoded_cond_features=4):
+    def __init__(self, condition_dim, encoded_cond_features=4,cond_encoder = None):
         super().__init__()
         
         # Your existing MLP condition encoder
-        self.cond_encoder = nn.Sequential(
+        self.cond_encoder = cond_encoder if cond_encoder is not None else nn.Sequential(
             nn.Linear(condition_dim, 64),
             nn.LayerNorm(64), 
             nn.ReLU(),
@@ -179,7 +185,7 @@ class DoseAttentionUnet(nn.Module):
         # The Attention-Gated UNet
         self.unet = AttentionUnet(
             spatial_dims=3,
-            in_channels=1 + encoded_cond_features,
+            in_channels=2 + encoded_cond_features,
             out_channels=1,
             # We use the exact same channels and strides as your original UNet
             channels=(16, 32, 64, 128, 256),
@@ -210,7 +216,7 @@ class FiLMConditionalDoseUnet(nn.Module):
         # 1. BasicUNet exposes its layers explicitly, allowing safe interception!
         self.unet = BasicUNet(
             spatial_dims=3,
-            in_channels=1,  # Only CT goes in. Condition is injected deep inside.
+            in_channels=2,  # Only CT goes in. Condition is injected deep inside.
             out_channels=1,
             # BasicUNet requires 6 feature sizes: 5 for encoder/bottleneck, 1 for the final decoder block
             features=(16, 32, 64, 128, bottleneck_channels, 16),
@@ -262,7 +268,7 @@ class FiLMConditionalDoseUnet(nn.Module):
 
 
 class ConditionalDoseUNet(nn.Module):
-    def __init__(self, condition_dim=3, encoded_cond_features=8):
+    def __init__(self, condition_dim=3, encoded_cond_features=8,use_softplus=True):
         """
         Args:
             condition_dim: The length of your raw condition vector (e.g., 3 for [x, y, z])
@@ -288,7 +294,7 @@ class ConditionalDoseUNet(nn.Module):
         self.unet = UNet(
             spatial_dims=3,
             # CT Channel (1) + Prior Mask Channel (1) + Encoded Condition Channels
-            in_channels=1 + encoded_cond_features,
+            in_channels=2 + encoded_cond_features,
             out_channels=1,
             channels=(16, 32, 64, 128, 256), # 5 layers deep
             strides=(2, 2, 2, 2),
@@ -296,6 +302,7 @@ class ConditionalDoseUNet(nn.Module):
             norm="instance",
             dropout=0.1, # Light dropout to further regularize
         )
+        self.use_softplus = use_softplus
 
     def forward(self, ct_volume, condition_vector):
         """
@@ -321,6 +328,6 @@ class ConditionalDoseUNet(nn.Module):
         
         # Step 5: The Softplus Fix
         # Prevents the Dying ReLU problem in the empty background
-        dose_pred = F.softplus(raw_output)
+        dose_pred = F.softplus(raw_output) if self.use_softplus else F.relu(raw_output)
         
         return dose_pred

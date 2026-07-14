@@ -29,7 +29,7 @@ args =  parser.parse_args()
 
 
 def create_config():
-    cfg = OmegaConf.load(f"configs/hw_config.yaml")
+    cfg = OmegaConf.load(f"configs/default_config.yaml")
     cfg = cfg[args.hw]
     if args.config != "default":
         cfg = OmegaConf.merge(cfg, OmegaConf.load(f"configs/{args.config}_config.yaml"))
@@ -55,6 +55,7 @@ def create_attentionUnet_instance(cfg):
     from scripts.models import DoseAttentionUnet
     model = DoseAttentionUnet(**cfg['attentionkwgs'])
     return model
+
 
 def choseModels(cfg):
     if cfg['modelname'] == "DoTA":
@@ -95,7 +96,7 @@ def train_dota():
     modelname = cfg['modelname']# if args.hw == "atlasz" else cfg['komondor_modelname']
     run_name = args.hw + "_" + run_name_base + "_" + str(modelname) + "_" + str(cfg['train']['num_epochs']) + "epochs"
     cfg['run_name'] = run_name
-    train_loader, val_loader = get_loaders(hw = args.hw)
+    train_loader, val_loader = get_loaders(cfg=cfg,hw = args.hw)
     model = choseModels(cfg)
     callbacks = create_callbacks(cfg)
 

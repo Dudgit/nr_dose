@@ -20,7 +20,8 @@ class DoseTrainer(pl.LightningModule):
         x = batch['ct']
         y = batch['gt_dose']
         prior = batch['geometric_prior']
-        x = torch.cat([x, prior], dim=1)
+                                        # BxCxHxWxD -> Bx(C+1)xHxWxD
+        x = torch.cat([x, prior], dim=1)# 64x1x128x128x32 -> 64x2x128x128x32
         condition = batch['condition']
         y_hat = self(x, condition)
         
@@ -135,7 +136,7 @@ class DoseGANTrainer(pl.LightningModule):
 
 
         if self.current_epoch < self.start_epoch:
-            ram_progress = (1.0, (self.current_epoch-self.start_epoch)/self.ramp_length)
+            ram_progress = min(1.0, (self.current_epoch-self.start_epoch)/self.ramp_length)
             self.loss_function.masked_factor = self.def_mae_weight+ram_progress*(self.max_mae_weight-self.def_mae_weight)
         loss_dict = self.loss_function(y_hat, y)
         physics_loss = loss_dict["total_loss"]

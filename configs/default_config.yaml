@@ -1,16 +1,68 @@
+atlasz:
+  num_workers: 8
+  batch_size: 256
+  prefetch_factor: 2 
+  persistent_workers: True
+  cache_dir: "/scratch/db/cache"
+  dataset_type: "persistent"
+  dataset_list: "data/dataset_list.json"
+  train_list: "data/train.json"
+  val_list: "data/val.json"
+  run_name: "New_prior_GAN"
+  modelname: "DoTA"
+  margin_slices: 15
+  pixdim: [4.0, 4.0, 3.0]
+  roi_size: [128, 128, 32]
+  ct_min: -1024
+  ct_max: 2000
+  sigma: 4.0 # 2 in komondor 4 in atlas
+    
+  dotakwgs:
+    in_channels: 2
+    out_channels: 1
+    channels: [32, 64, 128, 256]
+    num_heads: 8
+    num_layers: 4
+
+  unetkwgs:
+    condition_dim: 3
+
+  filmkwgs:
+    condition_dim: 3
+
+  attentionkwgs:
+    condition_dim: 3
+  
+  losskwgs:
+    masked_factor: 10.0
+    iid_curve_weight: 0.5
+    allMAE_weight: 0.50
+
+  train:
+    num_epochs: 100
+    use_warmups: False
+    fine_tune: False
+    adversarial:
+      use: True
+      adv_weight: 1.0
+      d_update_freq: 5
+      start_epoch: 75
+      ramp_length: 25
+      max_mae_weight: 15.0
+      def_mae_weight: 10.0
+    lr: 4e-4
 
 
-atlasz_run_name: "diff_reproduce_larger_batch"
-atlasz_modelname: "DoTA"
-atlasz_sigma: 4.0
-
-komondor_run_name: "Diff_sigma"
-komondor_modelname: "DoTA"
-komondor_sigma: 2.0
-
-#? models [DoTA,ConditionalDoseUNet, FiLMConditionalDoseUnet,DoseAttentionUnet]
-
-data:
+komondor:
+  num_workers: 4
+  batch_size: 128
+  cache_dir: "/scratch/nr_dose"
+  dataset_type: "persistent"
+  prefetch_factor: 2
+  persistent_workers: True
+  run_name: "Modified_lr"
+  modelname: "DoTA"
+  sigma: 4.0
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
@@ -19,34 +71,40 @@ data:
   roi_size: [128, 128, 32]
   ct_min: -1024
   ct_max: 2000
-  sigma: 4.0 # 2 in komondor 4 in atlas
 
+    
+  dotakwgs:
+    in_channels: 2
+    out_channels: 1
+    channels: [32, 64, 128, 256]
+    num_heads: 8
+    num_layers: 4
+
+  unetkwgs:
+    condition_dim: 3
+
+  filmkwgs:
+    condition_dim: 3
+
+  attentionkwgs:
+    condition_dim: 3
   
-dotakwgs:
-  in_channels: 2
-  out_channels: 1
-  channels: [32, 64, 128, 256]
-  num_heads: 8
-  num_layers: 4
+  losskwgs:
+    masked_factor: 10.0
+    iid_curve_weight: 0.5
+    allMAE_weight: 0.50
 
-unetkwgs:
-  condition_dim: 3
-
-filmkwgs:
-  condition_dim: 3
-
-attentionkwgs:
-  condition_dim: 3
-  
-losskwgs:
-  masked_factor: 10.0
-  iid_curve_weight: 0.5
-  allMAE_weight: 0.50
-  total_variation_weight: 0.01
-
-train:
-  num_epochs: 400
-  adversarial:
-    use: False
-    adv_weight: 0.1
-    d_update_freq: 5
+  train:
+    num_epochs: 100
+    lr: 2.8e-4
+    use_warmups: False
+    fine_tune: False
+    
+    adversarial:
+      use: False
+      adv_weight: 0.1
+      d_update_freq: 5
+      start_epoch: 50
+      ramp_length: 50
+      max_mae_weight: 10.0
+      def_mae_weight: 10.0
