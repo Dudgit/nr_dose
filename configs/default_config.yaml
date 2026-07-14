@@ -8,15 +8,12 @@ atlasz:
   dataset_list: "data/dataset_list.json"
   train_list: "data/train.json"
   val_list: "data/val.json"
-  run_name: "Higher_res"
+  run_name: "Fourier_energy"
   modelname: "DoTA"
   sigma: 4.0
-  dataset_list: "data/dataset_list.json"
-  train_list: "data/train.json"
-  val_list: "data/val.json"
   margin_slices: 15
-  pixdim: [2.0, 2.0, 3.0]
-  roi_size: [256, 256, 32]
+  pixdim: [4.0, 4.0, 3.0]
+  roi_size: [128, 128, 32]
   ct_min: -1024
   ct_max: 2000
 

@@ -6,10 +6,9 @@ dotakwgs:
   use_fourier_embedding: True
 
 losskwgs:
-  masked_factor: 10.0
-  iid_curve_weight: 0.5
-  allMAE_weight: 0.50
-  total_variation_weight: 0.01
+  use_high_dose_mask: True
+  high_dose_threshold: 0.8
+  high_dose_weight: 5.0
 
 train:
   adversarial:
