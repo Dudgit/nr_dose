@@ -95,7 +95,7 @@ def train_dota():
     run_name_base = cfg['run_name'] #if args.hw == "atlasz" else cfg['komondor_run_name']
     run_name_base = run_name_base + "_adv" if cfg['train']['adversarial']['use'] else run_name_base
     modelname = cfg['modelname']# if args.hw == "atlasz" else cfg['komondor_modelname']
-    run_name = args.hw + "_" + run_name_base + "_" + str(modelname) + "_" + str(cfg['train']['num_epochs']) + "epochs"
+    run_name = args.hw + "_" + run_name_base + "_" + str(modelname)
     cfg['run_name'] = run_name
     train_loader, val_loader = get_loaders(cfg=cfg,hw = args.hw)
     model = choseModels(cfg)

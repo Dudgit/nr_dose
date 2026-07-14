@@ -70,7 +70,7 @@ import torch
 import torch.nn.functional as F
 
 class DoseGANTrainer(pl.LightningModule):
-    def __init__(self, generator, discriminator, loss_function=None, adv_weight=0.1,d_update_freq=1,lr = 1e-4,start_epoch=50,ramp_length=50, max_mae_weight=10.0,def_mae_weight=10.0):
+    def __init__(self, generator, discriminator, loss_function=None, adv_weight=0.1,d_update_freq=1,lr = 1e-4,start_epoch=50,ramp_length=50, max_mae_weight=10.0,def_mae_weight=10.0, useRamping=False):
         super().__init__()
         self.model = generator
         self.discriminator = discriminator
@@ -83,6 +83,7 @@ class DoseGANTrainer(pl.LightningModule):
         self.ramp_length = ramp_length
         self.max_mae_weight = max_mae_weight
         self.def_mae_weight = def_mae_weight
+        self.useRamping = useRamping
 
     def forward(self, x, condition):
         return self.model(x, condition)
@@ -135,7 +136,7 @@ class DoseGANTrainer(pl.LightningModule):
 
 
 
-        if self.current_epoch > self.start_epoch:
+        if self.current_epoch > self.start_epoch and self.useRamping:
             ram_progress = min(1.0, (self.current_epoch-self.start_epoch)/self.ramp_length)
             self.loss_function.masked_factor = self.def_mae_weight+ram_progress*(self.max_mae_weight-self.def_mae_weight)
         loss_dict = self.loss_function(y_hat, y)
