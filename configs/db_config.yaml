@@ -1,16 +1,15 @@
-run_name: "Attention_Unet_3D_Gan"
-modelname: "DoseAttentionUnet"
-batch_size: 64
+run_name: "Good IDD"
+modelname: "DoTA"
 
+dotakwgs:
+  use_fourier_embedding: True
 
-
-attentionkwgs:
-  condition_dim: 3
-  encoded_cond_features: 4
+losskwgs:
+  use_high_dose_mask: False
 
 train:
-  lr: 2e-4
   adversarial:
-    use: True
+    use: False
+    useRamping: False
     adv_weight: 0.1
     d_update_freq: 5
