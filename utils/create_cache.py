@@ -1,7 +1,11 @@
 from scripts.data_loader import get_loaders
 import tqdm
+from omegaconf import OmegaConf
 
 if __name__ == "__main__":
-    train_loader, val_loader = get_loaders(hw = "komondor")
+    cfg = OmegaConf.load(f"configs/default_config.yaml")
+    cfg = cfg['atlasz']
+    cfg['batch_size'] = 64
+    train_loader, val_loader = get_loaders(cfg = cfg, hw = "atlasz")
     for batch in tqdm.tqdm(train_loader):
         continue

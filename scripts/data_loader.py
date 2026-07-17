@@ -401,8 +401,8 @@ def get_loaders(cfg,hw = "atlasz"):
     Spacingd(keys=["ct", "gt_dose"], pixdim=cfg['pixdim'], mode='trilinear'), # pixdim = [4.0, 4.0, 3.0]
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']), #roi_size = [128, 128, 32] 
     InjectGaussianBeamPriord(keys =['ct'],source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras = True),
-    EnsureTyped(keys=["ct", "gt_dose", "condition", "geometric_prior"],track_meta=False,dtype=torch.float32),
-    SelectItemsd(keys=["ct", "gt_dose", "condition", "geometric_prior"])
+    EnsureTyped(keys=["ct", "gt_dose", "condition", "geometric_prior","ray_source", "ray_target"],track_meta=False,dtype=torch.float32),
+    SelectItemsd(keys=["ct", "gt_dose", "condition", "geometric_prior","ray_source", "ray_target"])
     ])
     
     if cfg['dataset_type'] == "persistent":

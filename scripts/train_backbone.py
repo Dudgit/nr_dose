@@ -20,12 +20,14 @@ class DoseTrainer(pl.LightningModule):
         x = batch['ct']
         y = batch['gt_dose']
         prior = batch['geometric_prior']
+        ray_source = batch['ray_source']
+        ray_target = batch['ray_target']
                                         # BxCxHxWxD -> Bx(C+1)xHxWxD
         x = torch.cat([x, prior], dim=1)# 64x1x128x128x32 -> 64x2x128x128x32
         condition = batch['condition']
         y_hat = self(x, condition)
         
-        loss_dict = self.loss_function(y_hat, y)
+        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target)
         loss = loss_dict["total_loss"]
         self.logging_step(loss_dict, prefix)
         return loss, y_hat, y, condition
@@ -71,7 +73,7 @@ import torch.nn.functional as F
 
 class DoseGANTrainer(pl.LightningModule):
     def __init__(self, generator, discriminator, loss_function=None, adv_weight=0.1,d_update_freq=1,lr = 1e-4,
-                 start_epoch=50,ramp_length=50, max_mae_weight=10.0,def_mae_weight=10.0, useRamping=False,earlyRamp=False):
+                 start_epoch=50,ramp_length=50, max_mae_weight=10.0,def_mae_weight=10.0, useRamping=False,earlyRamp=False,use = True):
         super().__init__()
         self.model = generator
         self.discriminator = discriminator
@@ -100,6 +102,8 @@ class DoseGANTrainer(pl.LightningModule):
         x = torch.cat([x, prior], dim=1)  # Concatenate along the channel dimension
         y = batch['gt_dose']
         condition = batch['condition']
+        ray_source = batch['ray_source']
+        ray_target = batch['ray_target']
         
         opt_g, opt_d = self.optimizers()
 
@@ -140,7 +144,7 @@ class DoseGANTrainer(pl.LightningModule):
         if ramp_cond and self.useRamping:
             ram_progress = min(1.0, (self.current_epoch-self.start_epoch)/self.ramp_length)
             self.loss_function.masked_factor = self.def_mae_weight+ram_progress*(self.max_mae_weight-self.def_mae_weight)
-        loss_dict = self.loss_function(y_hat, y)
+        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target)
         physics_loss = loss_dict["total_loss"]
         
         # Evaluate generator against updated discriminator
@@ -182,7 +186,7 @@ class DoseGANTrainer(pl.LightningModule):
         x, y, condition = batch['ct'], batch['gt_dose'], batch['condition']
         x = torch.cat([x, batch['geometric_prior']], dim=1)  # Concatenate along the channel dimension
         y_hat = self(x, condition)
-        loss_dict = self.loss_function(y_hat, y)
+        loss_dict = self.loss_function(y_hat, y, batch['ray_source'], batch['ray_target'])
         self.logging_step(loss_dict,prefix ="val")
         return {"loss": loss_dict["total_loss"], "pred_dose": y_hat, "gt_dose": y, "condition": condition}
     
