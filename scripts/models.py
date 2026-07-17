@@ -66,7 +66,7 @@ class FourierEmbedding(nn.Module):
     
 
 class ConditionedTransformer(nn.Module):
-    def __init__(self,embed_dim=256,num_heads=8,num_layers=4,mlp_ratio=4,use_fourier_embedding=False):
+    def __init__(self,embed_dim=256,num_heads=8,num_layers=4,mlp_ratio=4,use_fourier_embedding=False,num_freqs=8):
         super().__init__()
 
         # Beam encoder
@@ -74,7 +74,7 @@ class ConditionedTransformer(nn.Module):
 
         self.energy_encoder = nn.Sequential(nn.Linear(1, 64),nn.GELU())
         if use_fourier_embedding:
-            self.energy_encoder = FourierFeatureEmbedder(num_freqs=8)
+            self.energy_encoder = FourierFeatureEmbedder(num_freqs=num_freqs)
         cond_input = self.energy_encoder.out_dim if use_fourier_embedding else 64
         self.condition_proj = nn.Sequential(nn.Linear(cond_input,embed_dim),nn.GELU())
         #FourierEmbedding(num_frequencies=8)
@@ -114,11 +114,11 @@ class ConditionedTransformer(nn.Module):
         return x
 
 class DoTA_based(nn.Module):
-    def __init__(self, in_channels=2, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4,use_fourier_embedding=False):
+    def __init__(self, in_channels=2, out_channels=1, channels=(32, 64, 128, 256), num_heads=8, num_layers=4,use_fourier_embedding=False,num_freqs=8):
         super().__init__()
         embed_dim = channels[-1]
         self.encoder = Encoder(in_channels=in_channels, channels=channels)
-        self.transformer = ConditionedTransformer(embed_dim=embed_dim,num_heads=num_heads,num_layers=num_layers,use_fourier_embedding=use_fourier_embedding)
+        self.transformer = ConditionedTransformer(embed_dim=embed_dim,num_heads=num_heads,num_layers=num_layers,use_fourier_embedding=use_fourier_embedding,num_freqs=num_freqs)
         self.decoder = Decoder(channels=list(reversed(channels)), out_channels=out_channels)
 
     def forward(self, x, beam):

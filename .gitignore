@@ -3,3 +3,4 @@ data
 *.sif
 *.log
 *.ckpt
+*.swp

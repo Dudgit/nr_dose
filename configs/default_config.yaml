@@ -11,9 +11,6 @@ atlasz:
   run_name: "Higher_res"
   modelname: "DoTA"
   sigma: 4.0
-  dataset_list: "data/dataset_list.json"
-  train_list: "data/train.json"
-  val_list: "data/val.json"
   margin_slices: 15
   pixdim: [2.0, 2.0, 3.0]
   roi_size: [256, 256, 32]

@@ -1,16 +1,17 @@
-
-run_name: "Fourier_energy"
+run_name: "Fourier_energy_more"
 modelname: "DoTA"
 
 dotakwgs:
   use_fourier_embedding: True
+  num_freqs: 16
 
 losskwgs:
   masked_factor: 10.0
   iid_curve_weight: 0.5
   allMAE_weight: 0.50
-  total_variation_weight: 0.01
+  use_high_dose_mask: False
 
 train:
   adversarial:
     use: True
+    useRamping: False
