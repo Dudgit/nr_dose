@@ -563,15 +563,66 @@ def compute_angle_agnostic_idd(dose_volume, ray_source, ray_target, spacing=(4.0
     idd_curves.scatter_add_(dim=1, index=depth_bins, src=dose_flat)
     
     return idd_curves
+    
 
+class BraggPeakPositionLoss(nn.Module):
+    def __init__(self, temperature=10.0):
+        super().__init__()
+        # A higher temperature makes the peak isolation sharper.
+        # 10.0 is usually a sweet spot for suppressing the dose plateau.
+        self.temperature = temperature 
+
+    def forward(self, pred, target):
+        """
+        pred, target shape: (Batch, 1, X, Y, Z)
+        """
+        B, _, X, Y, Z = pred.shape
+        device = pred.device
+        
+        # 1. Scale the volumes between 0 and 1
+        # We add 1e-6 to prevent division by zero in empty volumes
+        pred_max = pred.amax(dim=(2, 3, 4), keepdim=True) + 1e-6
+        target_max = target.amax(dim=(2, 3, 4), keepdim=True) + 1e-6
+        
+        pred_scaled = F.relu(pred) / pred_max
+        target_scaled = F.relu(target) / target_max
+        
+        # 2. Isolate the Bragg Peak using the temperature power
+        # The plateau vanishes, leaving only the high-dose peak
+        pred_weight = torch.pow(pred_scaled, self.temperature)
+        target_weight = torch.pow(target_scaled, self.temperature)
+        
+        # 3. Normalize into a spatial probability distribution (sums to 1.0)
+        pred_prob = pred_weight / pred_weight.sum(dim=(2, 3, 4), keepdim=True)
+        target_prob = target_weight / target_weight.sum(dim=(2, 3, 4), keepdim=True)
+        
+        # 4. Generate Coordinate Grids (Normalized from -1 to 1 for numerical stability)
+        grid_x, grid_y, grid_z = torch.meshgrid(
+            torch.linspace(-1, 1, X, device=device),
+            torch.linspace(-1, 1, Y, device=device),
+            torch.linspace(-1, 1, Z, device=device),
+            indexing='ij'
+        )
+        # Reshape to (1, 3, X, Y, Z) to broadcast across the batch
+        grid = torch.stack([grid_x, grid_y, grid_z], dim=0).unsqueeze(0)
+        
+        # 5. Calculate Center of Mass (The Expected 3D Coordinate)
+        # Multiply the probability map by the grid and sum the spatial dimensions
+        pred_com = (pred_prob.unsqueeze(1) * grid).sum(dim=(3, 4, 5))    # Shape: (B, 3)
+        target_com = (target_prob.unsqueeze(1) * grid).sum(dim=(3, 4, 5)) # Shape: (B, 3)
+        
+        # 6. Calculate the L2 Distance (MSE) between the predicted and true peak positions
+        position_loss = F.mse_loss(pred_com, target_com)
+        
+        return position_loss
 
 class Level1LossFunction(nn.Module):
-    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, use_high_dose_mask=False, high_dose_threshold=0.8, high_dose_weight=1.0):
+    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, use_high_dose_mask=False, high_dose_threshold=0.8, high_dose_weight=1.0,bragg_peak_weight=1.0):
         super().__init__()
         self.beam_masked_mae_loss = SimpleMaskedMAE()
+        self.bragg_peak_loss = BraggPeakPositionLoss()
         #self.IID_curve_loss = SimpleIDDLoss()
         self.allMAE = torch.nn.L1Loss()
-        #self.total_variation_loss = gradient_difference_loss_3d
         if use_high_dose_mask:
             self.beam_masked_mae_loss = SimpleMaskedMAE(threshold_pct=high_dose_threshold)
             self.high_dose_weight = high_dose_weight
@@ -579,10 +630,11 @@ class Level1LossFunction(nn.Module):
         self.iid_curve_weight = iid_curve_weight
         self.allMAE_weight = allMAE_weight
         self.use_high_dose_mask = use_high_dose_mask
-
+        self.bragg_peak_weight = bragg_peak_weight
     
     def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
+        bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
         #idd_curve_loss_value = #self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
         if ray_source is not None and ray_target is not None:
@@ -593,7 +645,8 @@ class Level1LossFunction(nn.Module):
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_mae * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
-        total_loss = eff_masked  + eff_all #+ total_variation + eff_idd
+        eff_bragg = bragg_peak_loss * 1.0  # You can adjust the weight for Bragg Peak Loss if needed
+        total_loss = eff_masked  + eff_all  #+ total_variation + eff_idd
         if self.use_high_dose_mask:
             high_beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
             eff_high_masked = high_beam_masked_mae * self.high_dose_weight

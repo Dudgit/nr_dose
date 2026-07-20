@@ -8,8 +8,10 @@ losskwgs:
   use_high_dose_mask: False
 
 train:
+  fine_tune: True
+  lr: 2.8e-5
   adversarial:
-    use: False
+    use: True
     useRamping: False
     adv_weight: 0.1
     d_update_freq: 5
