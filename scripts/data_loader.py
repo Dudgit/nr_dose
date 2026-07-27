@@ -30,9 +30,12 @@ class PatientIDWrapper(TorchDataset):
         # Example: "/scratch/db/proton/training/1ABB161/image/ct.mha" -> "1ABB161"
         file_path = self.raw_json_list[idx]["ct"]
         patient_id = file_path.split('/')[-3]
+        fpath2 = self.raw_json_list[idx]["gt_dose"]
+        gt_id = fpath2.split('/')[-1]
         
         # 3. Inject the string into the dictionary and return
         data_dict["patient_id"] = patient_id
+        data_dict["gt_id"] = gt_id
         return data_dict
 
 
@@ -102,7 +105,6 @@ class ExtractSlabsAroundZ(MapTransform):
 
 from monai.transforms import Lambdad
 from monai.transforms import SelectItemsd
-
 
 
 def scale_dose_by_1000(x):

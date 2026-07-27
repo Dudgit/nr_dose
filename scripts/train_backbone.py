@@ -44,7 +44,17 @@ class DoseTrainer(pl.LightningModule):
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():
             self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
-    
+
+    def predict(self, batch):
+        x = batch['ct']
+        prior = batch['geometric_prior']
+        prior_extra = batch['field']
+        x = torch.cat([x, prior, prior_extra], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
+        condition = batch['condition']
+        y_hat = self(x, condition)
+
+        return y_hat
+
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
         if self.use_wamrups:
