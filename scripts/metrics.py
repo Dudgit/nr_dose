@@ -635,18 +635,16 @@ class Level1LossFunction(nn.Module):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
         #idd_curve_loss_value = #self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
+        eff_masked = beam_masked_mae * self.masked_factor
+        eff_all = allMAE * self.allMAE_weight
+        total_loss = eff_masked  + eff_all
+
         if ray_source is not None and ray_target is not None:
             pred_idd = compute_angle_agnostic_idd(pred_dose, ray_source, ray_target)
             target_idd = compute_angle_agnostic_idd(gt_dose, ray_source, ray_target)
             idd_mae = F.l1_loss(pred_idd, target_idd)
-        #total_variation = self.total_variation_loss(pred_dose, gt_dose)
-        eff_masked = beam_masked_mae * self.masked_factor
-        eff_idd = idd_mae * self.iid_curve_weight
-        eff_all = allMAE * self.allMAE_weight
-        total_loss = eff_masked  + eff_all  + eff_idd
-
+            eff_idd = idd_mae * self.iid_curve_weight
        
-
         if self.use_high_dose_mask:
             high_beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
             eff_high_masked = high_beam_masked_mae * self.high_dose_weight
@@ -659,16 +657,16 @@ class Level1LossFunction(nn.Module):
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,
-            'effective_bragg_peak_loss': eff_bragg,
             "total_loss": total_loss
         }
 
         if use_bragg_peak_loss:
             bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
             eff_bragg = bragg_peak_loss * self.bragg_peak_weight  # You can adjust the weight for Bragg Peak Loss if needed
-            total_loss = total_loss + eff_bragg
+            total_loss = total_loss + eff_bragg+ eff_idd
             lossDict["bragg_peak_loss"] = bragg_peak_loss
             lossDict["effective_bragg_peak_loss"] = eff_bragg
+
         if self.use_high_dose_mask:
             lossDict["high_beam_masked_mae"] = high_beam_masked_mae
             lossDict["effective_high_beam_masked_mae"] = eff_high_masked

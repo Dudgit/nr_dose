@@ -196,21 +196,12 @@ class DoseGANTrainer(pl.LightningModule):
         return {"loss": g_loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
 
     def validation_step(self, batch, batch_idx):
-<<<<<<< HEAD
         x, y, condition = batch['ct'], batch['gt_dose'], batch['condition']
         x = torch.cat([x, batch['geometric_prior']], dim=1)  # Concatenate along the channel dimension
         y_hat = self(x, condition)
         is_finetune = self.current_epoch > 100
         loss_dict = self.loss_function(y_hat, y, batch['ray_source'], batch['ray_target'], fine_tune=is_finetune)
         self.logging_step(loss_dict,prefix ="val")
-=======
-        with torch.no_grad():
-            x, y, condition = batch['ct'], batch['gt_dose'], batch['condition']
-            x = torch.cat([x, batch['geometric_prior']], dim=1)  # Concatenate along the channel dimension
-            y_hat = self(x, condition)
-            loss_dict = self.loss_function(y_hat, y, batch['ray_source'], batch['ray_target'])
-            self.logging_step(loss_dict,prefix ="val")
->>>>>>> 41f7fb0 (bragg_peak_loss_added)
         return {"loss": loss_dict["total_loss"], "pred_dose": y_hat, "gt_dose": y, "condition": condition}
     
     def logging_step(self,res_dict,prefix):
