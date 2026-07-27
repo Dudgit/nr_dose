@@ -28,6 +28,9 @@ args =  parser.parse_args()
 
 
 
+from pytorch_lightning.profilers import PyTorchProfiler
+
+
 def create_config():
     cfg = OmegaConf.load(f"configs/default_config.yaml")
     cfg = cfg[args.hw]
@@ -99,10 +102,13 @@ def train_dota():
     train_loader, val_loader = get_loaders(cfg=cfg,hw = args.hw)
     model = choseModels(cfg)
     callbacks = create_callbacks(cfg)
-
-    wandb_logger = WandbLogger(log_model=False, project="DoseRad", name=run_name,entity="ELTE_dl_competition_team",save_dir="/tmp",config=dict(cfg))
+    wandb_name = run_name if not cfg['train']['fine_tune'] else run_name + "_finetune"
+    wandb_logger = WandbLogger(log_model=False, project="DoseRad", name=wandb_name,entity="ELTE_dl_competition_team",save_dir="/tmp",config=dict(cfg))
     strategy = "ddp" if not cfg['train']['adversarial']['use'] else "ddp_find_unused_parameters_true" 
     fine_tune_steps = 50 if cfg['train']["fine_tune"] else 0
+    
+    trace_profiler = PyTorchProfiler(dirpath=".",filename="perf_logs",export_to_chrome=True)
+    
     trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs']+fine_tune_steps,precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
                          accelerator="gpu",devices = 'auto',callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     

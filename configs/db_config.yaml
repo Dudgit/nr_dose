@@ -1,17 +1,21 @@
 run_name: "Pos_loss_added"
 modelname: "DoTA"
+batch_size: 256
 
 dotakwgs:
   use_fourier_embedding: True
+  in_channels: 3
 
 losskwgs:
+  allMAE_weight: 1.
+  masked_factor: 5.0
+  iid_curve_weight: 0.001
   use_high_dose_mask: False
+  bragg_peak_weight: 25.0
+
 
 train:
-  fine_tune: True
-  lr: 2.8e-5
+  num_epochs: 150
+  lr: 2.8e-4
   adversarial:
-    use: True
-    useRamping: False
-    adv_weight: 0.1
-    d_update_freq: 5
+    use: False
