@@ -621,7 +621,6 @@ class Level1LossFunction(nn.Module):
         super().__init__()
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.bragg_peak_loss = BraggPeakPositionLoss()
-        #self.IID_curve_loss = SimpleIDDLoss()
         self.allMAE = torch.nn.L1Loss()
         if use_high_dose_mask:
             self.beam_masked_mae_loss = SimpleMaskedMAE(threshold_pct=high_dose_threshold)
@@ -632,9 +631,8 @@ class Level1LossFunction(nn.Module):
         self.use_high_dose_mask = use_high_dose_mask
         self.bragg_peak_weight = bragg_peak_weight
     
-    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None, fine_tune = False):
+    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None, use_bragg_peak_loss=True):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
-        bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
         #idd_curve_loss_value = #self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
         if ray_source is not None and ray_target is not None:
@@ -645,10 +643,10 @@ class Level1LossFunction(nn.Module):
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_mae * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
-        eff_bragg = bragg_peak_loss * self.bragg_peak_weight  # You can adjust the weight for Bragg Peak Loss if needed
-        total_loss = eff_masked  + eff_all  #+ total_variation + eff_idd
-        if fine_tune:
-            total_loss = total_loss + eff_bragg
+        total_loss = eff_masked  + eff_all  + eff_idd
+
+       
+
         if self.use_high_dose_mask:
             high_beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
             eff_high_masked = high_beam_masked_mae * self.high_dose_weight
@@ -658,7 +656,6 @@ class Level1LossFunction(nn.Module):
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_mae,
             "allMAE": allMAE,
-            "bragg_peak_loss": bragg_peak_loss,
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,
@@ -666,6 +663,12 @@ class Level1LossFunction(nn.Module):
             "total_loss": total_loss
         }
 
+        if use_bragg_peak_loss:
+            bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
+            eff_bragg = bragg_peak_loss * self.bragg_peak_weight  # You can adjust the weight for Bragg Peak Loss if needed
+            total_loss = total_loss + eff_bragg
+            lossDict["bragg_peak_loss"] = bragg_peak_loss
+            lossDict["effective_bragg_peak_loss"] = eff_bragg
         if self.use_high_dose_mask:
             lossDict["high_beam_masked_mae"] = high_beam_masked_mae
             lossDict["effective_high_beam_masked_mae"] = eff_high_masked
