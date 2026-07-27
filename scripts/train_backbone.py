@@ -20,10 +20,10 @@ class DoseTrainer(pl.LightningModule):
         x = batch['ct']
         y = batch['gt_dose']
         prior = batch['geometric_prior']
+        prior_extra = batch['field']
         ray_source = batch['ray_source']
         ray_target = batch['ray_target']
-                                        # BxCxHxWxD -> Bx(C+1)xHxWxD
-        x = torch.cat([x, prior], dim=1)# 64x1x128x128x32 -> 64x2x128x128x32
+        x = torch.cat([x, prior, prior_extra], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
         condition = batch['condition']
         y_hat = self(x, condition)
         is_finetune = self.current_epoch > 100

@@ -19,7 +19,7 @@ atlasz:
 
     
   dotakwgs:
-    in_channels: 2
+    in_channels: 3
     out_channels: 1
     channels: [32, 64, 128, 256]
     num_heads: 8

@@ -1,28 +1,18 @@
-# What to check
+# Prior
+- Test if full length prior is better or the original one.
 
-## Loss functions
-- Optimal loss weights.
-- Additional losses to implement?
-- Level 2 losses.
+# Optimal energy encoding
+ - Fourier encoding.
+ - Gaussian field encoding.
 
-## Check multiple model architectures.
-- DOTA
-- UNET VANILLA
-- UNET ATTENTION
-- GAN-like training.
-- Anything Else to implement.
-- BraggNet (Bence)
+# Additinal regulazation
+- calculate start and endpoint of dosage.
+- Latent predictior maybe?
 
-## Optimal energy encoding
- - Gaussian inverse energy encoding?
- - Linear projection (current).
-
-## Run evaluation
+# Run evaluation
 - How fast is the evaluation?
 - Which compose should we get rid of? -> maybe just for final submission (if we don't touch pixdim).
 
-## Data resolution
-- Higher resolution can help, or can fit?
 
 
 
