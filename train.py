@@ -14,7 +14,7 @@ from pytorch_lightning.plugins.environments import LightningEnvironment
 
 #* Own scripts
 from scripts.data_loader import get_loaders
-from scripts.callbacks import DoseLevel1MetricsCallback, Matshow3DVisualizerCallback
+from scripts.callbacks import DoseLevel1MetricsCallback, Matshow3DVisualizerCallback, BraggPeakDistanceCallback
 from scripts.metrics import Level1LossFunction
 from scripts.train_backbone import DoseTrainer, DoseGANTrainer
 
@@ -86,7 +86,8 @@ def create_callbacks(cfg):
     last_callback = ModelCheckpoint(dirpath=os.path.join("checkpoints", cfg['run_name']),filename='last',save_last=True)
     doe_level1_callback = DoseLevel1MetricsCallback()
     matshow_callback = Matshow3DVisualizerCallback(num_samples=1)
-    return [last_callback, doe_level1_callback, matshow_callback]
+    posCallback = BraggPeakDistanceCallback()
+    return [last_callback, doe_level1_callback, matshow_callback, posCallback]
 
 def train_dota():
     cfg = create_config()
@@ -103,7 +104,7 @@ def train_dota():
     strategy = "ddp" if not cfg['train']['adversarial']['use'] else "ddp_find_unused_parameters_true" 
     fine_tune_steps = 50 if cfg['train']["fine_tune"] else 0
     trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs']+fine_tune_steps,precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
-                         accelerator="gpu",devices=4,callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
+                         accelerator="gpu",devices = 'auto',callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0)
     
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")
     if os.path.exists(last_ckpt_path):

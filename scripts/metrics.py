@@ -617,7 +617,7 @@ class BraggPeakPositionLoss(nn.Module):
         return position_loss
 
 class Level1LossFunction(nn.Module):
-    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, use_high_dose_mask=False, high_dose_threshold=0.8, high_dose_weight=1.0,bragg_peak_weight=1.0):
+    def __init__(self,masked_factor=1.0, iid_curve_weight=0.001, allMAE_weight=1.0, use_high_dose_mask=False, high_dose_threshold=0.8, high_dose_weight=1.0,bragg_peak_weight=50.0):
         super().__init__()
         self.beam_masked_mae_loss = SimpleMaskedMAE()
         self.bragg_peak_loss = BraggPeakPositionLoss()
@@ -632,7 +632,7 @@ class Level1LossFunction(nn.Module):
         self.use_high_dose_mask = use_high_dose_mask
         self.bragg_peak_weight = bragg_peak_weight
     
-    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None):
+    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None, fine_tune = False):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
         bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
         #idd_curve_loss_value = #self.IID_curve_loss(pred_dose, gt_dose)
@@ -645,8 +645,10 @@ class Level1LossFunction(nn.Module):
         eff_masked = beam_masked_mae * self.masked_factor
         eff_idd = idd_mae * self.iid_curve_weight
         eff_all = allMAE * self.allMAE_weight
-        eff_bragg = bragg_peak_loss * 1.0  # You can adjust the weight for Bragg Peak Loss if needed
+        eff_bragg = bragg_peak_loss * self.bragg_peak_weight  # You can adjust the weight for Bragg Peak Loss if needed
         total_loss = eff_masked  + eff_all  #+ total_variation + eff_idd
+        if fine_tune:
+            total_loss = total_loss + eff_bragg
         if self.use_high_dose_mask:
             high_beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
             eff_high_masked = high_beam_masked_mae * self.high_dose_weight
@@ -656,9 +658,11 @@ class Level1LossFunction(nn.Module):
             "masked_mae": beam_masked_mae,
             "idd_curve_loss_value": idd_mae,
             "allMAE": allMAE,
+            "bragg_peak_loss": bragg_peak_loss,
             "effective_beam_masked_mae": eff_masked,
             "effective_idd_curve_loss": eff_idd,
             "effective_allMAE": eff_all,
+            'effective_bragg_peak_loss': eff_bragg,
             "total_loss": total_loss
         }
 

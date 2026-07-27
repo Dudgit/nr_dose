@@ -4,8 +4,7 @@ from omegaconf import OmegaConf
 
 if __name__ == "__main__":
     cfg = OmegaConf.load(f"configs/default_config.yaml")
-    cfg = cfg['atlasz']
-    cfg['batch_size'] = 64
-    train_loader, val_loader = get_loaders(cfg = cfg, hw = "atlasz")
+    cfg = cfg['komondor']
+    train_loader, val_loader = get_loaders(cfg = cfg, hw = "komondor")
     for batch in tqdm.tqdm(train_loader):
         continue

@@ -72,7 +72,84 @@ class Matshow3DVisualizerCallback(pl.Callback):
             plt.close(fig_prior)
 
 
+class BraggPeakDistanceCallback(pl.Callback):
+    def __init__(self, spacing=(4.0, 4.0, 3.0)):
+        super().__init__()
+        # Store the physical voxel dimensions (X, Y, Z) in mm
+        self.spacing = torch.tensor(spacing)
+        self.train_distance = 0.0
+        self.train_samples = 0
+        self.val_distance = 0.0
+        self.val_samples = 0
 
+    def _calculate_batch_distance(self, y_hat, y, device):
+        # Ensure the spacing tensor is on the same GPU as the tensors
+        if self.spacing.device != device:
+            self.spacing = self.spacing.to(device)
+            
+        B, _, X, Y, Z = y_hat.shape
+        
+        # Flatten the spatial dimensions to find the absolute max index
+        y_hat_flat = y_hat.view(B, -1)
+        y_flat = y.view(B, -1)
+        
+        idx_pred = torch.argmax(y_hat_flat, dim=1)
+        idx_true = torch.argmax(y_flat, dim=1)
+        
+        # Unravel the 1D indices back into 3D grid coordinates (X, Y, Z)
+        x_pred = idx_pred // (Y * Z)
+        rem_pred = idx_pred % (Y * Z)
+        y_pred = rem_pred // Z
+        z_pred = rem_pred % Z
+        
+        x_true = idx_true // (Y * Z)
+        rem_true = idx_true % (Y * Z)
+        y_true = rem_true // Z
+        z_true = rem_true % Z
+        
+        coords_pred = torch.stack([x_pred, y_pred, z_pred], dim=1).float()
+        coords_true = torch.stack([x_true, y_true, z_true], dim=1).float()
+        
+        # Calculate physical distance in millimeters
+        physical_diff = (coords_pred - coords_true) * self.spacing
+        distances = torch.linalg.norm(physical_diff, dim=1)
+        
+        # Return the sum of distances and the batch size
+        return distances.sum().item(), B
+
+    # ---------------------------------------------------------
+    # TRAINING HOOKS
+    # ---------------------------------------------------------
+    def on_train_epoch_start(self, trainer, pl_module):
+        self.train_distance = 0.0
+        self.train_samples = 0
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        dist_sum, b_size = self._calculate_batch_distance(outputs["pred_dose"], outputs["gt_dose"], pl_module.device)
+        self.train_distance += dist_sum
+        self.train_samples += b_size
+
+    def on_train_epoch_end(self, trainer, pl_module):
+        if self.train_samples > 0:
+            mean_distance_mm = self.train_distance / self.train_samples
+            pl_module.log("train/bragg_peak_error_mm", mean_distance_mm, sync_dist=True)
+
+    # ---------------------------------------------------------
+    # VALIDATION HOOKS
+    # ---------------------------------------------------------
+    def on_validation_epoch_start(self, trainer, pl_module):
+        self.val_distance = 0.0
+        self.val_samples = 0
+
+    def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
+        dist_sum, b_size = self._calculate_batch_distance(outputs["pred_dose"], outputs["gt_dose"], pl_module.device)
+        self.val_distance += dist_sum
+        self.val_samples += b_size
+
+    def on_validation_epoch_end(self, trainer, pl_module):
+        if self.val_samples > 0:
+            mean_distance_mm = self.val_distance / self.val_samples
+            pl_module.log("val/bragg_peak_error_mm", mean_distance_mm, sync_dist=True)
 
 
 class DoseLevel1MetricsCallback(pl.Callback):

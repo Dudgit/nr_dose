@@ -7,8 +7,8 @@ export DATA_DIR="/home/nr_dopg/nr_dose_scratch"
 #export REAL_DATA_DIR=$(readlink -f $DATA_DIR)
 export REAL_SCRATCH=$(readlink -f $DATA_DIR)
 
-echo "Server runs at http://10.150.1.134:18888/?token=flora"
-export SINGULARITYENV_JUPYTER_PORT=18888
+echo "Server runs at http://10.150.1.134:18889/?token=flora"
+export SINGULARITYENV_JUPYTER_PORT=18889
 export SINGULARITYENV_PYTHONPATH=""  # prevent host path injection
 
 singularity exec --nv \

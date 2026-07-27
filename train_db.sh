@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=Dose_train
 #SBATCH --partition=ai
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:8
 #SBATCH --mem=300G 
 #SBATCH --cpus-per-task=4            
-#SBATCH --time=4:00:00
+#SBATCH --time=6:00:00
 #SBATCH --output=logs/vanilla.log
 
 export SINGULARITYENV_WANDB_API_KEY="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"

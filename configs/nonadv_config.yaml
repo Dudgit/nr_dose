@@ -1,4 +1,4 @@
-run_name: "Pos_loss_added"
+run_name: "All_loss_added"
 modelname: "DoTA"
 
 dotakwgs:
@@ -9,9 +9,5 @@ losskwgs:
 
 train:
   fine_tune: True
-  lr: 2.8e-5
   adversarial:
-    use: True
-    useRamping: False
-    adv_weight: 0.1
-    d_update_freq: 5
+    use: False
