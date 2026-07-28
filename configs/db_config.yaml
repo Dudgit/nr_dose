@@ -1,4 +1,4 @@
-run_name: "Pos_loss_added"
+run_name: "PG_prior_only"
 modelname: "DoTA"
 batch_size: 256
 
@@ -17,5 +17,6 @@ losskwgs:
 train:
   num_epochs: 150
   lr: 2.8e-4
+  useEnergyPrior: False
   adversarial:
     use: False

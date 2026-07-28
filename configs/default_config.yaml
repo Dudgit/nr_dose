@@ -48,6 +48,7 @@ atlasz:
     lr: 2.8e-4
     use_warmups: False
     fine_tune: False
+    useEnergyPrior: True
     
     adversarial:
       use: True

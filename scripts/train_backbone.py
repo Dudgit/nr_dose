@@ -6,12 +6,13 @@ import torch.nn as nn
 
 
 class DoseTrainer(pl.LightningModule):
-    def __init__(self,model,loss_function=None,lr = 1e-4,use_warmups=True):
+    def __init__(self,model,loss_function=None,lr = 1e-4,use_warmups=False,useEnergyPrior=True):
         super().__init__()
         self.model = model
         self.lr = lr
         self.use_wamrups = use_warmups
         self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
+        self.useEnergyPrior = useEnergyPrior
     
     def forward(self, x,condition):
         return self.model(x,condition)
@@ -23,11 +24,11 @@ class DoseTrainer(pl.LightningModule):
         prior_extra = batch['field']
         ray_source = batch['ray_source']
         ray_target = batch['ray_target']
-        x = torch.cat([x, prior, prior_extra], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
+        x = torch.cat([x, prior, prior_extra], dim=1) if self.useEnergyPrior else torch.cat([x, prior], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
         condition = batch['condition']
         y_hat = self(x, condition)
         
-        use_bragg_peak_loss = self.current_epoch >= 30
+        use_bragg_peak_loss = self.current_epoch >= 50
         loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss)
 
         loss = loss_dict["total_loss"]
@@ -37,7 +38,8 @@ class DoseTrainer(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch,prefix="train")
         
-        return loss
+        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
+
     
     def validation_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch,prefix="val")
