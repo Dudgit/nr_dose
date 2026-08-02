@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 import os
 from pathlib import Path
 
-from scripts.metaembedder import InjectGaussianBeamPriord, InjectEnergyDepositionFieldd
+from scripts.metaembedder import InjectGaussianBeamPriord, InjectEnergyDepositionFieldd, Ray_Info
 
 from monai.transforms import ScaleIntensityRanged
 
@@ -19,6 +19,11 @@ class PatientIDWrapper(TorchDataset):
         self.monai_dataset = monai_dataset
         self.raw_json_list = raw_json_list
 
+        if hasattr(monai_dataset, "transform"):
+            self.transform = monai_dataset.transform
+        else:
+            self.transform = None
+            
     def __len__(self):
         return len(self.monai_dataset)
 
@@ -43,6 +48,7 @@ class PatientIDWrapper(TorchDataset):
 import numpy as np
 import nibabel as nib
 from monai.transforms import MapTransform
+from monai.data import MetaTensor
 
 class ExtractSlabsAroundZ(MapTransform):
     def __init__(self, keys, source_key="ray_source", slice_radius=15, allow_missing_keys=False):
@@ -61,8 +67,9 @@ class ExtractSlabsAroundZ(MapTransform):
             img = d[key]
             
             # 2. Get the affine matrix from this specific image
-            affine = img.affine.cpu().numpy()
             
+            affine = img.affine.cpu().numpy()
+            d['affine_trans'] = affine
             # 3. Invert the affine to create a "Physical to Voxel" mapping
             inv_affine = np.linalg.inv(affine)
             
@@ -101,14 +108,67 @@ class ExtractSlabsAroundZ(MapTransform):
             d[key] = cropped_img
             
         return d
-    
+
+
+import random
+class RandChannelDropoutd(MapTransform):
+    """
+    Randomly zeroes out entire image channels with a given probability
+    to prevent the model from over-relying on spatial priors.
+    """
+    def __init__(self, keys, prob=0.15, allow_missing_keys=False):
+        super().__init__(keys, allow_missing_keys)
+        self.prob = prob
+
+    def __call__(self, data):
+        d = dict(data)
+        for key in self.keys:
+            if random.random() < self.prob:
+                # Completely black out this prior for the current forward pass
+                d[key] = torch.zeros_like(d[key])
+        return d
 
 from monai.transforms import Lambdad
 from monai.transforms import SelectItemsd
 
+class BackupFinalAffined(MapTransform):
+    def __call__(self, data):
+        d = dict(data)
+        for key in self.keys:
+            img = d[key]
+            # Save the fully updated affine as a standard array
+            if hasattr(img, "affine"):
+                d[f"{key}_affine_trans"] = img.affine.cpu().numpy()
+            elif hasattr(img, "meta") and "affine" in img.meta:
+                d[f"{key}_affine_trans"] = img.meta["affine"].cpu().numpy()
+        return d
+
 
 def scale_dose_by_1000(x):
     return x * 1000.0
+
+
+def get_post_transforms(cfg):
+    dynamic_post_transform_list = []
+    final_keys = ["ct", "gt_dose", "condition"]
+    if cfg['inject_geometric_prior']:
+        dynamic_post_transform_list.append(InjectGaussianBeamPriord(keys=['geometric_prior'], source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras=True, prior_mode=cfg['prior_mode']))
+        final_keys.append("geometric_prior")
+        final_keys.append("ray_source")
+        final_keys.append("ray_target")
+    if cfg['inject_energy_field']:
+        dynamic_post_transform_list.append(InjectEnergyDepositionFieldd(keys=['field'], spacing=cfg['pixdim']))
+        final_keys.append("field")
+    if cfg['drop_priors']:
+        dynamic_post_transform_list.append(RandChannelDropoutd(keys=['geometric_prior', 'field'], prob=0.15))
+    if cfg['ray_info']:
+        dynamic_post_transform_list.append(Ray_Info(keys=['ray_source', 'ray_target']))
+        final_keys.extend(["positions", "ray_z_positions", "ray_start_anchor", "ray_end_offset", "ray_bragg_offset"])
+    
+    dynamic_post_transform_list.append(EnsureTyped(keys=final_keys, track_meta=True, dtype=torch.float32))
+    dynamic_post_transform_list.append(SelectItemsd(keys=final_keys))
+    return dynamic_post_transform_list
+    
 def get_loaders(cfg,hw = "atlasz"):
     train_list = json.load(open(cfg['train_list'], "r"))
     val_list = json.load(open(cfg['val_list'], "r"))
@@ -118,15 +178,16 @@ def get_loaders(cfg,hw = "atlasz"):
     LoadImaged(keys=["ct", "gt_dose"]),
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
     Lambdad(keys=["gt_dose"], func=scale_dose_by_1000),
-    ScaleIntensityRanged(keys=['ct'],a_min=cfg['ct_min'], a_max=cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
+    ScaleIntensityRanged(keys=['ct'], a_min=cfg['ct_min'], a_max=cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
     ExtractSlabsAroundZ(keys=["ct", "gt_dose"], source_key="ray_source", slice_radius=15),
-    Spacingd(keys=["ct", "gt_dose"], pixdim=cfg['pixdim'], mode='nearest'), # pixdim = [4.0, 4.0, 3.0]
-    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']), #roi_size = [128, 128, 32] 
-    InjectGaussianBeamPriord(keys =['ct'],source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras = True,prior_mode = "full_line"),
-    InjectEnergyDepositionFieldd(keys =['field'],spacing=cfg['pixdim']),
-    EnsureTyped(keys=["ct", "gt_dose", "condition", "geometric_prior","ray_source", "ray_target","field"],track_meta=False,dtype=torch.float32),
-    SelectItemsd(keys=["ct", "gt_dose", "condition", "geometric_prior","ray_source", "ray_target","field"])
-    ])
+    Spacingd(keys=["ct", "gt_dose"], pixdim=cfg['pixdim'], mode='trilinear'),
+    ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']),
+    EnsureTyped(keys=["ct", "gt_dose","affine_trans"], track_meta=True)])
+
+
+
+
+    dynamic_post_transforms = Compose(get_post_transforms(cfg))
     
     if cfg['dataset_type'] == "persistent":
         cache_dir = cfg['cache_dir']
@@ -135,8 +196,12 @@ def get_loaders(cfg,hw = "atlasz"):
             cache_dir = os.path.join(scratch_dir,"cache")
             print(f"Using cache directory: {cache_dir}")
         os.makedirs(cache_dir, exist_ok=True)
-        train_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
-        val_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)
+
+        train_cached_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
+        val_cached_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)
+        train_ds = Dataset(data=train_cached_ds, transform=dynamic_post_transforms)
+        val_ds = Dataset(data=val_cached_ds, transform=dynamic_post_transforms)
+
     if cfg["dataset_type"] == "dataset":
         train_ds =  Dataset(data=train_list, transform=train_transforms)
         val_ds =  Dataset(data=val_list, transform=train_transforms)

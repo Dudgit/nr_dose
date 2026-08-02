@@ -47,7 +47,230 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         return nn.functional.softplus(self.out(self.decoder(x)))
+
+class FiLMLayer(nn.Module):
+    def __init__(self, condition_dim, num_channels):
+        super().__init__()
+        # Project the 1D condition vector into 2 values (gamma, beta) for every channel
+        self.proj = nn.Linear(condition_dim, num_channels * 2)
+        
+        # Initialize the projection so it starts as an identity mapping (safe starting point)
+        nn.init.zeros_(self.proj.weight)
+        nn.init.zeros_(self.proj.bias)
+
+    def forward(self, x, condition):
+        # x shape: [Batch, Channels, Z, Y, X]
+        # condition shape: [Batch, condition_dim]
+        
+        # 1. Get gamma and beta
+        params = self.proj(condition) # Shape: [Batch, Channels * 2]
+        
+        # 2. Reshape for 3D broadcasting
+        params = params.view(params.size(0), params.size(1), 1, 1, 1)
+        gamma, beta = params.chunk(2, dim=1)
+        
+        # 3. Apply modulation 
+        # (1.0 + gamma) is a standard stabilizing trick so initialization equals identity
+        return x * (1.0 + gamma) + beta
+
+class FiLMDecoderBlock(nn.Module):
+    def __init__(self, cin, cout, condition_dim):
+        super().__init__()
+        # 1. Expand spatial dimensions
+        self.upsample = nn.ConvTranspose3d(cin, cout, kernel_size=2, stride=2)
+        
+        # 2. Refine and inject condition
+        self.conv1 = nn.Conv3d(cout, cout, kernel_size=3, padding=1)
+        self.norm1 = nn.InstanceNorm3d(cout, affine=False) # Affine=False because FiLM handles scaling
+        self.film1 = FiLMLayer(condition_dim, cout)
+        self.act1 = nn.GELU()
+        
+        # 3. Optional extra capacity
+        self.conv2 = nn.Conv3d(cout, cout, kernel_size=3, padding=1)
+        self.norm2 = nn.InstanceNorm3d(cout, affine=False)
+        self.film2 = FiLMLayer(condition_dim, cout)
+        self.act2 = nn.GELU()
+
+    def forward(self, x, condition):
+        x = self.upsample(x)
+        
+        x = self.conv1(x)
+        x = self.norm1(x)
+        x = self.film1(x, condition) # Latent skip connection 1
+        x = self.act1(x)
+        
+        x = self.conv2(x)
+        x = self.norm2(x)
+        x = self.film2(x, condition) # Latent skip connection 2
+        x = self.act2(x)
+        
+        return x
+
+
+class Decoder_v2_MultiFiLM(nn.Module):
+    def __init__(self, condition_dim, channels=(256, 128, 64, 32), out_channels=1):
+        super().__init__()
+
+        self.blocks = nn.ModuleList()
+        
+        # 3 Upsampling steps: 256->128, 128->64, 64->32
+        for cin, cout in zip(channels[:-1], channels[1:]):
+            self.blocks.append(FiLMDecoderBlock(cin, cout, condition_dim))
+
+        # 4th step: 32->32
+        last_channel = channels[-1]
+        self.blocks.append(FiLMDecoderBlock(last_channel, last_channel, condition_dim))
+
+        self.out = nn.Conv3d(last_channel, out_channels, kernel_size=1)
+
+    def forward(self, x, condition):
+        # Pass the condition vector directly into every spatial scale
+        for block in self.blocks:
+            x = block(x, condition)
+            
+        return nn.functional.softplus(self.out(x))
+
+
+class Decoder_v2(nn.Module):
+    def __init__(self, channels=(256, 128, 64, 32), out_channels=1):
+        super().__init__()
+
+        layers = []
+
+        # This upsamples 3 times: 256->128, 128->64, 64->32
+        for cin, cout in zip(channels[:-1], channels[1:]):
+            layers.extend([
+                # 1. Expand spatial dimensions
+                nn.ConvTranspose3d(cin, cout, kernel_size=2, stride=2),
+                # 2. Refine and blend features (The missing piece!)
+                nn.Conv3d(cout, cout, kernel_size=3, padding=1),
+                nn.InstanceNorm3d(cout),
+                nn.GELU(),
+                # Optional: A second Conv3d here is very common in U-Nets for extra capacity
+                nn.Conv3d(cout, cout, kernel_size=3, padding=1),
+                nn.InstanceNorm3d(cout),
+                nn.GELU(),
+            ])
+
+        # ADD THE 4TH UPSAMPLE STEP HERE: 32->32
+        last_channel = channels[-1]
+        layers.extend([
+            nn.ConvTranspose3d(last_channel, last_channel, kernel_size=2, stride=2),
+            nn.Conv3d(last_channel, last_channel, kernel_size=3, padding=1),
+            nn.InstanceNorm3d(last_channel),
+            nn.GELU(),
+        ])
+
+        self.decoder = nn.Sequential(*layers)
+        self.out = nn.Conv3d(last_channel, out_channels, kernel_size=1)
+
+    def forward(self, x):
+        return nn.functional.softplus(self.out(self.decoder(x)))
     
+
+import torch
+import torch.nn as nn
+
+class LatentRegressor(nn.Module):
+    def __init__(self, in_channels, hidden_dim=256, dropout_prob=0.2):
+        """
+        in_channels: The number of feature channels coming out of your Latent Transformer/Bottleneck.
+        hidden_dim: The number of neurons in the hidden layers.
+        """
+        super().__init__()
+        
+        # 1. Spatial Pooling
+        # This takes [Batch, Channels, D, H, W] and averages the spatial dimensions
+        # down to [Batch, Channels, 1, 1, 1]. It makes the MLP invariant to the exact 
+        # spatial size of your bottleneck.
+        self.pool = nn.AdaptiveAvgPool3d(1)
+        
+        # 2. MLP Regression Head
+        self.mlp = nn.Sequential(
+            nn.Linear(in_channels, hidden_dim),
+            nn.LayerNorm(hidden_dim),  # LayerNorm stabilizes regression targets brilliantly
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(dropout_prob),
+            
+            nn.Linear(hidden_dim, hidden_dim // 2),
+            nn.LayerNorm(hidden_dim // 2),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(dropout_prob),
+            
+            # Output layer: exactly 9 values
+            # (3 for anchor, 3 for end_offset, 3 for bragg_offset)
+            nn.Linear(hidden_dim // 2, 9)
+        )
+
+    def forward(self, latent_features):
+        """
+        latent_features: Tensor of shape [Batch, Channels, D, H, W]
+        Returns: Tensor of shape [Batch, 9]
+        """
+        # Pool spatial dimensions
+        x = self.pool(latent_features)
+        
+        # Flatten from [Batch, Channels, 1, 1, 1] to [Batch, Channels]
+        x = torch.flatten(x, start_dim=1)
+        
+        # Predict the 9 physical parameters
+        predictions = self.mlp(x)
+        
+        return predictions
+
+
+import torch
+import torch.nn as nn
+
+class FiLM3D(nn.Module):
+    def __init__(self, condition_dim=9, latent_channels=256):
+        """
+        condition_dim: Number of predicted coordinates (e.g., 9 for start, end, max)
+        latent_channels: The number of feature channels in your 3D bottleneck
+        """
+        super().__init__()
+        self.latent_channels = latent_channels
+        
+        # A small MLP to convert the 9 coordinates into scaling (gamma) and shifting (beta) factors
+        # It outputs 2 * latent_channels (one gamma and one beta for every channel)
+        self.mlp = nn.Sequential(
+            nn.Linear(condition_dim, 64),
+            nn.LeakyReLU(0.2),
+            nn.Linear(64, 128),
+            nn.LeakyReLU(0.2),
+            nn.Linear(128, latent_channels * 2)
+        )
+        
+        # Initialize the final layer to output zeros so we start with an identity transform
+        nn.init.zeros_(self.mlp[-1].weight)
+        nn.init.zeros_(self.mlp[-1].bias)
+
+    def forward(self, latent_features, predicted_coords):
+        """
+        latent_features: Tensor of shape [Batch, Channels, D, H, W]
+        predicted_coords: Tensor of shape [Batch, condition_dim]
+        """
+        batch_size = latent_features.size(0)
+        
+        # Pass coordinates through the MLP
+        film_params = self.mlp(predicted_coords)
+        
+        # Split the output into gamma (scale) and beta (shift)
+        # Each will have shape [Batch, Channels]
+        delta_gamma, beta = torch.split(film_params, self.latent_channels, dim=1)
+        
+        # Add 1 to gamma so the default scale is 1 (identity)
+        gamma = 1.0 + delta_gamma
+        
+        # Reshape to [Batch, Channels, 1, 1, 1] so they broadcast over the 3D spatial dimensions
+        gamma = gamma.view(batch_size, self.latent_channels, 1, 1, 1)
+        beta = beta.view(batch_size, self.latent_channels, 1, 1, 1)
+        
+        # Apply the modulation
+        conditioned_features = (latent_features * gamma) + beta
+        
+        return conditioned_features
+
 
 class FourierEmbedding(nn.Module):
 

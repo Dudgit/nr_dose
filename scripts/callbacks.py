@@ -27,6 +27,8 @@ class Matshow3DVisualizerCallback(pl.Callback):
         pred_dose = outputs["pred_dose"]
         gt_dose = outputs["gt_dose"]
         geom_prior = batch["geometric_prior"]
+        if pl_module.useEnergyPrior:
+            field = batch["field"]
 
         # Loop through the requested number of samples in the batch
         for i in range(min(self.num_samples, pred_dose.shape[0])):
@@ -37,6 +39,8 @@ class Matshow3DVisualizerCallback(pl.Callback):
             p_vol = pred_dose[randIdx].squeeze().detach().cpu().float().numpy()
             g_vol = gt_dose[randIdx].squeeze().detach().cpu().float().numpy()
             prior_vol = geom_prior[randIdx].squeeze().detach().cpu().float().numpy()
+            if pl_module.useEnergyPrior:
+                prior_energy_vol = field[randIdx].squeeze().detach().cpu().float().numpy()
             
             # Calculate the Error Map (Absolute Difference)
             err_vol = np.abs(p_vol - g_vol)
@@ -54,23 +58,117 @@ class Matshow3DVisualizerCallback(pl.Callback):
             fig_prior = plt.figure(figsize=(12, 12))
             matshow3d(prior_vol, fig=fig_prior, title=f"Geometric Prior", cmap="viridis",frame_dim=-1)
 
+            if pl_module.useEnergyPrior:
+                fig_prior_energy = plt.figure(figsize=(12, 12))
+                matshow3d(prior_energy_vol, fig=fig_prior_energy, title=f"Energy Prior", cmap="viridis",frame_dim=-1)
+
             # Upload the matplotlib figures directly to Weights & Biases
-            trainer.logger.experiment.log({
-                f"val/visuals/Sample_{i}": [
-                    wandb.Image(fig_gt, caption="Ground Truth"),
-                    wandb.Image(fig_pred, caption="Prediction"),
-                    wandb.Image(fig_err, caption="Error Map"),
-                    wandb.Image(fig_prior, caption="Geometric Prior")
-                ],
-                "global_step": trainer.global_step
-            })
+            if pl_module.useEnergyPrior:
+                trainer.logger.experiment.log({
+                    f"val/visuals/Sample_{i}": [
+                        wandb.Image(fig_gt, caption="Ground Truth"),
+                        wandb.Image(fig_pred, caption="Prediction"),
+                        wandb.Image(fig_err, caption="Error Map"),
+                        wandb.Image(fig_prior, caption="Geometric Prior"),
+                        wandb.Image(fig_prior_energy, caption="Energy Prior"),
+                    ],
+                    "global_step": trainer.global_step
+                })
+            else:
+                trainer.logger.experiment.log({
+                    f"val/visuals/Sample_{i}": [
+                        wandb.Image(fig_gt, caption="Ground Truth"),
+                        wandb.Image(fig_pred, caption="Prediction"),
+                        wandb.Image(fig_err, caption="Error Map"),
+                        wandb.Image(fig_prior, caption="Geometric Prior"),
+                    ],
+                    "global_step": trainer.global_step
+                })
 
             # CRITICAL: Close the figures to prevent a massive RAM memory leak!
             plt.close(fig_gt)
             plt.close(fig_pred)
             plt.close(fig_err)
             plt.close(fig_prior)
+            if pl_module.useEnergyPrior:
+                plt.close(fig_prior_energy)
 
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
+            # 1. SPEED SAFEGUARD: Only run this on the very first batch of the validation epoch
+            if batch_idx != 0:
+                return
+                
+            # 2. DDP SAFEGUARD: Only the main GPU (Rank 0) is allowed to plot and talk to WandB
+            if not trainer.is_global_zero:
+                return
+    
+            # Extract tensors from the dictionary you return in validation_step
+            pred_dose = outputs["pred_dose"]
+            gt_dose = outputs["gt_dose"]
+            geom_prior = batch["geometric_prior"]
+            if pl_module.useEnergyPrior:
+                field = batch["field"]
+    
+            # Loop through the requested number of samples in the batch
+            for i in range(min(self.num_samples, pred_dose.shape[0])):
+                
+                # Detach, move to CPU, and convert to numpy. 
+                # Squeeze removes the channel dimension (1, 256, 256, 32) -> (256, 256, 32)
+                randIdx = np.random.randint(0, pred_dose.shape[0])
+                p_vol = pred_dose[randIdx].squeeze().detach().cpu().float().numpy()
+                g_vol = gt_dose[randIdx].squeeze().detach().cpu().float().numpy()
+                prior_vol = geom_prior[randIdx].squeeze().detach().cpu().float().numpy()
+                if pl_module.useEnergyPrior:
+                    prior_energy_vol = field[randIdx].squeeze().detach().cpu().float().numpy()
+                
+                # Calculate the Error Map (Absolute Difference)
+                err_vol = np.abs(p_vol - g_vol)
+    
+                # We use a viridis colormap for dose, and inferno for the error map to make it pop
+                fig_gt = plt.figure(figsize=(12, 12))
+                matshow3d(g_vol, fig=fig_gt, title=f"Ground Truth Dose", cmap="viridis",frame_dim=-1)
+                
+                fig_pred = plt.figure(figsize=(12, 12))
+                matshow3d(p_vol, fig=fig_pred, title=f"Predicted Dose", cmap="viridis",frame_dim=-1)
+    
+                fig_err = plt.figure(figsize=(12, 12))
+                matshow3d(err_vol, fig=fig_err, title=f"Absolute Error Map", cmap="inferno",frame_dim=-1)
+                
+    
+                if pl_module.useEnergyPrior:
+                    fig_prior_energy = plt.figure(figsize=(12, 12))
+                    matshow3d(prior_energy_vol, fig=fig_prior_energy, title=f"Energy Prior", cmap="viridis",frame_dim=-1)
+    
+                # Upload the matplotlib figures directly to Weights & Biases
+                if pl_module.useEnergyPrior:
+                    trainer.logger.experiment.log({
+                        f"val/visuals/Sample_{i}": [
+                            wandb.Image(fig_gt, caption="Train/Ground Truth"),
+                            wandb.Image(fig_pred, caption="Train/Prediction"),
+                            wandb.Image(fig_err, caption="Train/Error Map"),
+                            wandb.Image(fig_prior_energy, caption="Train/Energy Prior"),
+                        ],
+                        "global_step": trainer.global_step
+                    })
+                else:
+                    trainer.logger.experiment.log({
+                        f"val/visuals/Sample_{i}": [
+                            wandb.Image(fig_gt, caption="Ground Truth"),
+                            wandb.Image(fig_pred, caption="Prediction"),
+                            wandb.Image(fig_err, caption="Error Map"),
+                            wandb.Image(fig_prior, caption="Geometric Prior"),
+                        ],
+                        "global_step": trainer.global_step
+                    })
+    
+                # CRITICAL: Close the figures to prevent a massive RAM memory leak!
+                plt.close(fig_gt)
+                plt.close(fig_pred)
+                plt.close(fig_err)
+                plt.close(fig_prior)
+                if pl_module.useEnergyPrior:
+                    plt.close(fig_prior_energy)
 
 class BraggPeakDistanceCallback(pl.Callback):
     def __init__(self, spacing=(4.0, 4.0, 3.0)):

@@ -230,7 +230,8 @@ class InjectGaussianBeamPriord(MapTransform):
 
         # 3. Physical -> voxel coordinates
         ct_tensor = d[self.ref_key]
-        affine = ct_tensor.affine.cpu().numpy()
+        affine = d['affine_trans']
+
         inv_affine = np.linalg.inv(affine)
 
         vox_source = nib.affines.apply_affine(inv_affine, phys_source)
@@ -317,5 +318,324 @@ class InjectGaussianBeamPriord(MapTransform):
             gaussian_prior[(t_raw < 0.0) | (t_raw > 1.0)] = 0.0
 
         d["geometric_prior"] = gaussian_prior.unsqueeze(0)
+
+        return d
+
+
+import numpy as np
+import torch
+from monai.transforms import MapTransform
+
+
+class Ray_Info(MapTransform):
+    def __init__(
+        self,
+        keys,
+        dose_key="gt_dose",
+        output_key="positions",
+        z_output_key="ray_z_positions",
+        threshold_rel=0.03,
+        q_low=1.0,
+        q_high=99.0,
+        min_voxels_per_slice=3,
+        normalize_by_shape=True,
+        allow_missing_keys=False,
+    ):
+        super().__init__(keys, allow_missing_keys)
+
+        self.dose_key = dose_key
+        self.output_key = output_key
+        self.z_output_key = z_output_key
+
+        self.threshold_rel = threshold_rel
+        self.q_low = q_low
+        self.q_high = q_high
+        self.min_voxels_per_slice = min_voxels_per_slice
+        self.normalize_by_shape = normalize_by_shape
+
+    def _to_numpy_3d(self, dose):
+        if torch.is_tensor(dose):
+            arr = dose.detach().cpu().numpy()
+        else:
+            arr = np.asarray(dose)
+
+        arr = np.squeeze(arr).astype(np.float32)
+
+        if arr.ndim != 3:
+            raise ValueError(f"Expected 3D dose array after squeeze, got shape {arr.shape}")
+
+        return arr
+
+    def _find_beam_start_end(self, dose):
+        arr = self._to_numpy_3d(dose)
+
+        max_val = float(arr.max())
+
+        if max_val <= 0:
+            raise ValueError("Dose array is fully zero.")
+
+        mask = arr > self.threshold_rel * max_val
+
+        if mask.sum() < 5:
+            raise ValueError(
+                f"Too few voxels above threshold. "
+                f"mask.sum()={mask.sum()}, threshold_rel={self.threshold_rel}."
+            )
+
+        coords = np.argwhere(mask).astype(np.float32)
+
+        centroid = coords.mean(axis=0)
+        Xc = coords - centroid
+
+        cov = Xc.T @ Xc / max(len(coords) - 1, 1)
+
+        eigvals, eigvecs = np.linalg.eigh(cov)
+        direction = eigvecs[:, np.argmax(eigvals)]
+        direction = direction / (np.linalg.norm(direction) + 1e-8)
+
+        projections = Xc @ direction
+
+        p_low = np.percentile(projections, self.q_low)
+        p_high = np.percentile(projections, self.q_high)
+
+        point_low = centroid + p_low * direction
+        point_high = centroid + p_high * direction
+
+        def clip_round(p):
+            idx = np.round(p).astype(np.int64)
+            idx = np.clip(idx, [0, 0, 0], np.array(arr.shape) - 1)
+            return idx
+
+        idx_low = clip_round(point_low)
+        idx_high = clip_round(point_high)
+
+        bragg_index = np.array(
+            np.unravel_index(np.argmax(arr), arr.shape),
+            dtype=np.int64,
+        )
+
+        d_low_to_bragg = np.linalg.norm(idx_low - bragg_index)
+        d_high_to_bragg = np.linalg.norm(idx_high - bragg_index)
+
+        # A Bragg/max ponthoz közelebb eső vég legyen az end.
+        if d_low_to_bragg < d_high_to_bragg:
+            start_index = idx_high
+            end_index = idx_low
+        else:
+            start_index = idx_low
+            end_index = idx_high
+
+        direction = end_index.astype(np.float32) - start_index.astype(np.float32)
+        direction = direction / (np.linalg.norm(direction) + 1e-8)
+
+        return {
+            "start_index": start_index.astype(np.float32),
+            "end_index": end_index.astype(np.float32),
+            "bragg_index": bragg_index.astype(np.float32),
+            "direction": direction.astype(np.float32),
+            "max_dose": max_val,
+            "n_mask_voxels": int(mask.sum()),
+            "shape": np.array(arr.shape, dtype=np.float32),
+        }
+
+    def _find_start_end_bragg_for_each_z(self, dose):
+        """
+        Minden z-slice-ra kiszámolja:
+            start, end, bragg
+
+        Output shape:
+            (Z, 3, 3)
+
+        Jelentés:
+            out[z, 0, :] = start [x, y, z]
+            out[z, 1, :] = end   [x, y, z]
+            out[z, 2, :] = bragg [x, y, z]
+
+        Ha egy slice-on nincs elég dózis, akkor fallback:
+            az egész 3D dózis alapján számolt globális start/end/bragg
+            x,y koordinátáit használja, de z-t az aktuális slice-ra állítja.
+
+        Így sehol sem lesz nullás slice.
+        """
+
+        arr = self._to_numpy_3d(dose)
+
+        X, Y, Z = arr.shape
+        max_val = float(arr.max())
+
+        if max_val <= 0:
+            raise ValueError("Dose array is fully zero.")
+
+        threshold = self.threshold_rel * max_val
+
+        # Globális fallback arra az esetre, ha egy slice-on kevés voxel lenne.
+        global_result = self._find_beam_start_end(dose)
+        global_start = global_result["start_index"]
+        global_end = global_result["end_index"]
+        global_bragg = global_result["bragg_index"]
+
+        ray_z_positions = np.zeros((Z, 3, 3), dtype=np.float32)
+
+        for z in range(Z):
+            sl = arr[:, :, z]
+            mask = sl > threshold
+
+            # -----------------------------
+            # Fallback, ha kevés pont van
+            # -----------------------------
+            if mask.sum() < self.min_voxels_per_slice:
+                ray_z_positions[z, 0, :] = np.array(
+                    [global_start[0], global_start[1], float(z)],
+                    dtype=np.float32,
+                )
+                ray_z_positions[z, 1, :] = np.array(
+                    [global_end[0], global_end[1], float(z)],
+                    dtype=np.float32,
+                )
+                ray_z_positions[z, 2, :] = np.array(
+                    [global_bragg[0], global_bragg[1], float(z)],
+                    dtype=np.float32,
+                )
+                continue
+
+            coords_xy = np.argwhere(mask).astype(np.float32)  # shape: (N, 2), [x, y]
+
+            if len(coords_xy) < 2:
+                ray_z_positions[z, 0, :] = np.array(
+                    [global_start[0], global_start[1], float(z)],
+                    dtype=np.float32,
+                )
+                ray_z_positions[z, 1, :] = np.array(
+                    [global_end[0], global_end[1], float(z)],
+                    dtype=np.float32,
+                )
+                ray_z_positions[z, 2, :] = np.array(
+                    [global_bragg[0], global_bragg[1], float(z)],
+                    dtype=np.float32,
+                )
+                continue
+
+            # -----------------------------
+            # 2D PCA az adott slice-on
+            # -----------------------------
+            centroid = coords_xy.mean(axis=0)
+            Xc = coords_xy - centroid
+
+            cov = Xc.T @ Xc / max(len(coords_xy) - 1, 1)
+
+            eigvals, eigvecs = np.linalg.eigh(cov)
+            direction_2d = eigvecs[:, np.argmax(eigvals)]
+            direction_2d = direction_2d / (np.linalg.norm(direction_2d) + 1e-8)
+
+            projections = Xc @ direction_2d
+
+            p_low = np.percentile(projections, self.q_low)
+            p_high = np.percentile(projections, self.q_high)
+
+            point_low = centroid + p_low * direction_2d
+            point_high = centroid + p_high * direction_2d
+
+            def clip_round_2d(p):
+                idx = np.round(p).astype(np.int64)
+                idx = np.clip(idx, [0, 0], np.array([X, Y]) - 1)
+                return idx.astype(np.float32)
+
+            idx_low = clip_round_2d(point_low)
+            idx_high = clip_round_2d(point_high)
+
+            # Bragg/max az adott slice-on
+            bragg_xy = np.array(
+                np.unravel_index(np.argmax(sl), sl.shape),
+                dtype=np.float32,
+            )
+
+            # A Bragg/max ponthoz közelebb eső vég legyen az end
+            d_low_to_bragg = np.linalg.norm(idx_low - bragg_xy)
+            d_high_to_bragg = np.linalg.norm(idx_high - bragg_xy)
+
+            if d_low_to_bragg < d_high_to_bragg:
+                start_xy = idx_high
+                end_xy = idx_low
+            else:
+                start_xy = idx_low
+                end_xy = idx_high
+
+            start = np.array(
+                [start_xy[0], start_xy[1], float(z)],
+                dtype=np.float32,
+            )
+            end = np.array(
+                [end_xy[0], end_xy[1], float(z)],
+                dtype=np.float32,
+            )
+            bragg = np.array(
+                [bragg_xy[0], bragg_xy[1], float(z)],
+                dtype=np.float32,
+            )
+
+            ray_z_positions[z, 0, :] = start
+            ray_z_positions[z, 1, :] = end
+            ray_z_positions[z, 2, :] = bragg
+
+        return ray_z_positions
+
+    def __call__(self, data):
+        d = dict(data)
+
+        dose = d[self.dose_key]
+        arr = self._to_numpy_3d(dose)
+        shape = np.array(arr.shape, dtype=np.float32)
+
+        result = self._find_beam_start_end(dose)
+
+        start = result["start_index"]
+        end = result["end_index"]
+        bragg = result["bragg_index"]
+        direction = result["direction"]
+
+        ray_z_positions = self._find_start_end_bragg_for_each_z(dose)
+
+
+        if self.normalize_by_shape:
+            denom = np.maximum(shape - 1.0, 1.0)
+
+            start_out = start / denom
+            end_out = end / denom
+            bragg_out = bragg / denom
+
+            # shape: (Z, 3, 3)
+            ray_z_positions_out = ray_z_positions / denom[None, None, :]
+
+        else:
+            start_out = start
+            end_out = end
+            bragg_out = bragg
+            ray_z_positions_out = ray_z_positions
+
+        # --- NEW RELATIVE OFFSET CALCULATION ---
+        end_offset = end_out - start_out
+        bragg_offset = bragg_out - start_out
+
+        # Stack into a 9-dimensional vector for the MLP Regressor
+        positions = np.concatenate(
+            [
+                start_out,     # Anchor (Absolute start)
+                end_offset,    # Trajectory Vector
+                bragg_offset,  # Physics/Range Vector
+            ],
+            axis=0,
+        ).astype(np.float32)
+
+        d[self.output_key] = torch.as_tensor(positions, dtype=torch.float32)
+
+        d[self.z_output_key] = torch.as_tensor(
+            ray_z_positions_out,
+            dtype=torch.float32,
+        )
+
+        # Update the debug/raw keys to reflect the offsets if you want to track them
+        d["ray_start_anchor"] = torch.as_tensor(start_out, dtype=torch.float32)
+        d["ray_end_offset"] = torch.as_tensor(end_offset, dtype=torch.float32)
+        d["ray_bragg_offset"] = torch.as_tensor(bragg_offset, dtype=torch.float32)
 
         return d
