@@ -1,11 +1,15 @@
-run_name: "PG+DB_config"
+run_name: "PriorInModel"
 modelname: "DoTA"
-batch_size: 256
-inject_geometric_prior: False
+inject_geometric_prior: True
 inject_energy_field: True
+#train_list: "data/unified.json"
 drop_priors: False
-ray_info: True
+ray_info: False
 prior_mode: "full_line"
+roi_size: [512, 512, 32]
+pixdim: [1.0, 1.0, 3.0]
+dataset_type: "dataset"
+
 dotakwgs:
   use_fourier_embedding: True
   in_channels: 3
@@ -13,16 +17,17 @@ dotakwgs:
 losskwgs:
   allMAE_weight: 1.
   masked_factor: 5.0
-  iid_curve_weight: 0.001
+  iid_curve_weight: 0.01
   use_high_dose_mask: False
   bragg_peak_weight: 25.0
 
 
 train:
   useGTPosInLearning: True
-  useGeometricPrior: False
+  useGeometricPrior: True
   useEnergyPrior: True
-  num_epochs: 100
+  num_epochs: 150
+  use_maskPrediction: False
   lr: 2.8e-4
   adversarial:
     use: False

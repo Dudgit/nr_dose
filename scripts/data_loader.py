@@ -69,7 +69,7 @@ class ExtractSlabsAroundZ(MapTransform):
             # 2. Get the affine matrix from this specific image
             
             affine = img.affine.cpu().numpy()
-            d['affine_trans'] = affine
+            #d['affine_trans'] = affine
             # 3. Invert the affine to create a "Physical to Voxel" mapping
             inv_affine = np.linalg.inv(affine)
             
@@ -82,7 +82,7 @@ class ExtractSlabsAroundZ(MapTransform):
             # 6. Calculate theoretical Z boundaries (can exceed image shape)
             # We add +1 to z_end because Python slicing is exclusive at the end
             z_start = z_index - self.slice_radius
-            z_end = z_index + self.slice_radius + 1 
+            z_end = z_index + self.slice_radius + 2
             
             # 7. Clamp bounds for safe numpy slicing
             z_min = max(0, z_start)
@@ -90,7 +90,7 @@ class ExtractSlabsAroundZ(MapTransform):
             
             # 8. Crop the slab (Assuming shape is [Channel, X, Y, Z])
             # Notice we keep all of X and Y intact!
-            cropped_img = img[:, :, :, z_min:z_max]
+            cropped_img = img[:, :, :, z_min:z_max].clone()
             
             # 9. Calculate exactly where Z-padding belongs if we hit a boundary
             pad_z_left = max(0, -z_start)
@@ -106,6 +106,7 @@ class ExtractSlabsAroundZ(MapTransform):
                 )
                 
             d[key] = cropped_img
+            d['affine_trans'] = affine
             
         return d
 
@@ -147,15 +148,16 @@ class BackupFinalAffined(MapTransform):
 def scale_dose_by_1000(x):
     return x * 1000.0
 
+from monai.transforms import ScaleIntensityd
 
 def get_post_transforms(cfg):
     dynamic_post_transform_list = []
     final_keys = ["ct", "gt_dose", "condition"]
     if cfg['inject_geometric_prior']:
-        dynamic_post_transform_list.append(InjectGaussianBeamPriord(keys=['geometric_prior'], source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras=True, prior_mode=cfg['prior_mode']))
-        final_keys.append("geometric_prior")
+        #dynamic_post_transform_list.append(InjectGaussianBeamPriord_v2(keys=['geometric_prior'], ref_key="ct", sigma=cfg['sigma'],flip_lps_to_ras=False))
         final_keys.append("ray_source")
         final_keys.append("ray_target")
+        final_keys.append("geometric_prior")
     if cfg['inject_energy_field']:
         dynamic_post_transform_list.append(InjectEnergyDepositionFieldd(keys=['field'], spacing=cfg['pixdim']))
         final_keys.append("field")
@@ -163,9 +165,9 @@ def get_post_transforms(cfg):
         dynamic_post_transform_list.append(RandChannelDropoutd(keys=['geometric_prior', 'field'], prob=0.15))
     if cfg['ray_info']:
         dynamic_post_transform_list.append(Ray_Info(keys=['ray_source', 'ray_target']))
-        final_keys.extend(["positions", "ray_z_positions", "ray_start_anchor", "ray_end_offset", "ray_bragg_offset"])
+        final_keys.extend(["positions", "ray_start_anchor", "ray_end_offset", "ray_bragg_offset"])
     
-    dynamic_post_transform_list.append(EnsureTyped(keys=final_keys, track_meta=True, dtype=torch.float32))
+    dynamic_post_transform_list.append(EnsureTyped(keys=final_keys, track_meta=False, dtype=torch.float32))
     dynamic_post_transform_list.append(SelectItemsd(keys=final_keys))
     return dynamic_post_transform_list
     
@@ -177,17 +179,18 @@ def get_loaders(cfg,hw = "atlasz"):
     train_transforms = Compose([
     LoadImaged(keys=["ct", "gt_dose"]),
     EnsureChannelFirstd(keys=["ct", "gt_dose"]),
-    Lambdad(keys=["gt_dose"], func=scale_dose_by_1000),
-    ScaleIntensityRanged(keys=['ct'], a_min=cfg['ct_min'], a_max=cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
     ExtractSlabsAroundZ(keys=["ct", "gt_dose"], source_key="ray_source", slice_radius=15),
-    Spacingd(keys=["ct", "gt_dose"], pixdim=cfg['pixdim'], mode='trilinear'),
+    ScaleIntensityd(keys=["gt_dose"], factor=1000.0),
+    ScaleIntensityRanged(keys=['ct'], a_min=cfg['ct_min'], a_max=cfg['ct_max'], b_min=0.0, b_max=1.0, clip=True),
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']),
-    EnsureTyped(keys=["ct", "gt_dose","affine_trans"], track_meta=True)])
+    #InjectGaussianBeamPriord(keys=['geometric_prior'], source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras=True, prior_mode=cfg['prior_mode']),
+    #InjectEnergyDepositionFieldd(keys=['field'], spacing=cfg['pixdim']),
+    EnsureTyped(keys=["ct", "gt_dose","ray_source","ray_target","condition","affine_trans"], track_meta=False )])
 
 
 
 
-    dynamic_post_transforms = Compose(get_post_transforms(cfg))
+    #dynamic_post_transforms = Compose(get_post_transforms(cfg))
     
     if cfg['dataset_type'] == "persistent":
         cache_dir = cfg['cache_dir']
@@ -199,8 +202,8 @@ def get_loaders(cfg,hw = "atlasz"):
 
         train_cached_ds =  PersistentDataset(data=train_list, transform=train_transforms, cache_dir=cache_dir)
         val_cached_ds =  PersistentDataset(data=val_list, transform=train_transforms, cache_dir=cache_dir)
-        train_ds = Dataset(data=train_cached_ds, transform=dynamic_post_transforms)
-        val_ds = Dataset(data=val_cached_ds, transform=dynamic_post_transforms)
+        train_ds = Dataset(data=train_cached_ds, transform=None)
+        val_ds = Dataset(data=val_cached_ds, transform=None)
 
     if cfg["dataset_type"] == "dataset":
         train_ds =  Dataset(data=train_list, transform=train_transforms)

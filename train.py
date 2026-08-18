@@ -16,6 +16,7 @@ from pytorch_lightning.plugins.environments import LightningEnvironment
 from scripts.data_loader import get_loaders
 from scripts.callbacks import DoseLevel1MetricsCallback, Matshow3DVisualizerCallback, BraggPeakDistanceCallback
 from scripts.metrics import Level1LossFunction
+from scripts.models import BatchedEnergyPrior
 from scripts.train_backbone import DoseTrainer, DoseGANTrainer
 
 torch.set_float32_matmul_precision('medium')
@@ -38,6 +39,7 @@ def create_config():
 def create_dota_instance(cfg):
     from scripts.models import DoTA_based
     model = DoTA_based(**cfg['dotakwgs'])
+    model = torch.compile(model)
     return model
 
 def create_unet_instance(cfg):
@@ -77,7 +79,8 @@ def choseModels(cfg):
         dose_instance_model =DoseGANTrainer(generator=model,discriminator=discriminator,loss_function=loss_function,lr=cfg['train']['lr'],
                                             **cfg['train']['adversarial'])
     else:
-        dose_instance_model = DoseTrainer(model, loss_function,lr = cfg['train']['lr'],use_warmups=cfg['train']['use_warmups'],useEnergyPrior=cfg['train']['useEnergyPrior'])
+        dose_instance_model = DoseTrainer(model, loss_function,lr = cfg['train']['lr'],use_warmups=cfg['train']['use_warmups'],useEnergyPrior=cfg['train']['useEnergyPrior']
+                                          ,use_maskPrediction=cfg['train']['use_maskPrediction'])
 
     return dose_instance_model
 
@@ -85,9 +88,9 @@ def choseModels(cfg):
 
 def create_callbacks(cfg):
     last_callback = ModelCheckpoint(dirpath=os.path.join("checkpoints", cfg['run_name']),filename='last',save_last=True)
-    doe_level1_callback = DoseLevel1MetricsCallback()
+    doe_level1_callback = DoseLevel1MetricsCallback(voxel_spacing = (1,1,3))
     matshow_callback = Matshow3DVisualizerCallback(num_samples=1)
-    posCallback = BraggPeakDistanceCallback()
+    posCallback = BraggPeakDistanceCallback(spacing=(1,1,3))
     return [last_callback, doe_level1_callback, matshow_callback, posCallback]
 
 
@@ -99,7 +102,7 @@ def training_start(cfg,run_name,model,train_loader,val_loader):
     fine_tune_steps = 50 if cfg['train']["fine_tune"] else 0
         
     trainer = pl.Trainer(max_epochs=cfg['train']['num_epochs']+fine_tune_steps,precision="bf16-mixed",logger=wandb_logger, strategy = strategy,
-                             accelerator="gpu",devices = 'auto',callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=9)
+                             accelerator="gpu",devices = 'auto',callbacks=callbacks,plugins=LightningEnvironment(),num_sanity_val_steps=0,accumulate_grad_batches=2)
     last_ckpt_path = os.path.join("checkpoints", run_name, "last.ckpt")
     if os.path.exists(last_ckpt_path):
         print(f"Resuming 8-hour chain from {last_ckpt_path}...")
@@ -136,6 +139,27 @@ def createDBModel(cfg):
                             latent_regressor=latent_regressor,loss_function = loss_function,useEnergyPrior=cfg['train']['useEnergyPrior'],lr = cfg['train']['lr'],useGTPosInLearning=cfg['train']['useGTPosInLearning'],useGeometricPrior=cfg['train']['useGeometricPrior'])
     return db_instance
 
+def train_GT_posed():
+    cfg = create_config()
+    run_name_base = cfg['run_name'] 
+    run_name = args.hw + "_" + run_name_base
+    cfg['run_name'] = run_name
+    train_loader, val_loader = get_loaders(cfg=cfg,hw = args.hw)
+
+    from scripts.train_backbone import GT_Posed
+    from scripts.models import BatchedEnergyPrior
+    energyPriorCreator = BatchedEnergyPrior()
+    model = create_dota_instance(cfg)
+    loss_function = Level1LossFunction(**cfg['losskwgs'])
+    instance_model = GT_Posed(model,loss_function=loss_function,lr = cfg['train']['lr'],priorCreator=energyPriorCreator,useEnergyPrior=cfg['train']['useEnergyPrior'],useGeometricPrior=cfg['train']['useGeometricPrior']
+                            ,use_maskPrediction=cfg['train']['use_maskPrediction'])
+    if cfg['train']['useGeometricPrior']:
+        print("Using Geometric Prior in training")
+    if cfg['train']['useEnergyPrior']:
+        print("Using Energy Prior in training")
+    training_start(cfg,run_name,instance_model,train_loader,val_loader)
+
+
 def train_dbModel():
     cfg = create_config()
     run_name_base = cfg['run_name'] 
@@ -147,7 +171,10 @@ def train_dbModel():
 
 
 
+
+
 if __name__ == "__main__":
     import torch.multiprocessing as mp
     mp.set_start_method('spawn', force=True)
-    train_dbModel()
+    torch.multiprocessing.set_sharing_strategy('file_system')
+    train_dota()

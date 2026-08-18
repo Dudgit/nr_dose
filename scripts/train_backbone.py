@@ -3,151 +3,50 @@ import torch
 from scripts.metrics import BeamMaskedMAELoss, IDDCurveLoss
 import torch.nn as nn
 
-
-
-
-
-class DBTrainer(pl.LightningModule):
-    def __init__(self, encoder, decoder, transformer, latent_regressor, loss_function=None, lr=1e-4, useEnergyPrior=True, useGeometricPrior=True, useGTPosInLearning=True):
-        super().__init__()
-        self.encoder = encoder
-        self.decoder = decoder
-        self.transformer = transformer
-        self.latent_regressor = latent_regressor
-        #self.film_block = filmBlock  # Fixed: changed from self.model
-        self.lr = lr
-        
-        # Fixed: changed from self.loss_pred so it matches shared_step
-        self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
-        self.loss_coord = torch.nn.L1Loss()
-        
-        self.useEnergyPrior = useEnergyPrior
-        self.useGeometricPrior = useGeometricPrior
-        self.useGTPosInLearning = useGTPosInLearning
-
-    def forward(self, x, condition, gt_positions=None):
-        # 1. Encode and get global context
-        latent = self.encoder(x)
-        latent = self.transformer(latent, condition)
-        pred_pos = self.latent_regressor(latent)
-        film_condition = gt_positions if gt_positions is not None else pred_pos
-        pred_dose = self.decoder(latent, film_condition)
-        return pred_dose, pred_pos
-    
-    def shared_step(self, batch, prefix="Train"):
-        x = batch['ct']
-        y = batch['gt_dose']
-        prior = batch['geometric_prior']
-        prior_extra = batch['field']
-        ray_source = batch['ray_source']
-        ray_target = batch['ray_target']
-        gt_positions = batch['positions']
-        condition = batch['condition']
-
-        # Concat Priors
-        if self.useGeometricPrior:
-            x = torch.cat([x, prior], dim=1)  
-        if self.useEnergyPrior:
-            x = torch.cat([x, prior_extra], dim=1)  
-
-        if self.useGTPosInLearning and self.training:
-            y_hat, pred_pos = self(x, condition, gt_positions)
-        else:
-            y_hat, pred_pos = self(x, condition)
-        
-        use_bragg_peak_loss = self.current_epoch >= 50
-        
-        # Calculate main dose loss (using your custom loss function)
-        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss)
-        loss = loss_dict["total_loss"]
-
-        # Calculate and add Coordinate Loss
-        pos_loss = self.loss_coord(pred_pos, gt_positions)
-        loss_dict["position_loss"] = pos_loss
-        loss += pos_loss
-        
-        self.logging_step(loss_dict, prefix)
-        
-        return loss, y_hat, y, condition
-
-    def training_step(self, batch, batch_idx):
-        loss, y_hat, y, condition = self.shared_step(batch,prefix="train")
-        
-        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
-
-    def validation_step(self, batch, batch_idx):
-            loss, y_hat, y, condition = self.shared_step(batch,prefix="val")
-            return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
-    
-    def logging_step(self,res_dict,prefix):
-        for k,v in res_dict.items():
-            self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
-
-    def predict(self, batch):
-        x = batch['ct']
-        prior = batch['geometric_prior']
-        prior_extra = batch['field']
-        condition = batch['condition']
-
-        # Concat Priors
-        if self.useGeometricPrior:
-            x = torch.cat([x, prior], dim=1)  
-        if self.useEnergyPrior:
-            x = torch.cat([x, prior_extra], dim=1)  
-        y_hat, pred_pos = self(x, condition)
-
-        return y_hat
-
-    def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
-        return optimizer
-
-
-
-
 class DoseTrainer(pl.LightningModule):
-    def __init__(self,model,loss_function=None,lr = 1e-4,use_warmups=False,useEnergyPrior=True):
+    def __init__(self,model,loss_function=None,lr = 1e-4,use_warmups=False,useEnergyPrior=True,use_maskPrediction=True):
         super().__init__()
         self.model = model
         self.lr = lr
         self.use_wamrups = use_warmups
         self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
         self.useEnergyPrior = useEnergyPrior
-    
     def forward(self, x,condition):
         return self.model(x,condition)
     
     def shared_step(self, batch,prefix="Train"):
         x = batch['ct']
         y = batch['gt_dose']
-        prior = batch['geometric_prior']
-        prior_extra = batch['field']
         ray_source = batch['ray_source']
         ray_target = batch['ray_target']
-        x = torch.cat([x, prior, prior_extra], dim=1) if self.useEnergyPrior else torch.cat([x, prior], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
         condition = batch['condition']
+
+        prior = self.generate_gaussian_prior(x,phys_source=ray_source,phys_target=ray_target,affine_trans=batch['affine_trans'])
+        prior_extra = self.generate_energy_field(x,source_global=ray_source,target_global=ray_target,condition=condition)
+        x = torch.cat([x, prior, prior_extra], dim=1) if self.useEnergyPrior else torch.cat([x, prior], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
         y_hat = self(x, condition)
+
         
         use_bragg_peak_loss = self.current_epoch >= 50
-        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss)
+        use_idd_loss = self.current_epoch >= 50
+        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss,use_idd_loss = use_idd_loss)
 
         loss = loss_dict["total_loss"]
         self.logging_step(loss_dict, prefix)
         return loss, y_hat, y, condition
     
     def training_step(self, batch, batch_idx):
-        loss, y_hat, y, condition = self.shared_step(batch,prefix="train")
+        loss, _, _, _ = self.shared_step(batch,prefix="train")
         
-        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
+        return loss
 
-    
     def validation_step(self, batch, batch_idx):
         loss, y_hat, y, condition = self.shared_step(batch,prefix="val")
-        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
+        return {"loss": loss.detach(), "pred_dose": y_hat.detach(), "gt_dose": y.detach(), "condition": condition.detach()}
 
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():
-            self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
+            self.log(f"{prefix}/{k}",v.detach(),prog_bar=True,sync_dist=True)
 
     def predict(self, batch):
         x = batch['ct']
@@ -159,8 +58,146 @@ class DoseTrainer(pl.LightningModule):
 
         return y_hat
 
+    def generate_gaussian_prior(self, ct_tensor, phys_source, phys_target, affine_trans):
+        """
+        Generates an infinite Gaussian tube (full_line mode).
+        ct_tensor: [Batch, 1, X, Y, Z]
+        phys_source/target: [Batch, 3]
+        affine_trans: [Batch, 4, 4]
+        """
+        device = ct_tensor.device
+        dtype = ct_tensor.dtype
+        B, C, X, Y, Z = ct_tensor.shape
+        
+        # Flip LPS -> RAS batched
+        phys_source = phys_source.clone()
+        phys_target = phys_target.clone()
+        phys_source[:, 0:2] *= -1
+        phys_target[:, 0:2] *= -1
+        
+        # Add homogeneous coordinate for matrix multiplication: [Batch, 4, 1]
+        homo_source = torch.cat([phys_source, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
+        homo_target = torch.cat([phys_target, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
+        
+        # Physical -> Voxel batched (Invert affine matrices on GPU)
+        inv_affine = torch.linalg.inv(affine_trans.float())
+        
+        # Matrix multiply: [B, 4, 4] @ [B, 4, 1] -> [B, 4, 1] -> squeeze -> take first 3 [B, 3]
+        A = torch.bmm(inv_affine, homo_source).squeeze(2)[:, :3]
+        B_target = torch.bmm(inv_affine, homo_target).squeeze(2)[:, :3]
+        
+        # Lock Z to center (Optional, based on your original lock_z_to_center=True)
+        z_center = (Z - 1) / 2.0
+        A[:, 2] = z_center
+        B_target[:, 2] = z_center
+        
+        # Generate Grid (Shared for the whole batch)
+        x_grid = torch.arange(X, device=device, dtype=dtype)
+        y_grid = torch.arange(Y, device=device, dtype=dtype)
+        z_grid = torch.arange(Z, device=device, dtype=dtype)
+        grid_x, grid_y, grid_z = torch.meshgrid(x_grid, y_grid, z_grid, indexing="ij")
+        
+        # [3, X, Y, Z] -> Expand to [Batch, 3, X, Y, Z]
+        P = torch.stack([grid_x, grid_y, grid_z], dim=0).unsqueeze(0).expand(B, -1, -1, -1, -1)
+        
+        # Expand A and B for broadcasting with spatial grid [Batch, 3, 1, 1, 1]
+        A_expanded = A.view(B, 3, 1, 1, 1)
+        B_expanded = B_target.view(B, 3, 1, 1, 1)
+        
+        AB = B_expanded - A_expanded
+        AP = P - A_expanded
+        
+        dot_AP_AB = torch.sum(AP * AB, dim=1)  # [Batch, X, Y, Z]
+        dot_AB_AB = torch.sum(AB * AB, dim=1)  # [Batch, 1, 1, 1]
+        
+        # For FULL LINE, we do NOT clamp t_raw! It extends infinitely.
+        t_raw = dot_AP_AB / (dot_AB_AB + 1e-8)
+        
+        # C is the perpendicular projection of point P onto the infinite line AB
+        C = A_expanded + t_raw.unsqueeze(1) * AB
+        
+        dist_sq = torch.sum((P - C) ** 2, dim=1)  # [Batch, X, Y, Z]
+        
+        # Calculate Gaussian tube
+        sigma =  4.0#self.prior_cfg.get('sigma', 4.0)
+        gaussian_prior = torch.exp(-dist_sq / (2.0 * sigma ** 2))
+        
+        # Return as [Batch, 1, X, Y, Z]
+        return gaussian_prior.unsqueeze(1)
+
+
+    def generate_energy_field(self, ct_tensor, source_global, target_global, condition):
+        """
+        All inputs are Batched PyTorch Tensors on the GPU
+        """
+        device = ct_tensor.device
+        dtype = ct_tensor.dtype
+        B, C, X, Y, Z = ct_tensor.shape
+        spacing = (1.0,1.0,3.0)#self.prior_cfg.get('pixdim', (1.0, 1.0, 3.0))
+        
+        # Vector math [Batch, 3]
+        beam_vec_global = target_global - source_global
+        d_target = torch.norm(beam_vec_global, dim=1, keepdim=True) + 1e-6
+        beam_dir = beam_vec_global / d_target
+        
+        # Grid generation [3, X, Y, Z] -> expand to [Batch, 3, X, Y, Z]
+        grid_x = torch.arange(X, device=device, dtype=dtype) * spacing[0]
+        grid_y = torch.arange(Y, device=device, dtype=dtype) * spacing[1]
+        grid_z = torch.arange(Z, device=device, dtype=dtype) * spacing[2]
+        coords = torch.stack(torch.meshgrid(grid_x, grid_y, grid_z, indexing="ij"), dim=0)
+        coords = coords.unsqueeze(0).expand(B, -1, -1, -1, -1)
+        
+        target_local = torch.tensor([
+            (X * spacing[0]) / 2.0,
+            (Y * spacing[1]) / 2.0,
+            (Z * spacing[2]) / 2.0
+        ], dtype=dtype, device=device).view(1, 3, 1, 1, 1)
+        
+        # Expand for broadcasting [Batch, 3, 1, 1, 1]
+        d_target_view = d_target.view(B, 1, 1, 1, 1)
+        beam_dir_view = beam_dir.view(B, 3, 1, 1, 1)
+        
+        source_local = target_local - (d_target_view * beam_dir_view)
+        
+        v = coords - source_local
+        depths = torch.sum(v * beam_dir_view, dim=1)  # [Batch, X, Y, Z]
+        
+        v_lateral = v - (depths.unsqueeze(1) * beam_dir_view)
+        r_sq = torch.sum(v_lateral ** 2, dim=1)  # [Batch, X, Y, Z]
+        
+        depths_pos = torch.clamp(depths, min=0.0)
+        
+        # Grab config values (or use defaults)
+        sigma_base = 2.0
+        alpha = 0.004
+        plateau = 0.7
+        sig_ent = 16.0
+        sig_dist = 8.0
+        
+        sigma_d = sigma_base + (alpha * depths_pos)
+        lateral_profile = torch.exp(-r_sq / (2.0 * (sigma_d ** 2)))
+        
+        delta_d = depths - d_target.view(B, 1, 1, 1)
+        sigma_depth = torch.where(delta_d < 0, sig_ent, sig_dist)
+        
+        longitudinal_curve = torch.exp(- (delta_d ** 2) / (2.0 * (sigma_depth ** 2)))
+        entrance_mask = delta_d < 0
+        longitudinal_profile = torch.where(
+            entrance_mask,
+            plateau + (1.0 - plateau) * longitudinal_curve,
+            longitudinal_curve
+        )
+        
+        # Energy parsing - Assuming condition is [Batch, ...], grab relevant energy element
+        # (You may need to adjust this depending on exactly which index your energy is in 'condition')
+        e_scalar = condition[:, 2].view(B, 1, 1, 1) 
+        
+        field = e_scalar * longitudinal_profile * lateral_profile
+        
+        return field.unsqueeze(1) # [Batch, 1, X, Y, Z]
+
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5,fused=True)
         if self.use_wamrups:
             total_steps = self.trainer.estimated_stepping_batches
             max_epochs = self.trainer.max_epochs
@@ -309,3 +346,175 @@ class DoseGANTrainer(pl.LightningModule):
     def logging_step(self,res_dict,prefix):
         for k,v in res_dict.items():
             self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
+
+
+class GT_Posed(pl.LightningModule):
+    def __init__(self, model, loss_function=None, lr=1e-4,priorCreator=None,useEnergyPrior=True,useGeometricPrior=True,use_maskPrediction=False):
+        super().__init__()
+        self.model = model
+        self.lr = lr
+        self.PriorCreator = priorCreator
+        self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
+        self.loss_coord = torch.nn.L1Loss()
+        self.useEnergyPrior = useEnergyPrior
+        self.useGeometricPrior = useGeometricPrior
+        self.use_maskPrediction = use_maskPrediction
+        self.useNewPrior = True
+
+    def forward(self, x,condition):
+            return self.model(x,condition)
+
+    def shared_step(self,batch,prefix="train"):
+        x = batch['ct']
+        y = batch['gt_dose']
+        ray_source = batch['ray_source']
+        ray_target = batch['ray_target']
+        geom_prior = batch['geometric_prior']
+        field = batch['field']
+        condition = batch['condition']
+
+            
+        start_anchor = batch['ray_start_anchor']
+        end_offset   = batch['ray_end_offset']
+        bragg_offset = batch['ray_bragg_offset']
+
+        # 2. Reconstruct the coordinates 
+        beam_start = start_anchor
+        beam_end   = start_anchor + end_offset
+        bragg_peak = start_anchor + bragg_offset
+
+        prior_extra = self.PriorCreator(batch['ct'], beam_start, beam_end,bragg_peak,condition)
+
+        x = torch.cat([x, prior_extra], dim=1)
+
+        if self.useEnergyPrior:
+            x = torch.cat([x, field], dim=1)
+        if self.useGeometricPrior:
+            x = torch.cat([x, geom_prior], dim=1)
+        
+
+        y_hat = self(x, condition)
+        if self.use_maskPrediction:
+            mask = (geom_prior > 1e-4).float()
+            y_hat = y_hat * mask
+
+        use_bragg_peak_loss = self.current_epoch >= 50
+        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss)
+        loss = loss_dict["total_loss"]
+        self.logging_step(loss_dict, prefix)
+        
+        return loss, y_hat, y, condition, prior_extra
+
+    def training_step(self, batch, batch_idx):
+        loss, y_hat, y, condition, prior_extra = self.shared_step(batch,prefix="train")
+        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition,"prior_extra":prior_extra}
+
+    def validation_step(self, batch, batch_idx):
+        loss, y_hat, y, condition, prior_extra = self.shared_step(batch,prefix="val")
+        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition,"prior_extra":prior_extra}
+
+    def logging_step(self,res_dict,prefix):
+        for k,v in res_dict.items():
+            self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
+    
+    def configure_optimizers(self):
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
+        return optimizer
+
+        
+
+
+class DBTrainer(pl.LightningModule):
+    def __init__(self, encoder, decoder, transformer, latent_regressor, loss_function=None, lr=1e-4, useEnergyPrior=True, useGeometricPrior=True, useGTPosInLearning=True):
+        super().__init__()
+        self.encoder = encoder
+        self.decoder = decoder
+        self.transformer = transformer
+        self.latent_regressor = latent_regressor
+        #self.film_block = filmBlock  # Fixed: changed from self.model
+        self.lr = lr
+        
+        # Fixed: changed from self.loss_pred so it matches shared_step
+        self.loss_function = loss_function if loss_function is not None else torch.nn.L1Loss()
+        self.loss_coord = torch.nn.L1Loss()
+        
+        self.useEnergyPrior = useEnergyPrior
+        self.useGeometricPrior = useGeometricPrior
+        self.useGTPosInLearning = useGTPosInLearning
+
+    def forward(self, x, condition, gt_positions=None):
+        # 1. Encode and get global context
+        latent = self.encoder(x)
+        latent = self.transformer(latent, condition)
+        pred_pos = self.latent_regressor(latent)
+        film_condition = gt_positions if gt_positions is not None else pred_pos
+        pred_dose = self.decoder(latent, film_condition)
+        return pred_dose, pred_pos
+    
+    def shared_step(self, batch, prefix="Train"):
+        x = batch['ct']
+        y = batch['gt_dose']
+        ray_source = batch['ray_source']
+        ray_target = batch['ray_target']
+        gt_positions = batch['positions']
+        condition = batch['condition']
+
+        # Concat Priors
+        if self.useGeometricPrior:
+            prior = batch['geometric_prior']
+            x = torch.cat([x, prior], dim=1)  
+        if self.useEnergyPrior:
+            prior_extra = batch['field']
+            x = torch.cat([x, prior_extra], dim=1)  
+
+        if self.useGTPosInLearning and self.training:
+            y_hat, pred_pos = self(x, condition, gt_positions)
+        else:
+            y_hat, pred_pos = self(x, condition)
+        
+        use_bragg_peak_loss = self.current_epoch >= 50
+        
+        # Calculate main dose loss (using your custom loss function)
+        loss_dict = self.loss_function(y_hat, y, ray_source, ray_target, use_bragg_peak_loss=use_bragg_peak_loss)
+        loss = loss_dict["total_loss"]
+
+        # Calculate and add Coordinate Loss
+        pos_loss = self.loss_coord(pred_pos, gt_positions)
+        loss_dict["position_loss"] = pos_loss
+        loss += pos_loss
+        
+        self.logging_step(loss_dict, prefix)
+        
+        return loss, y_hat, y, condition
+
+    def training_step(self, batch, batch_idx):
+        loss, y_hat, y, condition = self.shared_step(batch,prefix="train")
+        
+        return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
+
+    def validation_step(self, batch, batch_idx):
+            loss, y_hat, y, condition = self.shared_step(batch,prefix="val")
+            return {"loss": loss, "pred_dose": y_hat, "gt_dose": y, "condition": condition}
+    
+    def logging_step(self,res_dict,prefix):
+        for k,v in res_dict.items():
+            self.log(f"{prefix}/{k}",v,prog_bar=True,sync_dist=True)
+
+    def predict(self, batch):
+        x = batch['ct']
+        prior = batch['geometric_prior']
+        prior_extra = batch['field']
+        condition = batch['condition']
+
+        # Concat Priors
+        if self.useGeometricPrior:
+            x = torch.cat([x, prior], dim=1)  
+        if self.useEnergyPrior:
+            x = torch.cat([x, prior_extra], dim=1)  
+        y_hat, pred_pos = self(x, condition)
+
+        return y_hat
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
+        return optimizer

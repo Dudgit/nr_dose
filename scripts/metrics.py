@@ -237,29 +237,35 @@ def dim_ceil(val):
     return int(val) + (1 if val % 1 > 0 else 0)
 
 class GammaLoss(nn.Module):
-    def __init__(self, voxel_spacing = None):
+    def __init__(self, voxel_spacing=(3, 3, 4)):
         """
         Args:
             voxel_spacing (tuple): Physical size of a voxel in mm (dx, dy, dz).
-                                   Crucial for calculating Distance-to-Agreement.
         """
         super().__init__()
-        cfg = OmegaConf.load("configs/default_config.yaml")
-        self.voxel_spacing = cfg['data']['voxel_spacing'] if voxel_spacing is None else voxel_spacing
+        # Fallback to default config if none provided
+        self.voxel_spacing = voxel_spacing
 
     def local_gamma_3d(self, pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
         """
         Computes the 3D Local Gamma Pass Rate (1% / 1mm) on GPU.
-        
-        Args:
-            pred (torch.Tensor): Predicted dose volume, shape (D, H, W)
-            gt (torch.Tensor): Ground truth dose volume, shape (D, H, W)
-            
-        Returns:
-            torch.Tensor: Scalar tensor containing the pass rate (0.0 to 1.0)
+        Supports 3D (D,H,W), 4D (C,D,H,W), or 5D (B,C,D,H,W) tensors.
         """
         device = pred.device
         dx, dy, dz = self.voxel_spacing
+        
+        dta_tol = 1.0        # 1.0 mm DTA criteria
+        dose_tol_pct = 0.01  # 1% local dose criteria
+        
+        # Standardize input to 5D: (B, C, D, H, W)
+        if pred.ndim == 3:
+            pred = pred.unsqueeze(0).unsqueeze(0)
+            gt = gt.unsqueeze(0).unsqueeze(0)
+        elif pred.ndim == 4:
+            pred = pred.unsqueeze(0)
+            gt = gt.unsqueeze(0)
+            
+        B, C, D, H, W = gt.shape
         
         # 1. Define evaluation mask (Voxels >= 10% of global maximum GT dose)
         gt_max = gt.max()
@@ -267,63 +273,61 @@ class GammaLoss(nn.Module):
         
         total_eval_voxels = eval_mask.sum()
         if total_eval_voxels == 0:
-            return torch.tensor(1.0, device=device) # Trivial pass if no high dose regions
+            return torch.tensor(1.0, device=device) # Trivial pass
 
-        # 2. Determine search window radius in voxels based on 1.0 mm limit
-        # A voxel distance further than 1mm automatically makes the spatial term > 1,
-        # meaning gamma cannot be <= 1. Thus, we only search within a 1mm radius.
-        r_z = int(dim_ceil(1.0 / dz))
-        r_y = int(dim_ceil(1.0 / dy))
-        r_x = int(dim_ceil(1.0 / dx))
+        # 2. Map tensor dimensions (D, H, W) to the correct spatial axes
+        # Maintaining the openGate simulation rotation: D (slices) maps to y-axis.
+        r_y = int(dim_ceil(dta_tol / dy))  # Radius for D dimension
+        r_z = int(dim_ceil(dta_tol / dz))  # Radius for H dimension
+        r_x = int(dim_ceil(dta_tol / dx))  # Radius for W dimension
         
-        # Initialize gamma matrix with infinity
         gamma_sq = torch.full_like(gt, float('inf'))
         
-        # Pad tensors to safely handle edge shifts
-        pad_w = (r_x, r_x, r_y, r_y, r_z, r_z)
-        gt_5d = gt[None, None, :, :, :]
-        gt_padded_5d = torch.nn.functional.pad(gt_5d, pad_w, mode='replicate')
-        gt_padded = gt_padded_5d[0, 0, :, :, :]
-
+        # 3. Pad the PREDICTION directly
+        pad_w = (r_x, r_x, r_z, r_z, r_y, r_y) # Padding for (W, H, D)
+        pred_padded = torch.nn.functional.pad(pred, pad_w, mode='replicate')
         
-        D, H, W = gt.shape
-
-        # 3. Search over the localized 3D neighborhood
-        for sz in range(-r_z, r_z + 1):
-            for sy in range(-r_y, r_y + 1):
+        # Pre-compute the ground truth dose tolerance mapping
+        dose_tol_map = dose_tol_pct * gt
+        dose_tol_sq = (dose_tol_map + 1e-8)**2
+        
+        # 4. Search over the localized 3D neighborhood
+        for sy in range(-r_y, r_y + 1):
+            for sz in range(-r_z, r_z + 1):
                 for sx in range(-r_x, r_x + 1):
-                    # Calculate physical Euclidean distance
-                    dist_sq = (sz * dz)**2 + (sy * dy)**2 + (sx * dx)**2
-                    if dist_sq > 1.0: 
-                        continue # Skip neighbor if distance strictly exceeds 1 mm
                     
-                    # Crop the shifted reference region matching the original dimensions
-                    gt_shifted = gt_padded[
-                        r_z + sz : r_z + sz + D,
-                        r_y + sy : r_y + sy + H,
+                    # Physical distance based on the axis mapping
+                    dist_sq = (sy * dy)**2 + (sz * dz)**2 + (sx * dx)**2
+                    if dist_sq > dta_tol**2: 
+                        continue 
+                    
+                    # Normalize the distance by the DTA criteria squared
+                    spatial_term = dist_sq / (dta_tol**2)
+                    
+                    # Shift the evaluated volume against the static reference, preserving B and C dimensions
+                    pred_shifted = pred_padded[
+                        :, :,
+                        r_y + sy : r_y + sy + D,
+                        r_z + sz : r_z + sz + H,
                         r_x + sx : r_x + sx + W
                     ]
                     
-                    # Local dose difference tolerance: 1% of the LOCAL reference dose
-                    dose_tol = 0.01 * gt_shifted
+                    # Compute dose discrepancy using the fixed GT tolerance
+                    dose_diff_sq = ((pred_shifted - gt)**2) / dose_tol_sq
                     
-                    # Compute dose discrepancy term safely avoiding division by zero
-                    dose_diff_sq = ((pred - gt_shifted) / (dose_tol + 1e-8))**2
-                    
-                    # Combined Gamma space value for this specific neighbor displacement
-                    current_gamma_sq = dist_sq + dose_diff_sq
-                    
-                    # Retain the minimum found across all checked neighbors
+                    # Gamma index addition
+                    current_gamma_sq = spatial_term + dose_diff_sq
                     gamma_sq = torch.minimum(gamma_sq, current_gamma_sq)
 
-        # 4. Extract final gamma metrics inside the valid evaluation mask
+        # 5. Extract final gamma metrics inside the valid evaluation mask
         gamma = torch.sqrt(gamma_sq[eval_mask])
         
-        # Pass rate is defined as the percentage of voxels where gamma <= 1
         passed_voxels = (gamma <= 1.0).sum()
         pass_rate = passed_voxels.float() / total_eval_voxels.float()
         
-        return pass_rate
+        return 1.0-pass_rate
+    def forward(self, pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
+        return self.local_gamma_3d(pred, gt)
 
 
 class TotalVariationLoss3D(nn.Module):
@@ -508,6 +512,7 @@ class SimpleIDDLoss(nn.Module):
 
 import torch
 
+
 def compute_angle_agnostic_idd(dose_volume, ray_source, ray_target, spacing=(4.0, 4.0, 3.0), bin_size_mm=4.0):
     """
     dose_volume: (B, 1, X, Y, Z) - The predicted or ground truth dose
@@ -631,7 +636,7 @@ class Level1LossFunction(nn.Module):
         self.use_high_dose_mask = use_high_dose_mask
         self.bragg_peak_weight = bragg_peak_weight
     
-    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None, use_bragg_peak_loss=True):
+    def __call__(self, pred_dose, gt_dose,ray_source=None, ray_target=None, use_bragg_peak_loss=True,use_idd_loss=True):
         beam_masked_mae = self.beam_masked_mae_loss(pred_dose, gt_dose)
         #idd_curve_loss_value = #self.IID_curve_loss(pred_dose, gt_dose)
         allMAE = self.allMAE(pred_dose, gt_dose)
@@ -642,7 +647,7 @@ class Level1LossFunction(nn.Module):
         if ray_source is not None and ray_target is not None:
             pred_idd = compute_angle_agnostic_idd(pred_dose, ray_source, ray_target)
             target_idd = compute_angle_agnostic_idd(gt_dose, ray_source, ray_target)
-            idd_mae = F.l1_loss(pred_idd, target_idd)
+            idd_mae = F.mse_loss(pred_idd, target_idd)
             eff_idd = idd_mae * self.iid_curve_weight
        
         if self.use_high_dose_mask:
@@ -660,12 +665,15 @@ class Level1LossFunction(nn.Module):
             "total_loss": total_loss
         }
 
+        if use_idd_loss:
+            total_loss = total_loss+ eff_idd
         if use_bragg_peak_loss:
             bragg_peak_loss = self.bragg_peak_loss(pred_dose, gt_dose)
             eff_bragg = bragg_peak_loss * self.bragg_peak_weight  # You can adjust the weight for Bragg Peak Loss if needed
-            total_loss = total_loss + eff_bragg+ eff_idd
             lossDict["bragg_peak_loss"] = bragg_peak_loss
             lossDict["effective_bragg_peak_loss"] = eff_bragg
+            total_loss = total_loss + eff_bragg
+            lossDict["total_loss"] = total_loss
 
         if self.use_high_dose_mask:
             lossDict["high_beam_masked_mae"] = high_beam_masked_mae

@@ -342,7 +342,7 @@ class DoTA_based(nn.Module):
         embed_dim = channels[-1]
         self.encoder = Encoder(in_channels=in_channels, channels=channels)
         self.transformer = ConditionedTransformer(embed_dim=embed_dim,num_heads=num_heads,num_layers=num_layers,use_fourier_embedding=use_fourier_embedding,num_freqs=num_freqs)
-        self.decoder = Decoder(channels=list(reversed(channels)), out_channels=out_channels)
+        self.decoder = Decoder_v2(channels=list(reversed(channels)), out_channels=out_channels)
 
     def forward(self, x, beam):
         x = self.encoder(x)
@@ -554,3 +554,102 @@ class ConditionalDoseUNet(nn.Module):
         dose_pred = F.softplus(raw_output) if self.use_softplus else F.relu(raw_output)
         
         return dose_pred
+
+class BatchedEnergyPrior(nn.Module):
+    def __init__(
+        self, 
+        spacing=(4.0, 4.0, 3.0),
+        sigma_base=6.0,       
+        alpha=0.004,
+        plateau_ratio=0.70,
+        sigma_entrance=16.0,
+        sigma_distal=4.0      
+    ):
+        super().__init__()
+        self.spacing = spacing
+        self.sigma_base = sigma_base
+        self.alpha = alpha
+        self.plateau_ratio = plateau_ratio
+        self.sigma_entrance = sigma_entrance
+        self.sigma_distal = sigma_distal
+
+    def forward(self, ref_img, beam_start, beam_end, bragg_peak, condition):
+        B, _, X, Y, Z = ref_img.shape
+        device = ref_img.device
+        dtype = ref_img.dtype
+        
+        # 1. Denormalize [0, 1] coordinates back to physical millimeters
+        shape_tensor = torch.tensor([X, Y, Z], device=device, dtype=dtype)
+        denom = torch.clamp(shape_tensor - 1.0, min=1.0)
+        spacing_tensor = torch.tensor(self.spacing, device=device, dtype=dtype)
+        
+        start_phys_raw = (beam_start * denom) * spacing_tensor
+        end_phys_raw   = (beam_end * denom) * spacing_tensor
+        bragg_phys = (bragg_peak * denom) * spacing_tensor
+        
+        # === THE PCA ORIENTATION FIX ===
+        # PCA eigenvectors have arbitrary signs, meaning start and end might be randomly flipped.
+        # Physics dictates the Bragg peak is the stopping point, so it MUST be closer to the distal end.
+        dist_start_to_bragg = torch.norm(bragg_phys - start_phys_raw, dim=1, keepdim=True)
+        dist_end_to_bragg = torch.norm(bragg_phys - end_phys_raw, dim=1, keepdim=True)
+        
+        # If the 'start' is closer to the Bragg peak than the 'end', PCA flipped the vector 180 degrees.
+        needs_flip = dist_start_to_bragg < dist_end_to_bragg
+        
+        # Swap start and end dynamically for the batches that are backwards
+        start_phys = torch.where(needs_flip, end_phys_raw, start_phys_raw)
+        end_phys = torch.where(needs_flip, start_phys_raw, end_phys_raw)
+        
+        # 2. Calculate Direction, End Depth, and Bragg Depth using CORRECTED vectors
+        beam_vec = end_phys - start_phys
+        d_target = torch.norm(beam_vec, dim=1, keepdim=True) + 1e-6 
+        beam_dir = beam_vec / d_target  
+        
+        d_bragg = torch.norm(bragg_phys - start_phys, dim=1, keepdim=True)
+        
+        # 3. Create 3D Grid in physical mm
+        grid_x = torch.arange(X, device=device, dtype=dtype) * self.spacing[0]
+        grid_y = torch.arange(Y, device=device, dtype=dtype) * self.spacing[1]
+        grid_z = torch.arange(Z, device=device, dtype=dtype) * self.spacing[2]
+        
+        coords = torch.stack(torch.meshgrid(grid_x, grid_y, grid_z, indexing="ij"), dim=0).unsqueeze(0)
+        
+        # 4. Project coordinates onto the beam line
+        start_phys_view = start_phys.view(B, 3, 1, 1, 1)
+        beam_dir_view = beam_dir.view(B, 3, 1, 1, 1)
+        
+        v = coords - start_phys_view 
+        depths = torch.sum(v * beam_dir_view, dim=1) # [B, X, Y, Z]
+        
+        # 5. Lateral Spread
+        v_lateral = v - (depths.unsqueeze(1) * beam_dir_view)
+        r_sq = torch.sum(v_lateral ** 2, dim=1) 
+        
+        depths_pos = torch.clamp(depths, min=0.0)
+        sigma_d = self.sigma_base + (self.alpha * depths_pos)
+        lateral_profile = torch.exp(-r_sq / (2.0 * (sigma_d ** 2)))
+        
+        # 6. Longitudinal Spread (Centered on Bragg Peak)
+        delta_d = depths - d_bragg.view(B, 1, 1, 1)
+        sigma_depth = torch.where(delta_d < 0, self.sigma_entrance, self.sigma_distal)
+        longitudinal_curve = torch.exp(- (delta_d ** 2) / (2.0 * (sigma_depth ** 2)))
+        
+        entrance_mask = delta_d < 0
+        longitudinal_profile = torch.where(
+            entrance_mask,
+            self.plateau_ratio + (1.0 - self.plateau_ratio) * longitudinal_curve,
+            longitudinal_curve
+        )
+        
+        # 7. HARD BOUNDARIES
+        is_after_start = (depths >= 0.0).float()
+        is_before_end = (depths <= d_target.view(B, 1, 1, 1)).float()
+        
+        strict_bounds_mask = is_after_start * is_before_end
+        e_scalar = condition[:, -1].view(B, 1, 1, 1)
+        
+        # 8. Combine into final normalized spatial field
+        field = longitudinal_profile * lateral_profile * strict_bounds_mask
+        field = field * e_scalar
+        
+        return field.unsqueeze(1)

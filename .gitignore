@@ -5,3 +5,5 @@ data
 *.ckpt
 *.swp
 preds
+checkpoints
+saved_runs
