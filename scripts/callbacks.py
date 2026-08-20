@@ -38,10 +38,10 @@ class Matshow3DVisualizerCallback(pl.Callback):
             use_prior_extra = True
         
         if use_geom_prior:
-            geom_prior = pl_module.generate_gaussian_prior(batch['ct'],batch['ray_source'],batch['ray_target'],batch['affine_trans']) 
+            geom_prior = pl_module.generate_gaussian_prior(batch['ct'],batch['ray_source'],batch['ray_target'],batch['affine_trans'],z_start=batch['z_start'],orig_shape=batch['orig_shape']) 
             #batch["geometric_prior"]
         if use_energy_prior:
-            field = pl_module.generate_energy_field(batch['ct'],source_global=batch['ray_source'],target_global=batch['ray_target'],condition=batch['condition'])
+            field = pl_module.generate_energy_field(batch['ct'],phys_source=batch['ray_source'],phys_target=batch['ray_target'],condition=batch['condition'],z_start=batch['z_start'],affine_trans=batch['affine_trans'],orig_shape=batch['orig_shape'])
             #batch["field"]
         if use_prior_extra:
             prior_extra = outputs["prior_extra"]

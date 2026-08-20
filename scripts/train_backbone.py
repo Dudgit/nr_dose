@@ -20,9 +20,10 @@ class DoseTrainer(pl.LightningModule):
         ray_source = batch['ray_source']
         ray_target = batch['ray_target']
         condition = batch['condition']
+        orig_shape = batch['orig_shape']
 
-        prior = self.generate_gaussian_prior(x,phys_source=ray_source,phys_target=ray_target,affine_trans=batch['affine_trans'])
-        prior_extra = self.generate_energy_field(x,source_global=ray_source,target_global=ray_target,condition=condition)
+        prior = self.generate_gaussian_prior(x,phys_source=ray_source,phys_target=ray_target,affine_trans=batch['affine_trans'],z_start=batch['z_start'],orig_shape=orig_shape)
+        prior_extra = self.generate_energy_field(x,phys_source=ray_source,phys_target=ray_target,condition=condition,z_start=batch['z_start'],affine_trans=batch['affine_trans'],orig_shape=orig_shape)
         x = torch.cat([x, prior, prior_extra], dim=1) if self.useEnergyPrior else torch.cat([x, prior], dim=1)  # 64x1x128x128x32 -> 64x3x128x128x32
         y_hat = self(x, condition)
 
@@ -58,13 +59,7 @@ class DoseTrainer(pl.LightningModule):
 
         return y_hat
 
-    def generate_gaussian_prior(self, ct_tensor, phys_source, phys_target, affine_trans):
-        """
-        Generates an infinite Gaussian tube (full_line mode).
-        ct_tensor: [Batch, 1, X, Y, Z]
-        phys_source/target: [Batch, 3]
-        affine_trans: [Batch, 4, 4]
-        """
+    def generate_gaussian_prior(self, ct_tensor, phys_source, phys_target, affine_trans, z_start, orig_shape):
         device = ct_tensor.device
         dtype = ct_tensor.dtype
         B, C, X, Y, Z = ct_tensor.shape
@@ -75,99 +70,113 @@ class DoseTrainer(pl.LightningModule):
         phys_source[:, 0:2] *= -1
         phys_target[:, 0:2] *= -1
         
-        # Add homogeneous coordinate for matrix multiplication: [Batch, 4, 1]
         homo_source = torch.cat([phys_source, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
         homo_target = torch.cat([phys_target, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
         
-        # Physical -> Voxel batched (Invert affine matrices on GPU)
         inv_affine = torch.linalg.inv(affine_trans.float())
-        
-        # Matrix multiply: [B, 4, 4] @ [B, 4, 1] -> [B, 4, 1] -> squeeze -> take first 3 [B, 3]
         A = torch.bmm(inv_affine, homo_source).squeeze(2)[:, :3]
         B_target = torch.bmm(inv_affine, homo_target).squeeze(2)[:, :3]
         
-        # Lock Z to center (Optional, based on your original lock_z_to_center=True)
-        z_center = (Z - 1) / 2.0
-        A[:, 2] = z_center
-        B_target[:, 2] = z_center
+        # Calculate X/Y center-crop offsets
+        x_offset = torch.div((orig_shape[:, 0] - X), 2, rounding_mode='floor')
+        y_offset = torch.div((orig_shape[:, 1] - Y), 2, rounding_mode='floor')
+
+        # Apply shifts exactly once
+        A[:, 0] -= x_offset
+        A[:, 1] -= y_offset
+        A[:, 2] -= z_start.view(-1)
+
+        B_target[:, 0] -= x_offset
+        B_target[:, 1] -= y_offset
+        B_target[:, 2] -= z_start.view(-1)
         
-        # Generate Grid (Shared for the whole batch)
+        # Generate Grid
         x_grid = torch.arange(X, device=device, dtype=dtype)
         y_grid = torch.arange(Y, device=device, dtype=dtype)
         z_grid = torch.arange(Z, device=device, dtype=dtype)
         grid_x, grid_y, grid_z = torch.meshgrid(x_grid, y_grid, z_grid, indexing="ij")
         
-        # [3, X, Y, Z] -> Expand to [Batch, 3, X, Y, Z]
         P = torch.stack([grid_x, grid_y, grid_z], dim=0).unsqueeze(0).expand(B, -1, -1, -1, -1)
         
-        # Expand A and B for broadcasting with spatial grid [Batch, 3, 1, 1, 1]
         A_expanded = A.view(B, 3, 1, 1, 1)
         B_expanded = B_target.view(B, 3, 1, 1, 1)
         
         AB = B_expanded - A_expanded
         AP = P - A_expanded
         
-        dot_AP_AB = torch.sum(AP * AB, dim=1)  # [Batch, X, Y, Z]
-        dot_AB_AB = torch.sum(AB * AB, dim=1)  # [Batch, 1, 1, 1]
+        dot_AP_AB = torch.sum(AP * AB, dim=1)
+        dot_AB_AB = torch.sum(AB * AB, dim=1)
         
-        # For FULL LINE, we do NOT clamp t_raw! It extends infinitely.
         t_raw = dot_AP_AB / (dot_AB_AB + 1e-8)
-        
-        # C is the perpendicular projection of point P onto the infinite line AB
         C = A_expanded + t_raw.unsqueeze(1) * AB
+        dist_sq = torch.sum((P - C) ** 2, dim=1)
         
-        dist_sq = torch.sum((P - C) ** 2, dim=1)  # [Batch, X, Y, Z]
-        
-        # Calculate Gaussian tube
-        sigma =  4.0#self.prior_cfg.get('sigma', 4.0)
+        sigma = 4.0
         gaussian_prior = torch.exp(-dist_sq / (2.0 * sigma ** 2))
         
-        # Return as [Batch, 1, X, Y, Z]
         return gaussian_prior.unsqueeze(1)
 
 
-    def generate_energy_field(self, ct_tensor, source_global, target_global, condition):
-        """
-        All inputs are Batched PyTorch Tensors on the GPU
-        """
+    def generate_energy_field(self, ct_tensor, phys_source, phys_target, condition, affine_trans, z_start,orig_shape):
         device = ct_tensor.device
         dtype = ct_tensor.dtype
         B, C, X, Y, Z = ct_tensor.shape
-        spacing = (1.0,1.0,3.0)#self.prior_cfg.get('pixdim', (1.0, 1.0, 3.0))
+        spacing = torch.tensor([1.0, 1.0, 3.0], device=device, dtype=dtype).view(1, 3)
         
-        # Vector math [Batch, 3]
-        beam_vec_global = target_global - source_global
-        d_target = torch.norm(beam_vec_global, dim=1, keepdim=True) + 1e-6
-        beam_dir = beam_vec_global / d_target
+        # 1. Get Local Voxel Coordinates (Exactly like the Gaussian Prior!)
+        phys_source_clone = phys_source.clone()
+        phys_target_clone = phys_target.clone()
+        phys_source_clone[:, 0:2] *= -1
+        phys_target_clone[:, 0:2] *= -1
         
-        # Grid generation [3, X, Y, Z] -> expand to [Batch, 3, X, Y, Z]
-        grid_x = torch.arange(X, device=device, dtype=dtype) * spacing[0]
-        grid_y = torch.arange(Y, device=device, dtype=dtype) * spacing[1]
-        grid_z = torch.arange(Z, device=device, dtype=dtype) * spacing[2]
-        coords = torch.stack(torch.meshgrid(grid_x, grid_y, grid_z, indexing="ij"), dim=0)
-        coords = coords.unsqueeze(0).expand(B, -1, -1, -1, -1)
+        homo_source = torch.cat([phys_source_clone, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
+        homo_target = torch.cat([phys_target_clone, torch.ones(B, 1, device=device)], dim=1).unsqueeze(2)
         
-        target_local = torch.tensor([
-            (X * spacing[0]) / 2.0,
-            (Y * spacing[1]) / 2.0,
-            (Z * spacing[2]) / 2.0
-        ], dtype=dtype, device=device).view(1, 3, 1, 1, 1)
+        inv_affine = torch.linalg.inv(affine_trans.float())
+        A_vox = torch.bmm(inv_affine, homo_source).squeeze(2)[:, :3]
+        B_vox = torch.bmm(inv_affine, homo_target).squeeze(2)[:, :3]
+        x_offset = torch.div((orig_shape[:, 0] - X), 2, rounding_mode='floor')
+        y_offset = torch.div((orig_shape[:, 1] - Y), 2, rounding_mode='floor')
         
-        # Expand for broadcasting [Batch, 3, 1, 1, 1]
-        d_target_view = d_target.view(B, 1, 1, 1, 1)
+        # Shift Global Z to Local Crop Z
+        A_vox[:, 0] -= x_offset
+        A_vox[:, 1] -= y_offset
+        A_vox[:, 2] -= z_start.view(-1)
+        
+        # 2. Convert Local Voxels to Local Physical mm (for dose curve math)
+        B_vox[:, 0] -= x_offset
+        B_vox[:, 1] -= y_offset
+        B_vox[:, 2] -= z_start.view(-1)
+
+        A_phys = A_vox * spacing
+        B_phys = B_vox * spacing
+        
+        # 3. Create Local Physical Grid
+        grid_x = torch.arange(X, device=device, dtype=dtype) * spacing[0, 0]
+        grid_y = torch.arange(Y, device=device, dtype=dtype) * spacing[0, 1]
+        grid_z = torch.arange(Z, device=device, dtype=dtype) * spacing[0, 2]
+        coords = torch.stack(torch.meshgrid(grid_x, grid_y, grid_z, indexing="ij"), dim=0) 
+        coords = coords.unsqueeze(0).expand(B, -1, -1, -1, -1) # [Batch, 3, X, Y, Z]
+        
+        # 4. Beam Vectors in Local Physical Space
+        beam_vec = B_phys - A_phys
+        d_target = torch.norm(beam_vec, dim=1, keepdim=True) + 1e-6
+        beam_dir = beam_vec / d_target  
+        
+        A_phys_view = A_phys.view(B, 3, 1, 1, 1)
         beam_dir_view = beam_dir.view(B, 3, 1, 1, 1)
+        d_target_view = d_target.view(B, 1, 1, 1, 1)
         
-        source_local = target_local - (d_target_view * beam_dir_view)
-        
-        v = coords - source_local
-        depths = torch.sum(v * beam_dir_view, dim=1)  # [Batch, X, Y, Z]
+        # 5. Project grid onto beam vector
+        v = coords - A_phys_view
+        depths = torch.sum(v * beam_dir_view, dim=1)  # Depth along beam
         
         v_lateral = v - (depths.unsqueeze(1) * beam_dir_view)
-        r_sq = torch.sum(v_lateral ** 2, dim=1)  # [Batch, X, Y, Z]
+        r_sq = torch.sum(v_lateral ** 2, dim=1)  # Lateral radius squared
         
+        # 6. Apply Physics equations
         depths_pos = torch.clamp(depths, min=0.0)
         
-        # Grab config values (or use defaults)
         sigma_base = 2.0
         alpha = 0.004
         plateau = 0.7
@@ -177,7 +186,7 @@ class DoseTrainer(pl.LightningModule):
         sigma_d = sigma_base + (alpha * depths_pos)
         lateral_profile = torch.exp(-r_sq / (2.0 * (sigma_d ** 2)))
         
-        delta_d = depths - d_target.view(B, 1, 1, 1)
+        delta_d = depths - d_target_view.squeeze(1) # Distance from Bragg peak target
         sigma_depth = torch.where(delta_d < 0, sig_ent, sig_dist)
         
         longitudinal_curve = torch.exp(- (delta_d ** 2) / (2.0 * (sigma_depth ** 2)))
@@ -188,13 +197,10 @@ class DoseTrainer(pl.LightningModule):
             longitudinal_curve
         )
         
-        # Energy parsing - Assuming condition is [Batch, ...], grab relevant energy element
-        # (You may need to adjust this depending on exactly which index your energy is in 'condition')
         e_scalar = condition[:, 2].view(B, 1, 1, 1) 
-        
         field = e_scalar * longitudinal_profile * lateral_profile
         
-        return field.unsqueeze(1) # [Batch, 1, X, Y, Z]
+        return field.unsqueeze(1)
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5,fused=True)

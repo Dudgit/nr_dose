@@ -1,4 +1,4 @@
-run_name: "PriorInModel"
+run_name: "RealignedPriors"
 modelname: "DoTA"
 inject_geometric_prior: True
 inject_energy_field: True
@@ -26,7 +26,7 @@ train:
   useGTPosInLearning: True
   useGeometricPrior: True
   useEnergyPrior: True
-  num_epochs: 150
+  num_epochs: 50
   use_maskPrediction: False
   lr: 2.8e-4
   adversarial:

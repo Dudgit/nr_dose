@@ -104,9 +104,10 @@ class ExtractSlabsAroundZ(MapTransform):
                     (pad_z_left, pad_z_right, 0, 0, 0, 0), # (Z_left, Z_right, Y_left, Y_right, X_left, X_right)
                     mode='constant', value=0
                 )
-                
+            d['orig_shape'] = np.array(img.shape[1:3], dtype=np.float32)
             d[key] = cropped_img
             d['affine_trans'] = affine
+            d['z_start'] = np.array([z_start], dtype=np.float32)
             
         return d
 
@@ -185,7 +186,7 @@ def get_loaders(cfg,hw = "atlasz"):
     ResizeWithPadOrCropd(keys=["ct", "gt_dose"], spatial_size=cfg['roi_size']),
     #InjectGaussianBeamPriord(keys=['geometric_prior'], source_key="ray_source", target_key="ray_target", ref_key="ct", sigma=cfg['sigma'], flip_lps_to_ras=True, prior_mode=cfg['prior_mode']),
     #InjectEnergyDepositionFieldd(keys=['field'], spacing=cfg['pixdim']),
-    EnsureTyped(keys=["ct", "gt_dose","ray_source","ray_target","condition","affine_trans"], track_meta=False )])
+    EnsureTyped(keys=["ct", "gt_dose","ray_source","ray_target","condition","affine_trans","z_start","orig_shape"], track_meta=False )])
 
 
 
