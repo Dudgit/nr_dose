@@ -17,8 +17,8 @@ The base for our model is coming from the state of the art model [DoTa](https://
 ### Our ideas
 As we started to work on the project one of the main idea was that we should try to develop an even closer approximation for the dose distributions. We've calculated the energy dependent expected start and endpoint of the doses and built an extre prior for the model. The issue we had so far with the predictions that they are always "longer" than the target maps. It means in the 2D slices of the 3D image, the dose maps, that are looking like tubes, are longer in case od prediction compared to the targets.
 As shown in:
-<img src="docs/sample_gt.png" alt="Ground Truth" width="450" height="400"> <img src="docs/sample_pred.png" alt="Prediction" width="450" height="400"> 
+<img src="docs/sample_gt.png" alt="Ground Truth" width="350" height="400"> <img src="docs/sample_pred.png" alt="Prediction" width="350" height="400"> 
 <p align="center">
-<img src="docs/sample_error.png" alt="Error Map" width="450" height="400">
+<img src="docs/sample_error.png" alt="Error Map" width="350" height="400">
 </p>
 I'm currently working on a latent regressor, that should be able to predict the start-endpoint of the "tubes". If the model can predict these values it means the information flow was lost in the training loop or just dominated by a wrong loss weight. If the model is unable to predict it with high accuracy it means that we lose this information in the encoding part.
