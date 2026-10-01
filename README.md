@@ -1,5 +1,6 @@
 <div align="center">
-  
+
+# Proton dose calculations
 **Environment & Tools**<br>
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![OpenGate](https://img.shields.io/badge/OpenGate-Monte_Carlo-red)](https://github.com/OpenGATE/Gate)
@@ -19,7 +20,7 @@
 
 ---
 
-# Proton dose calculations
+
 Proton therapy is an alternative for traditional radiation treatment. Due to the nature of protons (which is some particle physics black magic, we will not look deeply into), they deposit their energy in a more concentrated manner. This simply means that they do more harm in a smaller area, compared to traditional photons. In cancer treatment, where you want to harm the malignant cells and minimize the harm done in the healthy tissues proton treatment would be a fantastic idea. The only problem is our treatment planning methodologies were not originally designed for protons. In this work we are focusing on a development for proton dose map calculations in different body regions from CT images. In my other works you can see I work on Proton Computed Tomography (doing CT with protons for proton treatment), yet here we will try to develop a model that will predict the energy deposition distribution, using the CT images and the initial kinetic energies of the incoming protons. Later in the future we want to combine this with the pCT prediction algorithms, to see its effect on the model performance
 
 
