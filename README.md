@@ -1,3 +1,24 @@
+<div align="center">
+  
+**Environment & Tools**<br>
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![OpenGate](https://img.shields.io/badge/OpenGate-Monte_Carlo-red)](https://github.com/OpenGATE/Gate)
+[![Geant4](https://img.shields.io/badge/Geant4-Physics-blue)](https://geant4.web.cern.ch/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![MONAI](https://img.shields.io/badge/MONAI-Medical_DL-052F5F)](https://monai.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Datasets**<br>
+[![Dataset: FLARE22](https://img.shields.io/badge/Dataset-FLARE22-lightgreen)](https://flare22.grand-challenge.org/)
+[![Format: NIfTI](https://img.shields.io/badge/Format-NIfTI-success)](https://nifti.nimh.nih.gov/)
+
+**Target Architectures**<br>
+[![Model: 3D U-Net](https://img.shields.io/badge/Model-3D_U--Net-orange)](#)
+[![Model: Latent Regressor](https://img.shields.io/badge/Model-Latent_Regressor-purple)](#)
+</div>
+
+---
+
 # Proton dose calculations
 Proton therapy is an alternative for traditional radiation treatment. Due to the nature of protons (which is some particle physics black magic, we will not look deeply into), they deposit their energy in a more concentrated manner. This simply means that they do more harm in a smaller area, compared to traditional photons. In cancer treatment, where you want to harm the malignant cells and minimize the harm done in the healthy tissues proton treatment would be a fantastic idea. The only problem is our treatment planning methodologies were not originally designed for protons. In this work we are focusing on a development for proton dose map calculations in different body regions from CT images. In my other works you can see I work on Proton Computed Tomography (doing CT with protons for proton treatment), yet here we will try to develop a model that will predict the energy deposition distribution, using the CT images and the initial kinetic energies of the incoming protons. Later in the future we want to combine this with the pCT prediction algorithms, to see its effect on the model performance
 
