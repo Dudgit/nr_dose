@@ -1,0 +1,64 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%labels
+    Author Competition Setup
+    Version 1.0
+    Description Singularity container for downloading HuggingFace datasets
+
+%help
+    This container provides an environment for downloading HuggingFace datasets.
+
+    Usage:
+        # Basic download (public dataset):
+        singularity run huggingface_download.sif
+
+        # With HuggingFace token (for gated/private datasets):
+        singularity run --env HF_TOKEN=your_token_here huggingface_download.sif
+
+        # Specify custom output directory (bind mount):
+        singularity run --bind /path/to/local/data:/data huggingface_download.sif
+
+        # Run custom download script:
+        singularity exec huggingface_download.sif python /scripts/download_dataset.py
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export HF_HOME=/tmp/huggingface_cache
+    export TRANSFORMERS_CACHE=/tmp/huggingface_cache
+    # HF_TOKEN should be set at runtime via --env HF_TOKEN=your_token
+
+%post
+    apt-get update && apt-get install -y \
+        git \
+        wget \
+        curl \
+        ca-certificates \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install Python dependencies
+    pip install --no-cache-dir \
+        huggingface_hub \
+        datasets \
+        tqdm \
+        requests
+
+    # Create directories
+    mkdir -p /data
+    mkdir -p /scripts
+    mkdir -p /tmp/huggingface_cache
+
+%files
+    # The download script will be placed at /scripts/download_dataset.py
+    # Copy it in at build time if available, or exec it at runtime
+
+%runscript
+    echo "=== HuggingFace Dataset Downloader ==="
+    echo "HF_HOME: $HF_HOME"
+    if [ -f /scripts/download_dataset.py ]; then
+        python /scripts/download_dataset.py "$@"
+    else
+        echo "No download script found at /scripts/download_dataset.py"
+        echo "Please bind-mount your script or use: singularity exec <sif> python your_script.py"
+    fi

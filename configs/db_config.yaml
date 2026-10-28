@@ -1,0 +1,24 @@
+run_name: "PG_prior_EnergyPrior"
+modelname: "DoTA"
+prior_mode: "full_line"
+inject_geometric_prior: True
+inject_energy_field: True
+drop_priors: True
+ray_info: True
+dotakwgs:
+  use_fourier_embedding: True
+  in_channels: 3
+
+losskwgs:
+  allMAE_weight: 1.
+  masked_factor: 5.0
+  iid_curve_weight: 0.1
+  use_high_dose_mask: False
+  bragg_peak_weight: 25.0
+
+
+train:
+  num_epochs: 150
+  useEnergyPrior: True
+  adversarial:
+    use: False

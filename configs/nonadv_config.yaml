@@ -1,0 +1,13 @@
+run_name: "All_loss_added"
+modelname: "DoTA"
+
+dotakwgs:
+  use_fourier_embedding: True
+
+losskwgs:
+  use_high_dose_mask: False
+
+train:
+  fine_tune: True
+  adversarial:
+    use: False

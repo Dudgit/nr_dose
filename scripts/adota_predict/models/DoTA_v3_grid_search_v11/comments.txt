@@ -1,0 +1,2 @@
+Full 71k training. Lungs and Pelvis dataset. 20% validation set size.
+Static weights for all epochs. No GPR calculation. Adaptive learning rate with patience of 20 epochs and decay of 0.75. Increase model size. Corrected LPS implementation.

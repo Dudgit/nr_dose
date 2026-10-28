@@ -1,0 +1,10 @@
+data
+*.pyc
+*.sif
+*.log
+*.ckpt
+*.swp
+preds
+flare_CT
+flare_dose
+checkpoits

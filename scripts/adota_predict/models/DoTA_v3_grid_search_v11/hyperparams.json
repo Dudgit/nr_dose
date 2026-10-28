@@ -1,0 +1,26 @@
+{
+    "input_shape": [
+        2,
+        160,
+        30,
+        30
+    ],
+    "output_shape": [
+        1,
+        160,
+        30,
+        30
+    ],
+    "zero_padding": true,
+    "last_activation": false,
+    "num_levels": 4,
+    "enc_features": 32,
+    "kernel_size": 3,
+    "convolutional_steps": 1,
+    "conv_hidden_channels": 64,
+    "num_transformers": 1,
+    "num_heads": 4,
+    "dropout_rate": 0.1,
+    "causal": true,
+    "num_forward": 2
+}
