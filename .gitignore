@@ -8,3 +8,4 @@ preds
 flare_CT
 flare_dose
 checkpoits
+*.pth
