@@ -1,0 +1,3422 @@
+[
+    {
+        "patient_id": "FLARE22_Tr_0045_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 124.86990305475925,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0027_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 165.03351668573796,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_50.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 50,
+        "energy": 111.6928570274696,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_50.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0005_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0005_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0005_0000_angle_180.nii.gz",
+        "beam_source": [
+            -6.123233995736766e-14,
+            -500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 180,
+        "energy": 226.44356229931884,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0005_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0005_0000_angle_180.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0036_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_110.nii.gz",
+        "beam_source": [
+            -469.8463103929542,
+            -171.01007166283435,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 110,
+        "energy": 138.9086420473224,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_110.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0002_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_340.nii.gz",
+        "beam_source": [
+            171.0100716628343,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 340,
+        "energy": 225.17778629154483,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_340.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0007_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_310.nii.gz",
+        "beam_source": [
+            383.0222215594891,
+            321.3938048432696,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 310,
+        "energy": 118.08895229127866,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_310.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0009_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0009_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0009_0000_angle_340.nii.gz",
+        "beam_source": [
+            171.0100716628343,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 340,
+        "energy": 125.10697753908592,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0009_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0009_0000_angle_340.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0047_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 104.38160606837745,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0028_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0028_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0028_0000_angle_320.nii.gz",
+        "beam_source": [
+            321.3938048432698,
+            383.0222215594889,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 320,
+        "energy": 193.65383746982337,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0028_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0028_0000_angle_320.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0047_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 150.4096831113965,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0026_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0026_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0026_0000_angle_90.nii.gz",
+        "beam_source": [
+            -500.0,
+            3.061616997868383e-14,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 90,
+        "energy": 171.53020082846757,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0026_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0026_0000_angle_90.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0035_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 191.76238413023526,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0026_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0026_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0026_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 148.65788560276644,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0026_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0026_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_150.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            -433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 150,
+        "energy": 226.82040507103167,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_150.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0036_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 101.34321496021767,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 190.721836111512,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0030_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0030_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0030_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 150.41559474734385,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0030_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0030_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 196.86632338937272,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0048_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_270.nii.gz",
+        "beam_source": [
+            500.0,
+            -9.184850993605149e-14,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 270,
+        "energy": 123.17703835537536,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_270.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0021_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0021_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0021_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 220.30647553603933,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0021_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0021_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_210.nii.gz",
+        "beam_source": [
+            250.00000000000006,
+            -433.0127018922193,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 210,
+        "energy": 143.26327251813228,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_210.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_340.nii.gz",
+        "beam_source": [
+            171.0100716628343,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 340,
+        "energy": 139.08752363489128,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_340.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0035_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 174.28703343990145,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0014_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_270.nii.gz",
+        "beam_source": [
+            500.0,
+            -9.184850993605149e-14,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 270,
+        "energy": 195.5012596182978,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_270.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 132.99323191232097,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0020_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_310.nii.gz",
+        "beam_source": [
+            383.0222215594891,
+            321.3938048432696,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 310,
+        "energy": 151.90344317999558,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_310.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 194.77485234504303,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0044_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 216.42127866289783,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0044_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_340.nii.gz",
+        "beam_source": [
+            171.0100716628343,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 340,
+        "energy": 196.26017423795105,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_340.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0048_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_310.nii.gz",
+        "beam_source": [
+            383.0222215594891,
+            321.3938048432696,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 310,
+        "energy": 179.48986203848852,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_310.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0037_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 176.9535055169612,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0014_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 108.10915309122413,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 175.87586075405642,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0009_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0009_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0009_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 214.32172640352547,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0009_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0009_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0044_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 128.65472648440252,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0046_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 175.94607459467477,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0018_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 135.21600631323693,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0040_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0040_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0040_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 118.08812029100685,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0040_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0040_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 135.63713760141334,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0042_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_100.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            -86.82408883346515,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 100,
+        "energy": 207.25199806730907,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_100.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 165.69070403304985,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0049_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 119.16081063824186,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_280.nii.gz",
+        "beam_source": [
+            492.40387650610404,
+            86.82408883346498,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 280,
+        "energy": 212.25894921484053,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_280.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_110.nii.gz",
+        "beam_source": [
+            -469.8463103929542,
+            -171.01007166283435,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 110,
+        "energy": 205.6843577362043,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_110.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0002_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 184.89455705658298,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_160.nii.gz",
+        "beam_source": [
+            -171.01007166283443,
+            -469.84631039295414,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 160,
+        "energy": 114.04052462292304,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_160.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_0.nii.gz",
+        "beam_source": [
+            -0.0,
+            500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 0,
+        "energy": 168.17662316481662,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_0.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0032_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_180.nii.gz",
+        "beam_source": [
+            -6.123233995736766e-14,
+            -500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 180,
+        "energy": 111.83667538004539,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_180.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0046_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 154.32599368488638,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0007_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_350.nii.gz",
+        "beam_source": [
+            86.8240888334652,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 350,
+        "energy": 196.7428062863238,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_350.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_210.nii.gz",
+        "beam_source": [
+            250.00000000000006,
+            -433.0127018922193,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 210,
+        "energy": 151.92722789183327,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_210.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_340.nii.gz",
+        "beam_source": [
+            171.0100716628343,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 340,
+        "energy": 163.79660462595513,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_340.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0039_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0039_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0039_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 149.84212878444032,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0039_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0039_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_300.nii.gz",
+        "beam_source": [
+            433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 300,
+        "energy": 205.68140957324,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_300.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_40.nii.gz",
+        "beam_source": [
+            -321.3938048432696,
+            383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 40,
+        "energy": 119.75933730835618,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_40.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 199.15680243202746,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0001_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0001_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0001_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 144.1321850115093,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0001_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0001_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0032_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_50.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 50,
+        "energy": 208.99024182848885,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_50.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0048_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 119.3434260782654,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0004_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_270.nii.gz",
+        "beam_source": [
+            500.0,
+            -9.184850993605149e-14,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 270,
+        "energy": 159.9962995605774,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_270.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 140.66930224473003,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0046_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 108.64690762704741,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0046_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0046_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_320.nii.gz",
+        "beam_source": [
+            321.3938048432698,
+            383.0222215594889,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 320,
+        "energy": 138.97844559799216,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_320.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0047_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_160.nii.gz",
+        "beam_source": [
+            -171.01007166283443,
+            -469.84631039295414,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 160,
+        "energy": 200.69390714753,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_160.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0041_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0041_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0041_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 204.15928943806543,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0041_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0041_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0042_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 222.16409289992416,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0037_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 185.094907232296,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_150.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            -433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 150,
+        "energy": 187.5840902653111,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_150.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0045_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_110.nii.gz",
+        "beam_source": [
+            -469.8463103929542,
+            -171.01007166283435,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 110,
+        "energy": 222.53968066751696,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_110.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0011_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0011_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0011_0000_angle_220.nii.gz",
+        "beam_source": [
+            321.3938048432696,
+            -383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 220,
+        "energy": 225.9730327336997,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0011_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0011_0000_angle_220.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0005_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0005_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0005_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 149.6154327066879,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0005_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0005_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0004_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 160.8832269280668,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_300.nii.gz",
+        "beam_source": [
+            433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 300,
+        "energy": 161.83626169626416,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_300.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_310.nii.gz",
+        "beam_source": [
+            383.0222215594891,
+            321.3938048432696,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 310,
+        "energy": 228.00676708955896,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_310.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0045_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_200.nii.gz",
+        "beam_source": [
+            171.01007166283432,
+            -469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 200,
+        "energy": 118.89260424977014,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_200.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0029_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0029_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0029_0000_angle_190.nii.gz",
+        "beam_source": [
+            86.82408883346524,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 190,
+        "energy": 192.0400964221156,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0029_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0029_0000_angle_190.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_0.nii.gz",
+        "beam_source": [
+            -0.0,
+            500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 0,
+        "energy": 209.1245488080388,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_0.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0007_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 126.0203241816969,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0004_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 142.66318715163717,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0047_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_40.nii.gz",
+        "beam_source": [
+            -321.3938048432696,
+            383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 40,
+        "energy": 199.94681784011362,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0047_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0047_0000_angle_40.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0027_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 229.1713918325772,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 208.2703479573205,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0023_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0023_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0023_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 228.65230828227988,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0023_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0023_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0001_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0001_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0001_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 174.4445452368691,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0001_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0001_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0044_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_190.nii.gz",
+        "beam_source": [
+            86.82408883346524,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 190,
+        "energy": 221.17648540277446,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0044_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0044_0000_angle_190.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 207.97109183906227,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0035_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_310.nii.gz",
+        "beam_source": [
+            383.0222215594891,
+            321.3938048432696,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 310,
+        "energy": 171.63757814250332,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_310.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 160.34415472831492,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0012_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_330.nii.gz",
+        "beam_source": [
+            250.00000000000023,
+            433.0127018922192,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 330,
+        "energy": 200.49522301592117,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_330.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0019_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 184.59444190623253,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0019_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0019_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 204.5973801589256,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0006_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 175.55348011999104,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0048_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_330.nii.gz",
+        "beam_source": [
+            250.00000000000023,
+            433.0127018922192,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 330,
+        "energy": 145.68370409613024,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_330.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0011_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0011_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0011_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 110.414999035008,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0011_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0011_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0013_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 211.3373355896567,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_110.nii.gz",
+        "beam_source": [
+            -469.8463103929542,
+            -171.01007166283435,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 110,
+        "energy": 211.21944610738853,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_110.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 187.8563415048706,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0006_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_300.nii.gz",
+        "beam_source": [
+            433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 300,
+        "energy": 194.90506040575585,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_300.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0007_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_40.nii.gz",
+        "beam_source": [
+            -321.3938048432696,
+            383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 40,
+        "energy": 106.82322760686382,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_40.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0006_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 105.49030993875854,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0006_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0006_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0013_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 159.7499509250186,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0045_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_350.nii.gz",
+        "beam_source": [
+            86.8240888334652,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 350,
+        "energy": 189.81382835014023,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_350.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0043_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0043_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0043_0000_angle_50.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 50,
+        "energy": 105.46602264425323,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0043_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0043_0000_angle_50.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0049_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 212.5260911433191,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 190.10087836880246,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0049_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_50.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 50,
+        "energy": 125.8210739731352,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_50.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0014_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_150.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            -433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 150,
+        "energy": 127.63221864231402,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_150.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0035_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 114.50390654111585,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0035_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0035_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0022_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 219.38046179704878,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0014_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 119.93408683600441,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_100.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            -86.82408883346515,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 100,
+        "energy": 217.41891890697838,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_100.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0027_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 176.79770655309244,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0027_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_320.nii.gz",
+        "beam_source": [
+            321.3938048432698,
+            383.0222215594889,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 320,
+        "energy": 140.91707529065837,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_320.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_350.nii.gz",
+        "beam_source": [
+            86.8240888334652,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 350,
+        "energy": 167.78584978533178,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_350.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0023_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0023_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0023_0000_angle_100.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            -86.82408883346515,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 100,
+        "energy": 197.59699074417486,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0023_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0023_0000_angle_100.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 133.28703247087378,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0022_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_110.nii.gz",
+        "beam_source": [
+            -469.8463103929542,
+            -171.01007166283435,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 110,
+        "energy": 219.96940566070182,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_110.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0017_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_220.nii.gz",
+        "beam_source": [
+            321.3938048432696,
+            -383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 220,
+        "energy": 124.12213551584325,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0017_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0017_0000_angle_220.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0004_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_70.nii.gz",
+        "beam_source": [
+            -469.84631039295414,
+            171.0100716628344,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 70,
+        "energy": 128.6574897681262,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_70.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0015_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 200.92484915953747,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0015_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0015_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_40.nii.gz",
+        "beam_source": [
+            -321.3938048432696,
+            383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 40,
+        "energy": 190.46246342956204,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_40.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 168.34523542062004,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0039_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0039_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0039_0000_angle_190.nii.gz",
+        "beam_source": [
+            86.82408883346524,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 190,
+        "energy": 106.30734908249964,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0039_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0039_0000_angle_190.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0048_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_250.nii.gz",
+        "beam_source": [
+            469.8463103929542,
+            -171.01007166283426,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 250,
+        "energy": 222.67783514789676,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0048_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0048_0000_angle_250.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0049_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 124.27485846135286,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0030_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0030_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0030_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 112.23290937101874,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0030_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0030_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0034_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 118.81120839280604,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0008_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0008_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0008_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 158.80324795151557,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0008_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0008_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_200.nii.gz",
+        "beam_source": [
+            171.01007166283432,
+            -469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 200,
+        "energy": 160.285934974991,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_200.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 159.55564411924914,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0034_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_280.nii.gz",
+        "beam_source": [
+            492.40387650610404,
+            86.82408883346498,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 280,
+        "energy": 103.38392260375531,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_280.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0020_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 117.62408587812612,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_180.nii.gz",
+        "beam_source": [
+            -6.123233995736766e-14,
+            -500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 180,
+        "energy": 201.59801511158435,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_180.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0034_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 195.61230250938354,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0014_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_140.nii.gz",
+        "beam_source": [
+            -321.3938048432697,
+            -383.02222155948897,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 140,
+        "energy": 220.61267436280775,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0014_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0014_0000_angle_140.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_220.nii.gz",
+        "beam_source": [
+            321.3938048432696,
+            -383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 220,
+        "energy": 196.91855547573385,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_220.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0010_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 212.87901787432133,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0010_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0010_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0033_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 107.37617352211092,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0004_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_160.nii.gz",
+        "beam_source": [
+            -171.01007166283443,
+            -469.84631039295414,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 160,
+        "energy": 206.2808346609105,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0004_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0004_0000_angle_160.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0016_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 193.21489163759964,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0016_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0016_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0032_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 116.64178827828579,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0032_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0032_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0002_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 191.81235919407172,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0034_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 191.1974550287058,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0012_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_300.nii.gz",
+        "beam_source": [
+            433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 300,
+        "energy": 193.47405527966015,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_300.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0020_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_160.nii.gz",
+        "beam_source": [
+            -171.01007166283443,
+            -469.84631039295414,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 160,
+        "energy": 160.30594898613919,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0020_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0020_0000_angle_160.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0033_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 135.45602421244305,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_130.nii.gz",
+        "beam_source": [
+            -383.022221559489,
+            -321.39380484326966,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 130,
+        "energy": 198.01696427120118,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_130.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_280.nii.gz",
+        "beam_source": [
+            492.40387650610404,
+            86.82408883346498,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 280,
+        "energy": 188.2049009267276,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_280.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0033_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_120.nii.gz",
+        "beam_source": [
+            -433.01270189221935,
+            -249.9999999999999,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 120,
+        "energy": 193.28226557068166,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0033_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0033_0000_angle_120.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0042_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_350.nii.gz",
+        "beam_source": [
+            86.8240888334652,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 350,
+        "energy": 213.38060190963915,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_350.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 130.69143720003493,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0034_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_200.nii.gz",
+        "beam_source": [
+            171.01007166283432,
+            -469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 200,
+        "energy": 225.33077109340888,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0034_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0034_0000_angle_200.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0050_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 189.90299637633905,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0050_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0050_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0007_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 226.36460739886093,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0007_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0007_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0003_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_60.nii.gz",
+        "beam_source": [
+            -433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 60,
+        "energy": 176.6082081487297,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_60.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 100.41922821983796,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0018_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 170.23580809970997,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0012_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_180.nii.gz",
+        "beam_source": [
+            -6.123233995736766e-14,
+            -500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 180,
+        "energy": 164.91069103426446,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0012_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0012_0000_angle_180.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0003_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 200.1294931891082,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0018_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_80.nii.gz",
+        "beam_source": [
+            -492.403876506104,
+            86.82408883346521,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 80,
+        "energy": 172.23921361704961,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0018_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0018_0000_angle_80.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0002_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_330.nii.gz",
+        "beam_source": [
+            250.00000000000023,
+            433.0127018922192,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 330,
+        "energy": 202.10526003218123,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0002_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0002_0000_angle_330.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0045_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_230.nii.gz",
+        "beam_source": [
+            383.02222155948897,
+            -321.3938048432697,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 230,
+        "energy": 222.0861408003091,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0045_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0045_0000_angle_230.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0037_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_220.nii.gz",
+        "beam_source": [
+            321.3938048432696,
+            -383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 220,
+        "energy": 100.40896924238997,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0037_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0037_0000_angle_220.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0022_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 220.90548238112703,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0022_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_210.nii.gz",
+        "beam_source": [
+            250.00000000000006,
+            -433.0127018922193,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 210,
+        "energy": 126.0095312234206,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_210.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0049_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 197.30549382004332,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0049_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0049_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0013_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_180.nii.gz",
+        "beam_source": [
+            -6.123233995736766e-14,
+            -500.0,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 180,
+        "energy": 195.65187904228446,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0013_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0013_0000_angle_180.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0024_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_170.nii.gz",
+        "beam_source": [
+            -86.82408883346514,
+            -492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 170,
+        "energy": 159.89972084354642,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_170.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0024_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_160.nii.gz",
+        "beam_source": [
+            -171.01007166283443,
+            -469.84631039295414,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 160,
+        "energy": 167.62395152234936,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_160.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0025_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_30.nii.gz",
+        "beam_source": [
+            -249.99999999999997,
+            433.01270189221935,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 30,
+        "energy": 158.60994313920884,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0025_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0025_0000_angle_30.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0024_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_210.nii.gz",
+        "beam_source": [
+            250.00000000000006,
+            -433.0127018922193,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 210,
+        "energy": 136.6198242436367,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0024_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0024_0000_angle_210.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0036_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_20.nii.gz",
+        "beam_source": [
+            -171.01007166283435,
+            469.8463103929542,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 20,
+        "energy": 150.69092137637924,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_20.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0003_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_40.nii.gz",
+        "beam_source": [
+            -321.3938048432696,
+            383.022221559489,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 40,
+        "energy": 120.45667900215446,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0003_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0003_0000_angle_40.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0042_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_290.nii.gz",
+        "beam_source": [
+            469.84631039295414,
+            171.0100716628345,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 290,
+        "energy": 194.6888148813964,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0042_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0042_0000_angle_290.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0027_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_10.nii.gz",
+        "beam_source": [
+            -86.82408883346517,
+            492.403876506104,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 10,
+        "energy": 107.37574191762394,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0027_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0027_0000_angle_10.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0043_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0043_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0043_0000_angle_90.nii.gz",
+        "beam_source": [
+            -500.0,
+            3.061616997868383e-14,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 90,
+        "energy": 223.0605810284797,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0043_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0043_0000_angle_90.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0036_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_260.nii.gz",
+        "beam_source": [
+            492.403876506104,
+            -86.82408883346517,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 260,
+        "energy": 120.6922565232825,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0036_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0036_0000_angle_260.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0022_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_240.nii.gz",
+        "beam_source": [
+            433.0127018922192,
+            -250.00000000000023,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 240,
+        "energy": 112.70748593799105,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0022_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0022_0000_angle_240.nii.gz"
+    },
+    {
+        "patient_id": "FLARE22_Tr_0038_0000",
+        "ct_path": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose_path": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_300.nii.gz",
+        "beam_source": [
+            433.0127018922193,
+            250.00000000000006,
+            0.0
+        ],
+        "beam_target": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "angle": 300,
+        "energy": 221.769942224668,
+        "ct": "/project/nr_dose/flare_CT/flare/FLARE22_Tr_0038_0000.nii.gz",
+        "dose": "/project/nr_dose/flare_dose/output/dose_FLARE22_Tr_0038_0000_angle_300.nii.gz"
+    }
+]

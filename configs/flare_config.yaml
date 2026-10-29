@@ -1,0 +1,19 @@
+data:
+  train_list: "jsons/train_flare.json"
+  val_list: "jsons/val_flare.json"
+  persistent_dataset: False
+  batch_size: 4
+  num_workers: 4
+
+dotakwgs:
+  input_shape: [2, 512, 32, 32] 
+  num_levels: 4
+  enc_features: 32
+  kernel_size: 3
+  convolutional_steps: 1  
+  conv_hidden_channels: 64
+  num_transformers: 1
+  num_heads: 8
+  dropout_rate: 0.1
+  causal: True
+  num_forward: 1
